@@ -1,0 +1,109 @@
+<html>
+<body>
+<script>
+
+var blockProviders = ["https://insight.bitpay.com/api/block/",
+"https://www.localbitcoinschain.com/api/block/",
+//"https://blockchain.info/it/rawblock/",
+"http://vr4.synaptica.info:3000/api/block/"];
+
+var hash= "0000000000000000044630fe53f6c922dba8101c179d337f7b4e4c23203d2aae";
+var results = [];
+askBlock(hash);
+
+function askBlock(hash) {
+  var promises=[];
+  for(var i = 0; i< blockProviders.length ; i++) {
+    var url = blockProviders[i] + hash;
+    var req = makeRequest({
+      method:"GET",
+      url:url,
+      timeout: 5000
+    });
+    promises.push(req);
+  }
+  Promise.all(promises).then(function(data) {
+    for(var i = 0; i< data.length ; i++) {
+      var result=JSON.parse(data[i].response);
+      var time = result['time'];
+      console.log(time);
+      if(results.indexOf(time)>=0) {
+        console.log("found twice!");
+      }
+      results.push(time);
+
+    }
+
+  });
+
+}
+
+function softFail(promise) {
+  return new Promise(function(resolve, reject) {
+    promise
+    .then(resolve)
+    .catch(resolve)
+  })
+}
+
+function makeRequest (opts) {
+  return new Promise(function (resolve, reject) {
+    var now = Date.now();
+    var xhr = new XMLHttpRequest();
+    xhr.timeout= opts.timeout || 5000;
+    xhr.open(opts.method, opts.url);
+    xhr.onload = function () {
+      if (this.status >= 200 && this.status < 300) {
+        var data = {};
+        data['response']= xhr.response;
+        data['elapsed'] = Date.now() - now;
+        resolve(data);
+      } else {
+        reject({
+          status: this.status,
+          statusText: xhr.statusText,
+          m: "statusNot200",
+          opts: opts,
+          elapsed : Date.now() - now
+        });
+      }
+    };
+    xhr.onerror = function () {
+      reject({
+        status: this.status,
+        statusText: xhr.statusText,
+        m: "error",
+        opts: opts,
+        elapsed : Date.now() - now
+      });
+    };
+    xhr.ontimeout = function () {
+      reject({
+        status: this.status,
+        statusText: xhr.statusText,
+        m: "timeout",
+        opts: opts,
+        elapsed : Date.now() - now
+      });
+    };
+    if (opts.headers) {
+      Object.keys(opts.headers).forEach(function (key) {
+        xhr.setRequestHeader(key, opts.headers[key]);
+      });
+    }
+    var params = opts.params;
+    // We'll need to stringify if we've been given an object
+    // If we have a string, this is skipped.
+    if (params && typeof params === 'object') {
+      params = Object.keys(params).map(function (key) {
+        return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
+      }).join('&');
+    }
+    xhr.send(params);
+  });
+}
+
+
+</script>
+</body>
+</html>
