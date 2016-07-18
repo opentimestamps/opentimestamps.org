@@ -38,7 +38,7 @@
         <ul class="sidebar-nav">
             <a id="menu-close" href="#" class="btn btn-light btn-lg pull-right toggle"><i class="fa fa-times"></i></a>
             <li class="sidebar-brand">
-                <a href="#top" onclick=$("#menu-close").click();>Start Bootstrap</a>
+                <a href="#top" onclick=$("#menu-close").click();>OpenTimestamps</a>
             </li>
             <li>
                 <a href="#top" onclick=$("#menu-close").click();>Home</a>
@@ -77,7 +77,7 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2>Open<wbr>Timestamps</h2>
-                    <p class="lead">OpenTimestamps aim to be a standard format for blockchain timestamping.<br>
+                    <p class="lead">OpenTimestamps aims to be a standard format for blockchain timestamping.<br>
                       The format is flexible enough to be vendor and blockchain independent. <a href="#howitworks">Tell me more...</a>
                     </p>
                 </div>
@@ -168,18 +168,35 @@
                         <div class="col-sm-6">
                             <div>
                                 <h3>1. Calculate hash</h3>
-                                <p>Drag &amp; Drop a file or select<br>The hash is calculated on your broswer preserving your privacy</p>
+
+                                <div id="holder" >
+                                    <div class="text-center">
+                                        <br><span id="filename">Drop here a document</span>
+                                        <br><span id="filesize">Or click to select one</span>
+                                    </div>
+                                </div>
+                                <p>The hash is calculated on your browser preserving your privacy</p>
+                                <input id="myInput" type="file" style="visibility:hidden">
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div>
-                                <h3>2. Paste here your OpenTimestamp</h3>
-                                <textarea></textarea>
+                                <h3>2. Paste your Open<wbr>Timestamp</h3>
+                                <br>
+                                <textarea class="form-control" rows="4" id="jsonstamp"></textarea>
+
                             </div>
                         </div>
                     </div>
                     <!-- /.row (nested) -->
-                    <a href="#" class="btn btn-dark">VERIFY</a>
+                    <p id="status" class="wrap" style="margin-bottom: 0px"></p>
+                    <br><a href="#" class="btn btn-dark" id="verifyButton">VERIFY</a>
+                    <br><br>
+                    <div class="alert alert-warning" role="alert" id="alertMessage" style="visibility:hidden">
+                      <div class="alert alert-success" role="alert" id="successMessage" style="visibility:hidden">
+                    </div>
+
+
                 </div>
                 <!-- /.col-lg-10 -->
             </div>
@@ -320,11 +337,15 @@
     <!-- jQuery -->
     <script src="js/jquery.js"></script>
 
+    <script src="bower_components/bitcore-lib/bitcore-lib.min.js"></script>
+
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/crypto.js"></script>
 
     <!-- Custom Theme JavaScript -->
     <script>
+    var bitcore = require('bitcore-lib');
     // Closes the sidebar menu
     $("#menu-close").click(function(e) {
         e.preventDefault();
@@ -375,6 +396,174 @@
             }
         }
     });
+
+
+    var hash;
+
+(function() {
+   // your page initialization code here
+   // the DOM will be available here
+  var holder = document.getElementById('holder'),
+       state = document.getElementById('status'),
+       alertMessage = document.getElementById('alertMessage'),
+       successMessage = document.getElementById('successMessage');
+
+  if (typeof window.FileReader === 'undefined') {
+    state.className = 'fail';
+  } else {
+    state.className = 'success';
+  }
+
+  document.getElementById('myInput').addEventListener('change', function(evt) {
+      var f = evt.target.files[0];
+      handleFileSelect(f);
+    }, false);
+
+  document.getElementById('verifyButton').onclick = function(e) {
+    e.preventDefault();
+    if(!hash) {
+      alert("Select a document first");
+      return;
+    }
+    var stamp;
+    try {
+      var stampString = document.getElementById('jsonstamp').value;
+      console.log("verifyButton clicked");
+      var stamp = JSON.parse(stampString);
+    } catch(e) {}
+
+    if(!stamp) {
+      alert("Stamp data is not a valid");
+      return;
+    }
+    verify(hash,stamp);
+  }
+
+})();
+
+function alert(text) {
+  alertMessage.style.visibility = 'visible'
+  alertMessage.innerText = text;
+}
+
+
+function success(text) {
+  successMessage.style.visibility = 'visible'
+  successMessage.innerText = text;
+}
+
+
+holder.ondragover = function () { this.className = 'hover'; return false; };
+holder.ondragend = function () { this.className = ''; return false; };
+holder.ondrop = function (e) {
+  this.className = '';
+  e.preventDefault();
+  var file = e.dataTransfer.files[0];
+  handleFileSelect(file);
+
+  return false;
+};
+
+function status(text) {
+    document.getElementById('status').innerText = text ;
+}
+
+function crypto_callback(p) {
+    status('Hashing ' + (p*100).toFixed(0) + '% completed');
+}
+
+holder.onclick = function () {
+    console.log("holder.onclick");
+
+    document.getElementById('myInput').click(
+    );
+};
+
+function humanFileSize(bytes, si) {
+    var thresh = si ? 1000 : 1024;
+    if(Math.abs(bytes) < thresh) {
+        return bytes + ' B';
+    }
+    var units = si
+        ? ['kB','MB','GB','TB','PB','EB','ZB','YB']
+        : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+    var u = -1;
+    do {
+        bytes /= thresh;
+        ++u;
+    } while(Math.abs(bytes) >= thresh && u < units.length - 1);
+    return bytes.toFixed(1)+' '+units[u];
+}
+
+
+function handleFileSelect(file) {
+   document.getElementById('filename').innerText = file.name;
+   document.getElementById('filesize').innerText = humanFileSize(file.size,true);
+
+   reader = new FileReader();
+   reader.onload = function (event) {
+
+   var data = event.target.result;
+   setTimeout(function() {
+        CryptoJS.SHA256(data, crypto_callback, crypto_finish);
+      }, 200);
+   };
+   console.log(file);
+   reader.readAsBinaryString(file);
+}
+
+
+function verify(hash, stamp) {
+  try {
+    var stampPath=stamp[0];
+    var stampEnd=stamp[1];
+    var value = hash;
+    for (var i = 1; i < stampPath.length; i++) {
+      current = stampPath[i];
+      console.log("value= " + value);
+      value = exec(current[0], current[1], value, current[2]);
+    }
+
+    var finalValue = finalExec(stampEnd[0], stampEnd[1], stampEnd[2], value, stampEnd[3] )
+    console.log("finalValue=" + finalValue);
+    success("" + finalValue);
+  } catch(e) {
+    alert(e);
+  }
+}
+
+
+function finalExec(what, chain, prefix, prec, suffix) {
+  if( what=="block_header" && chain=="bitcoin-mainnet" ) {
+    return exec("sha256",exec("sha256",prefix,prec,suffix),"","");
+  } else {
+    throw new Exception("error");
+  }
+}
+function exec(what, prefix, prec, suffix) {
+  value=new bitcore.deps.Buffer(prefix + prec + suffix, "hex");
+  if("sha256" == what) {
+    h=bitcore.crypto.Hash.sha256(value);
+    return h.toString('hex');
+  } else if("reverse" == what) {
+    return value.reverse().toString("hex");
+  } else if("ripemd160" == what) {
+    h=bitcore.crypto.Hash.ripemd160(value);
+    return h.toString('hex');
+  } else {
+    throw new Exception("error");
+  }
+}
+
+
+function crypto_finish(val) {
+    hash=val;
+    console.log("crypto_finish " + hash);
+    status("Document hash is " + hash );
+
+    /*document.getElementById('hashinput').value=hash ;*/
+
+}
 
     </script>
 

@@ -254,3 +254,15 @@ footer {
   bottom: 5px;
   right: 5px;
 }
+
+#holder {
+    border: 7px dashed #ccc;
+    border-radius: 7px;
+    width: 200px;
+    height: 100px;
+    margin: 20px auto;
+}
+
+#holder.hover {
+    border: 7px dashed #333;
+}
