@@ -162,7 +162,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 col-lg-offset-1 text-center">
-                    <h2>Verify</h2>
+                    <br><h2>Verify</h2>
                     <hr class="small">
                     <div class="row">
                         <div class="col-sm-6">
@@ -194,9 +194,24 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 col-lg-offset-1 text-center">
-                    <h2>How it Works?</h2>
+                    <br><h2>How it Works?</h2>
                     <hr class="small">
-                    <p></p>
+                </div>
+                <div class="col-lg-10 col-lg-offset-1">
+                    <p>
+                      OpenTimestamps format define a path of operation from the timestamped data to the hash of a block in a blockchain.<br>
+                      The existence of the path is the proof that the data is committed to the blockchain in that specific block.<br>
+                      The commitment in the blockchain grants the data are created on or before the block timestamp.<br>
+                      At the moment the bitcoin blockchain is the only one supported but there is no issue in extending the format to other blockchains.<br>
+                      Currently supported operations are:
+                      <ul>
+                        <li>sha256</li>
+                        <li>ripemd160</li>
+                        <li>reverse</li>
+                      </ul>
+
+
+                    </p>
                 </div>
                 <!-- /.col-lg-10 -->
             </div>
@@ -211,7 +226,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 col-lg-offset-1 text-center">
-                    <h2>Vendors</h2>
+                    <br><h2>Vendors</h2>
                     <hr class="small">
                     <div class="row">
                         <div class="col-sm-6">
@@ -225,7 +240,7 @@
                         <div class="col-sm-6">
                             <div>
                                 <h3>Your company here</h3>
-                                <a href="#" class="btn btn-dark">ADD</a>
+                                <a href="https://github.com/RCasatta/web-opentimestamps/edit/master/index.html" class="btn btn-dark">ADD</a>
                             </div>
                         </div>
                     </div>
@@ -244,19 +259,22 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 col-lg-offset-1 text-center">
-                    <h2>Libraries</h2>
+                    <br><h2>Libraries</h2>
                     <hr class="small">
                     <div class="row">
                         <div class="col-sm-6">
                             <div>
                                 <h3>python-opentimestamp</h3>
-                                <p></p>
+                                <p>The original python library from Peter Todd</p>
+                                <a href="https://github.com/petertodd/python-opentimestamps"><i class="fa fa-github fa-fw fa-inverse fa-3x"></i></a>
+
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div>
                                 <h3>javascript</h3>
-                                <p></p>
+                                <p>The js code running in this page to make in browser verification</p>
+                                <a href="https://github.com/RCasatta/web-opentimestamps"><i class="fa fa-github fa-fw fa-inverse fa-3x"></i></a>
                             </div>
                         </div>
                     </div>
@@ -288,7 +306,7 @@
                     <ul class="list-inline">
 
                         <li>
-                            <a href="#"><i class="fa fa-github fa-fw fa-3x"></i></a>
+                            <a href="https://github.com/RCasatta/web-opentimestamps"><i class="fa fa-github fa-fw fa-3x"></i></a>
                         </li>
                     </ul>
                     <hr class="small">
@@ -357,26 +375,7 @@
             }
         }
     });
-    // Disable Google Maps scrolling
-    // See http://stackoverflow.com/a/25904582/1607849
-    // Disable scroll zooming and bind back the click event
-    var onMapMouseleaveHandler = function(event) {
-        var that = $(this);
-        that.on('click', onMapClickHandler);
-        that.off('mouseleave', onMapMouseleaveHandler);
-        that.find('iframe').css("pointer-events", "none");
-    }
-    var onMapClickHandler = function(event) {
-            var that = $(this);
-            // Disable the click handler until the user leaves the map area
-            that.off('click', onMapClickHandler);
-            // Enable scrolling zoom
-            that.find('iframe').css("pointer-events", "auto");
-            // Handle the mouse leave event
-            that.on('mouseleave', onMapMouseleaveHandler);
-        }
-        // Enable map zooming with mouse scroll when the user clicks the map
-    $('.map').on('click', onMapClickHandler);
+
     </script>
 
 </body>
