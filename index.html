@@ -222,23 +222,26 @@
                       The commitment in the blockchain grants the data are created on or before the block timestamp.<br>
                       At the moment the bitcoin blockchain is the only one supported but there is no issue in extending the format to other blockchains.<br>
                       The stamp use <a href="http://json.org" style="color:white">json</a> as data-interchange format and the schema is the following.
+                    </p>
 
+                      <br>
                       <h4 id="schema">Schema:</h4>
                       <ul>
-                        <li>array of</li>
+                        <li>Array of</li>
                         <ul>
-                          <li>array of</li>
+                          <li>Array of</li>
                           <ul>
                             <li><a href="#pathstep"><code class="highlighter-rouge">Path Step</code></a></li>
                           </ul>
                         </ul>
                         <ul>
-                          <li>array of</li>
+                          <li>Array of</li>
                           <ul>
                             <li><a href="#finalstep"><code class="highlighter-rouge">Final Step</code></a></li>
                           </ul>
                         </ul>
                       </ul>
+                      <br>
 
                       <h4 id="pathstep">Path Step:</h4>
                       <p>The path contain the operation type, eventual prefix and suffix of data to append to the value obtained by the previous step in the path.
@@ -254,6 +257,7 @@
                         <li><code class="highlighter-rouge">Suffix</code></li>
                       </ul>
 
+                      <br>
                       <h4 id="finalstep">Final Step:</h4>
                       <ul>
                         <li><code class="highlighter-rouge">Blockchain Object</code> obtained by executing the path.</li>
@@ -264,16 +268,14 @@
                         <ul>
                           <li>bitcoin-mainnet</li>
                         </ul>
-                        <li><code class="highlighter-rouge">prefix</code></li>
-                        <li><code class="highlighter-rouge">suffix</code></li>
+                        <li><code class="highlighter-rouge">Prefix</code></li>
+                        <li><code class="highlighter-rouge">Suffix</code></li>
                       </ul>
 
-
-
+                      <br>
                       <h4>OpenTimestamp example:</h4>
 
 
-                    </p>
                     <figure class="highlight" style="height:350px; overflow:auto"><pre><code class="language-shell" data-lang="shell"><span class="o">[</span>
                 <span class="o">[</span>
                   <span class="o">[</span>
@@ -630,6 +632,10 @@
       var stampString = document.getElementById('jsonstamp').value;
       console.log("verifyButton clicked");
       var stamp = JSON.parse(stampString);
+      if(stamp.ots1) {
+        stamp=stamp.ots1;
+      }
+
     } catch(e) {}
 
     if(!stamp) {
