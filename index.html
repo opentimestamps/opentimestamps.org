@@ -736,7 +736,8 @@ function verify(hash, stamp) {
 
     var finalValue = finalExec(stampEnd[0], stampEnd[1], stampEnd[2], value, stampEnd[3] )
     console.log("Block hash=" + finalValue);
-    var reversed = new bitcore.deps.Buffer(finalValue,"hex").reverse().toString("hex");
+    var finalValueBuffer = new bitcore.deps.Buffer(finalValue,"hex");
+    var reversed = bitcore.util.buffer.reverse(finalValueBuffer).toString("hex");
 
     askBlock(reversed);
 
@@ -759,7 +760,7 @@ function exec(what, prefix, prec, suffix) {
     h=bitcore.crypto.Hash.sha256(value);
     return h.toString('hex');
   } else if("reverse" == what) {
-    return value.reverse().toString("hex");
+    return bitcore.util.buffer.reverse(value).toString("hex");
   } else if("ripemd160" == what) {
     h=bitcore.crypto.Hash.ripemd160(value);
     return h.toString('hex');
