@@ -221,15 +221,214 @@
                       The existence of the path is the proof that the data is committed to the blockchain in that specific block.<br>
                       The commitment in the blockchain grants the data are created on or before the block timestamp.<br>
                       At the moment the bitcoin blockchain is the only one supported but there is no issue in extending the format to other blockchains.<br>
-                      Currently supported operations are:
+                      The stamp use <a href="http://json.org" style="color:white">json</a> as data-interchange format and the schema is the following.
+
+                      <h4 id="schema">Schema:</h4>
                       <ul>
-                        <li>sha256</li>
-                        <li>ripemd160</li>
-                        <li>reverse</li>
+                        <li>array of</li>
+                        <ul>
+                          <li>array of</li>
+                          <ul>
+                            <li><a href="#pathstep"><code class="highlighter-rouge">Path Step</code></a></li>
+                          </ul>
+                        </ul>
+                        <ul>
+                          <li>array of</li>
+                          <ul>
+                            <li><a href="#finalstep"><code class="highlighter-rouge">Final Step</code></a></li>
+                          </ul>
+                        </ul>
+                      </ul>
+
+                      <h4 id="pathstep">Path Step:</h4>
+                      <p>The path contain the operation type, eventual prefix and suffix of data to append to the value obtained by the previous step in the path.
+                        The first step has the document data as input.</p>
+                      <ul>
+                        <li><code class="highlighter-rouge">Path Operation</code> contains the operation executed in the step. It could be easily extended with other standard functions (like other hash functions)</li>
+                        <ul>
+                          <li>sha256</li>
+                          <li>ripemd160</li>
+                          <li>reverse</li>
+                        </ul>
+                        <li><code class="highlighter-rouge">Prefix</code></li>
+                        <li><code class="highlighter-rouge">Suffix</code></li>
+                      </ul>
+
+                      <h4 id="finalstep">Final Step:</h4>
+                      <ul>
+                        <li><code class="highlighter-rouge">Blockchain Object</code> obtained by executing the path.</li>
+                        <ul>
+                          <li>block_header</li>
+                        </ul>
+                        <li><code class="highlighter-rouge">Which Blockchain</code></li>
+                        <ul>
+                          <li>bitcoin-mainnet</li>
+                        </ul>
+                        <li><code class="highlighter-rouge">prefix</code></li>
+                        <li><code class="highlighter-rouge">suffix</code></li>
                       </ul>
 
 
+
+                      <h4>OpenTimestamp example:</h4>
+
+
                     </p>
+                    <figure class="highlight" style="height:350px; overflow:auto"><pre><code class="language-shell" data-lang="shell"><span class="o">[</span>
+                <span class="o">[</span>
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,   <span class="c"># hash the input data with sha256, obtaining 78e4400495668c2984752aaafe06c28e64bf6b4182d9bd976aae48bb294121ea</span>
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,  <span class="c"># hash the result of the previous step prepended by the following prefix</span>
+                    <span class="s2">"1a2599c68b10dc0e2429af84eb6d84d7608d6fe65783a0e708fe8f1a1aa6cb06"</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"ripemd160"</span>,  <span class="c"># hash the previous step result with ripemd160 (in this case finding the address used in the bitcoin tx)</span>
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,   <span class="c"># hash the previous step result prepended and suffixed by the following which are the missing part of the bitcoin tx</span>
+                    <span class="s2">"0100000001545998db8b1958d9f2851f2f60011726423a7b559b69b106368c936050e91eff010000006a47304402202e699adf61fbed11fd44d777f719b4bba7427d6168e53431d172ca527dc34a720220731a425efbde3778fc27e5c511cba87ae300694f5ef5b9b154e0d9b1a16cfa190121034985ce697016d2aea060dd142886c875bb834d1fbe919e62529f49e23ae0005ffeffffff0270170000000000001976a914"</span>,
+                    <span class="s2">"88ac8bc80200000000001976a914d568233da83dd0c901982af78609a8c2af3f57af88acc0520600"</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,  <span class="c"># hash the previous step result again, finding tx id</span>
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,  <span class="c"># the next steps are for finding the bitcoin block merkle root</span>
+                    <span class="s2">"d4079bd871b948aac583624213a70ee2d13a0cd047c69826ede68f1e0f48f8e6"</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">"517d1c48146bd9339e5976c040a4cc6538159dd0c7dde0e0dcd3744cfe786e27"</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">"1c19ecb00323dc30abcf164ae1ca9a3bec450a0d54480ab8c41bef4a895e7a76"</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">"d701150b9b68e7c4f8313b9175b1b6d09d580baf169bc1ac5df56ba7b4457e20"</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">"42c8f3b497cb54f7c841eae8dd0635f54a9177c5568c52237f8eab2b30b235a0"</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">"600f4259d4a321a54d962bfff9a3fae3d41563fb58ed00ca815dc84c643b7fc8"</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">"72f449e5cf1ec52af3323ee1ae2e6016e1f1a4f538250d73fdbf6feaed6f758e"</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">"ff67072d9c67c9bf9949766d1a89ee8ba91df85d8f367d9fda5cd4e916f089fa"</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">"e9c4cdecf23a3787f0062a79e599a851d0d0d03d6c0f4ec1a5ab74c58eb2b8c8"</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">"57276146c3621e9db77e20b2faf625e53d935436aee0391369cd81932093d9a6"</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">"aa9900285ae3dbb30024761c48ac1dda8cc04ef14b30341b342ad9f44cecdd43"</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,
+                    <span class="s2">"74079e5c0bc140e22ccc6a494dc6a402fd375cf198b099d0b0e9090e6646809e"</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>,
+                  <span class="o">[</span>
+                    <span class="s2">"sha256"</span>,   <span class="c"># After this last operation the result is the merkle root</span>
+                    <span class="s2">""</span>,
+                    <span class="s2">""</span>
+                  <span class="o">]</span>
+                <span class="o">]</span>,
+                <span class="o">[</span>
+                  <span class="s2">"block_header"</span>,   <span class="c"># In this last we obtain the bitcoin block header, by double hashing it we obtain the block hash</span>
+                  <span class="s2">"bitcoin-mainnet"</span>,
+                  <span class="s2">"04000000fb312a4a8035922bb03a1d53a400f5aef6706eae843b7d040000000000000000"</span>,
+                  <span class="s2">"9e0b50573684051839660b0d"</span>
+                <span class="o">]</span>
+              <span class="o">]</span></code></pre></figure>
                 </div>
                 <!-- /.col-lg-10 -->
             </div>
