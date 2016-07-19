@@ -196,7 +196,8 @@
                     </div>
                     <div class="alert alert-success" role="alert" id="successMessage" style="display:none">
                     </div>
-
+                    <div class="alert alert-danger" role="alert" id="dangerMessage" style="display:none">
+                    </div>
 
                 </div>
                 <!-- /.col-lg-10 -->
@@ -627,6 +628,8 @@
     e.preventDefault();
     $('#alertMessage').hide();
     $('#successMessage').hide();
+    $('#dangerMessage').hide();
+
     if(!hash) {
       alert("Select a document first");
       return;
@@ -651,15 +654,20 @@
 
 })();
 
+function danger(text) {
+  $('#dangerMessage').show();
+  $('#dangerMessage').html("<strong>FAIL!</strong> " +text);
+}
+
 function alert(text) {
   $('#alertMessage').show();
-  $('#alertMessage').text(text);
+  $('#alertMessage').html("<strong>ALERT!</strong> " + text);
 }
 
 
 function success(text) {
   $('#successMessage').show();
-  $('#successMessage').text(text);
+  $('#successMessage').html("<strong>SUCCESS!</strong> " + text);
 }
 
 
@@ -798,18 +806,24 @@ function askBlock(hash) {
     });
     promises.push(req);
   }
-  Promise.all(promises).then(function(data) {
+  Promise.all(promises.map(softFail)).then(function(data) {
+    var found=false;
     for(var i = 0; i< data.length ; i++) {
-      var result=JSON.parse(data[i].response);
-      var time = result['time'];
-      console.log(time);
-      if(results.indexOf(time)>=0) {
-        console.log("found twice!");
-        var a = new Date(time * 1000);
-        success("SUCCESS, data was created on or before " + a);
-      }
-      results.push(time);
-
+      try {
+        var result=JSON.parse(data[i].response);
+        var time = result['time'];
+        console.log(time);
+        if(results.indexOf(time)>=0) {
+          console.log("found twice!");
+          var a = new Date(time * 1000);
+          success("Data was created on or before " + a);
+          found=true;
+        }
+        results.push(time);
+      } catch(e) {}
+    }
+    if(!found) {
+      danger("Can't verify the stamp")
     }
 
   });
