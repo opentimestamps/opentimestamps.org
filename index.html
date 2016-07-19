@@ -823,7 +823,7 @@ function askBlock(hash) {
       } catch(e) {}
     }
     if(!found) {
-      danger("Can't verify the stamp")
+      danger("Can't verify the stamp, block hash is " + hash);
     }
 
   });
