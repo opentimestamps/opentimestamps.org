@@ -274,11 +274,22 @@
                       </ul>
 
                       <br>
+
                       <h4>OpenTimestamp example:</h4>
 
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav active"><a href="#A" data-toggle="tab">File format</a></li>
+        <li class="nav"><a href="#B" data-toggle="tab">Network format</a></li>
+    </ul>
 
-<figure class="highlight" style="height:350px; overflow:auto">
-<pre><code class="language-shell" data-lang="shell"><span class="o">[</span>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="A">
+          <figure class="highlight" style="height:350px; overflow:auto">
+<pre><code class="language-shell" data-lang="shell"><span class="o">OpenTimestamps Proof</span>
+<span class="o">v0.1</span>
+<span class="o">[</span>
   <span class="o">[</span>
     <span class="o">[</span>
       <span class="s2">"sha256"</span>,   <span class="c"># hash the input data with sha256, obtaining 78e4400495668c2984752aaafe06c28e64bf6b4182d9bd976aae48bb294121ea</span>
@@ -433,9 +444,19 @@
     <span class="s2">"9e0b50573684051839660b0d"</span>
   <span class="o">]</span>
 <span class="o">]</span>
-</code>
-</pre>
-</figure>
+          </code>
+          </pre>
+          </figure>
+        </div>
+        <div class="tab-pane fade" id="B">Content inside tab B</div>
+    </div>
+</div>
+
+
+
+
+
+
                 </div>
                 <!-- /.col-lg-10 -->
             </div>

@@ -449,3 +449,11 @@ footer {
 
 /* Literal.Number.Integer.Long */
 .css .o, .css .o + .nt, .css .nt + .nt { color: #999; }
+
+.nav-tabs > li > a {
+  background-color: aliceblue;
+}
+
+.nav-tabs > li.active > a, .nav-pills > li.active > a:focus {
+    background-color: white;
+}
