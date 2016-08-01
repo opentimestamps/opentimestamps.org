@@ -180,7 +180,7 @@
                         </div>
                         <div class="col-sm-6">
                             <div>
-                                <h3>2. Paste Open<wbr>Timestamp</h3>
+                                <h3>2. Paste Open<wbr>Timestamps</h3>
                                 <br>
                                 <textarea class="form-control" rows="4" id="jsonstamp"></textarea>
 
@@ -296,32 +296,32 @@
 <span class="o">[</span>
   <span class="o">[</span>
     <span class="o">[</span>
-      <span class="s2">"sha256"</span>,   <span class="c"># hash the input data with sha256, obtaining 78e4400495668c2984752aaafe06c28e64bf6b4182d9bd976aae48bb294121ea</span>
+      <span class="s2">"sha256"</span>,
       <span class="s2">""</span>,
       <span class="s2">""</span>
     <span class="o">]</span>,
     <span class="o">[</span>
-      <span class="s2">"sha256"</span>,  <span class="c"># hash the result of the previous step prepended by the following prefix</span>
+      <span class="s2">"sha256"</span>,
       <span class="s2">"1a2599c68b10dc0e2429af84eb6d84d7608d6fe65783a0e708fe8f1a1aa6cb06"</span>,
       <span class="s2">""</span>
     <span class="o">]</span>,
     <span class="o">[</span>
-      <span class="s2">"ripemd160"</span>,  <span class="c"># hash the previous step result with ripemd160 (in this case finding the address used in the bitcoin tx)</span>
+      <span class="s2">"ripemd160"</span>,
       <span class="s2">""</span>,
       <span class="s2">""</span>
     <span class="o">]</span>,
     <span class="o">[</span>
-      <span class="s2">"sha256"</span>,   <span class="c"># hash the previous step result prepended and suffixed by the following which are the missing part of the bitcoin tx</span>
+      <span class="s2">"sha256"</span>,
       <span class="s2">"0100000001545998db8b1958d9f2851f2f60011726423a7b559b69b106368c936050e91eff010000006a47304402202e699adf61fbed11fd44d777f719b4bba7427d6168e53431d172ca527dc34a720220731a425efbde3778fc27e5c511cba87ae300694f5ef5b9b154e0d9b1a16cfa190121034985ce697016d2aea060dd142886c875bb834d1fbe919e62529f49e23ae0005ffeffffff0270170000000000001976a914"</span>,
       <span class="s2">"88ac8bc80200000000001976a914d568233da83dd0c901982af78609a8c2af3f57af88acc0520600"</span>
     <span class="o">]</span>,
     <span class="o">[</span>
-      <span class="s2">"sha256"</span>,  <span class="c"># hash the previous step result again, finding tx id</span>
+      <span class="s2">"sha256"</span>,
       <span class="s2">""</span>,
       <span class="s2">""</span>
     <span class="o">]</span>,
     <span class="o">[</span>
-      <span class="s2">"sha256"</span>,  <span class="c"># the next steps are for finding the bitcoin block merkle root</span>
+      <span class="s2">"sha256"</span>,
       <span class="s2">"d4079bd871b948aac583624213a70ee2d13a0cd047c69826ede68f1e0f48f8e6"</span>,
       <span class="s2">""</span>
     <span class="o">]</span>,
@@ -436,13 +436,13 @@
       <span class="s2">""</span>
     <span class="o">]</span>,
     <span class="o">[</span>
-      <span class="s2">"sha256"</span>,   <span class="c"># After this last operation the result is the merkle root</span>
+      <span class="s2">"sha256"</span>,
       <span class="s2">""</span>,
       <span class="s2">""</span>
     <span class="o">]</span>
   <span class="o">]</span>,
   <span class="o">[</span>
-    <span class="s2">"block_header"</span>,   <span class="c"># In this last we obtain the bitcoin block header, by double hashing it we obtain the block hash</span>
+    <span class="s2">"block_header"</span>,
     <span class="s2">"bitcoin-mainnet"</span>,
     <span class="s2">"04000000fb312a4a8035922bb03a1d53a400f5aef6706eae843b7d040000000000000000"</span>,
     <span class="s2">"9e0b50573684051839660b0d"</span>
@@ -686,7 +686,17 @@
         stamp=stamp.ots1;
       }
 
-    } catch(e) {}
+    } catch(e) {
+      console.log("cannot parse as json, trying removing first two lines");
+      try {
+        //remove first two lines and retry
+        var splitted=stampString.split("\n");
+        var firstTwoRemoved=splitted.slice(2,splitted.length).join("\n");
+        stamp = JSON.parse( firstTwoRemoved );
+      } catch(e2) {
+        console.log("cannot parse as json removing first two lines");
+      }
+    }
 
     if(!stamp) {
       alert("Stamp data is not a valid");
@@ -871,7 +881,7 @@ function askBlock(hash) {
       } catch(e) {}
     }
     if(!found) {
-      danger("Can't verify the block hash with a block explorer (maybe connection problem), you should manually verify the block hash");
+      danger("Can't verify the block hash with a block explorer (maybe connection problem).<br>You should manually verify the block hash");
     }
 
   });
