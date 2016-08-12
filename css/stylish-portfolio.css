@@ -451,7 +451,7 @@ footer {
 .css .o, .css .o + .nt, .css .nt + .nt { color: #999; }
 
 .nav-tabs > li > a {
-  background-color: aliceblue;
+  background-color: lightgray;
 }
 
 .nav-tabs > li.active > a, .nav-pills > li.active > a:focus {
