@@ -240,23 +240,24 @@
                       <ul>
                         <li>Array of</li>
                         <ul>
+                          <li><code class="highlighter-rouge">Hash</code> of the timestamped data</li>
                           <li>Array of</li>
                           <ul>
-                            <li><a href="#pathstep"><code class="highlighter-rouge">Path Step</code></a></li>
+                            <li><a href="#merklePathOperations"><code class="highlighter-rouge">Merkle Path Operation</code></a></li>
                           </ul>
                         </ul>
                         <ul>
                           <li>Array of</li>
                           <ul>
-                            <li><a href="#finalstep"><code class="highlighter-rouge">Final Step</code></a></li>
+                            <li><a href="#timestampSignature"><code class="highlighter-rouge">Timestamp Signature</code></a></li>
                           </ul>
                         </ul>
                       </ul>
                       <br>
 
-                      <h4 id="pathstep">Path Step:</h4>
-                      <p>The path contain the operation type, eventual prefix and suffix of data to append to the value obtained by the previous step in the path.
-                        The first step has the document data as input.</p>
+                      <h4 id="merklePathOperations">Merkle Path Operations:</h4>
+                      <p>The path contain the operation type, eventual prefix and suffix of data to append to the value obtained by the previous step in the path.<br>
+                        The first step has the document data as input and the result of the first operation must be equal to the <code class="highlighter-rouge">Hash</code> of the timestamped data.</p>
                       <ul>
                         <li><code class="highlighter-rouge">Path Operation</code> contains the operation executed in the step. It could be easily extended with other standard functions (like other hash functions)</li>
                         <ul>
@@ -269,7 +270,7 @@
                       </ul>
 
                       <br>
-                      <h4 id="finalstep">Final Step:</h4>
+                      <h4 id="timestampSignature">Timestamp Signature:</h4>
                       <ul>
                         <li><code class="highlighter-rouge">Blockchain Object</code> obtained by executing the path.</li>
                         <ul>
@@ -299,8 +300,8 @@
           <figure class="highlight" style="height:350px; overflow:auto">
 <pre><code class="language-shell" data-lang="shell"><span class="o">OpenTimestamps Proof</span>
 <span class="o">v0.1</span>
-<span class="o">20c7ba9c57f653b7c079df5171c196f494a5446d684c1b26a63bc5fc3fa2e25e</span>
 </span><span class="p">[</span><span class="w">
+  </span><span class="s2">"20c7ba9c57f653b7c079df5171c196f494a5446d684c1b26a63bc5fc3fa2e25e"</span><span class="p">,</span><span class="w">
   </span><span class="p">[</span><span class="w">
     </span><span class="p">[</span><span class="w">
       </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
@@ -476,8 +477,8 @@
 <pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
   </span><span class="nt">"OpenTimestamps"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.1"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"hash"</span><span class="p">:</span><span class="w"> </span><span class="s2">"20c7ba9c57f653b7c079df5171c196f494a5446d684c1b26a63bc5fc3fa2e25e"</span><span class="p">,</span><span class="w">
     </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+              </span><span class="s2">"20c7ba9c57f653b7c079df5171c196f494a5446d684c1b26a63bc5fc3fa2e25e"</span><span class="p">,</span><span class="w">
               </span><span class="p">[</span><span class="w">
                 </span><span class="p">[</span><span class="w">
                   </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
@@ -990,16 +991,22 @@ function handleFileSelect(file) {
 
 function verify(hash, stamp) {
   try {
-    var stampPath=stamp[0];
-    var stampEnd=stamp[1];
+    var stampHash=stamp[0]
+    var merklePathOperations=stamp[1];
+    var timestampSignature=stamp[2];
+    if(hash!=stampHash) {
+      alert("Document hash and stamp hash does not match.")
+      return;
+    }
+
     var value = hash;
-    for (var i = 1; i < stampPath.length; i++) {
-      current = stampPath[i];
+    for (var i = 1; i < merklePathOperations.length; i++) {
+      current = merklePathOperations[i];
       console.log("value=" + value);
       value = exec(current[0], current[1], value, current[2]);
     }
 
-    var finalValue = finalExec(stampEnd[0], stampEnd[1], stampEnd[2], value, stampEnd[3] )
+    var finalValue = finalExec(timestampSignature[0], timestampSignature[1], timestampSignature[2], value, timestampSignature[3] )
 
     console.log("Block hash=" + finalValue);
     var finalValueBuffer = new bitcore.deps.Buffer(finalValue,"hex");
