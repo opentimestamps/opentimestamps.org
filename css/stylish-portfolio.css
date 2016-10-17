@@ -16,6 +16,13 @@ body {
     font-family: "Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
+.white {
+  color: white;
+}
+.underline {
+  text-decoration: underline;
+}
+
 .text-vertical-center {
     display: table-cell;
     text-align: center;
@@ -255,15 +262,15 @@ footer {
   right: 5px;
 }
 
-#holder {
+.holder {
     border: 7px dashed #ccc;
     border-radius: 7px;
     width: 200px;
-    height: 100px;
+    height: 120px;
     margin: 20px auto;
 }
 
-#holder.hover {
+.holder.hover {
     border: 7px dashed #333;
 }
 

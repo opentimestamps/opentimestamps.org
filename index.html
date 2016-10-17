@@ -12,6 +12,8 @@
     <title>OpenTimestamps</title>
 
     <!-- Bootstrap Core CSS -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">-->
+    <!-- Bootstrap Core CSS LOCAL-->
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
@@ -53,7 +55,7 @@
                 <a href="#about" onclick=$("#menu-close").click();>About</a>
             </li>
             <li>
-                <a href="#verify" onclick=$("#menu-close").click();>Verify</a>
+                <a href="#stampandverify" onclick=$("#menu-close").click();>Stamp and Verify</a>
             </li>
             <li>
                 <a href="#howitworks" onclick=$("#menu-close").click();>How it works?</a>
@@ -62,7 +64,10 @@
                 <a href="#vendors" onclick=$("#menu-close").click();>Vendors</a>
             </li>
             <li>
-                <a href="#libraries" onclick=$("#menu-close").click();>Libraries</a>
+                <a href="#repositories" onclick=$("#menu-close").click();>Repositories</a>
+            </li>
+            <li>
+                <a href="#usecases" onclick=$("#menu-close").click();>Use cases</a>
             </li>
         </ul>
     </nav>
@@ -84,7 +89,7 @@
                 <div class="col-lg-12 text-center">
                     <h2>Open<wbr>Timestamps</h2>
                     <p class="lead">OpenTimestamps aims to be a standard format for blockchain timestamping.<br>
-                      The format is flexible enough to be vendor and blockchain independent. <a href="#howitworks">Tell me more...</a>
+                      The format is flexible enough to be vendor and blockchain independent.
                     </p>
                 </div>
             </div>
@@ -98,22 +103,24 @@
     <section id="services" class="services bg-primary">
         <div class="container">
             <div class="row text-center">
-                <div class="col-lg-10 col-lg-offset-1">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-6">
+
+                        <div class="col-lg-4 col-sm-6">
                             <div class="service-item">
                                 <span class="fa-stack fa-4x">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-check fa-stack-1x text-primary"></i>
                             </span>
                                 <h4>
-                                    <strong>Verify</strong>
+                                    <strong>Stamp &amp; Verify</strong>
                                 </h4>
-                                <p>Use the online verifier to check your stamp proof.</p>
-                                <a href="#verify" class="btn btn-light">VERIFY</a>
+                                <p>
+                                  Use the in-browser stamper and verifier
+
+                                </p>
+                                <a href="#stampandverify" class="btn btn-light">STAMP &amp; VERIFY</a>
                             </div>
                         </div>
-                        <div class="col-md-3 col-sm-6">
+                        <div class="col-lg-4 col-sm-6">
                             <div class="service-item">
                                 <span class="fa-stack fa-4x">
                                 <i class="fa fa-circle fa-stack-2x"></i>
@@ -123,11 +130,11 @@
                                 <h4>
                                     <strong>How it works?</strong>
                                 </h4>
-                                <p>Let me know the details on how the format works.</p>
+                                <p>Deatails on OpenTimestamps</p>
                                 <a href="#howitworks" class="btn btn-light">HOW IT WORKS</a>
                             </div>
                         </div>
-                        <div class="col-md-3 col-sm-6">
+                        <div class="col-lg-4 col-sm-6">
                             <div class="service-item">
                                 <span class="fa-stack fa-4x">
                                 <i class="fa fa-circle fa-stack-2x"></i>
@@ -136,27 +143,51 @@
                                 <h4>
                                     <strong>Vendors</strong>
                                 </h4>
-                                <p>What are the services in production that are adopting this standard?</p>
+                                <p>Company using OpenTimestamps</p>
                                 <a href="#vendors" class="btn btn-light">VENDORS</a>
                             </div>
                         </div>
-                        <div class="col-md-3 col-sm-6">
+                        <div class="col-lg-4 col-sm-6">
                             <div class="service-item">
                                 <span class="fa-stack fa-4x">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-book fa-stack-1x text-primary"></i>
                             </span>
                                 <h4>
-                                    <strong>Libraries</strong>
+                                    <strong>Repositories</strong>
                                 </h4>
-                                <p>I want to adopt OpenTimestamps, show me working code!</p>
-                                <a href="#libraries" class="btn btn-light">LIBRARIES</a>
+                                <p>OpenTimestamps repositories</p>
+                                <a href="#repositories" class="btn btn-light">REPOSITORIES</a>
                             </div>
                         </div>
-                    </div>
-                    <!-- /.row (nested) -->
-                </div>
-                <!-- /.col-lg-10 -->
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="service-item">
+                                <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x text-primary"></i>
+                            </span>
+                                <h4>
+                                    <strong>Mailing list</strong>
+                                </h4>
+                                <p>Subscribe to the mailing list</p>
+                                <a href="#mailinglist" class="btn btn-light">MAILING LIST</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="service-item">
+                                <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-lightbulb-o fa-stack-1x text-primary"></i>
+                            </span>
+                                <h4>
+                                    <strong>Use cases</strong>
+                                </h4>
+                                <p>What can you do with timestamping?</p>
+                                <a href="#usecases" class="btn btn-light">USE CASES</a>
+                            </div>
+                        </div>
+
+
             </div>
             <!-- /.row -->
         </div>
@@ -164,18 +195,41 @@
     </section>
 
 
-    <section id="verify">
+    <section id="stampandverify">
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 col-lg-offset-1 text-center">
+                    <br><h2>Stamp</h2>
+                    <hr class="small">
+                    <div class="row">
+                        <div class="col-sm-12 text-center">
+                            <div>
+                                <h3>Data to timestamp<a href="#verify" data-toggle="tooltip" title="The hash is calculated on your browser preserving your privacy"><upper>*</upper></a></h3>
+
+                                <div id="holder" class="holder" >
+                                    <div class="text-center">
+                                        <br><span id="filename">Drop here a document</span>
+                                        <br><span id="filesize">Or click to select one</span>
+                                    </div>
+                                </div>
+                                <input id="myInput" type="file" style="display:none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <br><a href="#" class="btn btn-dark" id="stampButton">STAMP</a>
+                    <br><br>
+
                     <br><h2>Verify</h2>
+                    <p>In-browser verification is to be considered for testing purpose only.
+                      <br>for proven security system use <a href="https://github.com/opentimestamps/opentimestamps-client">OpenTimestamps client</a></p>
                     <hr class="small">
                     <div class="row">
                         <div class="col-sm-6">
                             <div>
-                                <h3>1. Calculate hash <a href="#verify" data-toggle="tooltip" title="The hash is calculated on your browser preserving your privacy"><upper>*</upper></a></h3>
+                                <h3>Timestamped data <a href="#verify" data-toggle="tooltip" title="The hash is calculated on your browser preserving your privacy"><upper>*</upper></a></h3>
 
-                                <div id="holder" >
+                                <div id="holder" class="holder" >
                                     <div class="text-center">
                                         <br><span id="filename">Drop here a document</span>
                                         <br><span id="filesize">Or click to select one</span>
@@ -186,10 +240,13 @@
                         </div>
                         <div class="col-sm-6">
                             <div>
-                                <h3>2. Paste Open<wbr>Timestamps</h3>
-                                <br>
-                                <textarea class="form-control" rows="4" id="jsonstamp"></textarea>
-
+                                <h3>Open<wbr>Timestamps Proof</h3>
+                                  <div id="holder2" class="holder" >
+                                      <div class="text-center">
+                                          <br><span id="filename2">Drop here the OpenTimestamps Proof</span>
+                                          <br><span id="filesize">Or click to select one</span>
+                                      </div>
+                                  </div>
                             </div>
                         </div>
                     </div>
@@ -226,433 +283,9 @@
                     <br><h2>How it Works?</h2>
                     <hr class="small">
                 </div>
-                <div class="col-lg-10 col-lg-offset-1">
-                    <p>
-                      OpenTimestamps format define a path of operation from the timestamped data to the hash of a block in a blockchain.<br>
-                      The existence of the path is the proof that the data is committed to the blockchain in that specific block.<br>
-                      The commitment in the blockchain grants the data are created on or before the block timestamp.<br>
-                      At the moment the bitcoin blockchain is the only one supported but there is no issue in extending the format to other blockchains.<br>
-                      The stamp use <a href="http://json.org" style="color:white">json</a> as data-interchange format and the schema is the following.
-                    </p>
-
-                      <br>
-                      <h4 id="schema">Schema:</h4>
-                      <ul>
-                        <li>Array of</li>
-                        <ul>
-                          <li><code class="highlighter-rouge">Hash</code> of the timestamped data</li>
-                          <li>Array of</li>
-                          <ul>
-                            <li><a href="#merklePathOperations"><code class="highlighter-rouge">Merkle Path Operation</code></a></li>
-                          </ul>
-                        </ul>
-                        <ul>
-                          <li>Array of</li>
-                          <ul>
-                            <li><a href="#timestampSignature"><code class="highlighter-rouge">Timestamp Signature</code></a></li>
-                          </ul>
-                        </ul>
-                      </ul>
-                      <br>
-
-                      <h4 id="merklePathOperations">Merkle Path Operations:</h4>
-                      <p>The path contain the operation type, eventual prefix and suffix of data to append to the value obtained by the previous step in the path.<br>
-                        The first step has the document data as input and the result of the first operation must be equal to the <code class="highlighter-rouge">Hash</code> of the timestamped data.</p>
-                      <ul>
-                        <li><code class="highlighter-rouge">Path Operation</code> contains the operation executed in the step. It could be easily extended with other standard functions (like other hash functions)</li>
-                        <ul>
-                          <li>sha256</li>
-                          <li>ripemd160</li>
-                          <li>reverse</li>
-                        </ul>
-                        <li><code class="highlighter-rouge">Prefix</code></li>
-                        <li><code class="highlighter-rouge">Suffix</code></li>
-                      </ul>
-
-                      <br>
-                      <h4 id="timestampSignature">Timestamp Signature:</h4>
-                      <ul>
-                        <li><code class="highlighter-rouge">Blockchain Object</code> obtained by executing the path.</li>
-                        <ul>
-                          <li>block_header</li>
-                        </ul>
-                        <li><code class="highlighter-rouge">Which Blockchain</code></li>
-                        <ul>
-                          <li>bitcoin-mainnet</li>
-                        </ul>
-                        <li><code class="highlighter-rouge">Prefix</code></li>
-                        <li><code class="highlighter-rouge">Suffix</code></li>
-                      </ul>
-
-                      <br>
-
-                      <h4>OpenTimestamps example:</h4>
-
-<div class="container">
-    <ul class="nav nav-tabs">
-        <li class="nav active"><a href="#A" data-toggle="tab">File format</a></li>
-        <li class="nav"><a href="#B" data-toggle="tab">Network format</a></li>
-    </ul>
-
-    <!-- Tab panes -->
-    <div class="tab-content">
-        <div class="tab-pane fade in active" id="A">
-          <figure class="highlight" style="height:350px; overflow:auto">
-<pre><code class="language-shell" data-lang="shell"><span class="o">OpenTimestamps Proof</span>
-<span class="o">v0.1</span>
-</span><span class="p">[</span><span class="w">
-  </span><span class="s2">"20c7ba9c57f653b7c079df5171c196f494a5446d684c1b26a63bc5fc3fa2e25e"</span><span class="p">,</span><span class="w">
-  </span><span class="p">[</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"4c822a3b88741e8e83e7b9a289ffc97ba5dbb330cfbbf0cf67b94776edad9dcd"</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"414c7dd644620431dfd2636c27aadb7c59845258ab0f1efb813857b9edc38e94"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"6e8d8f6163ef68207d6432bd6b368e90fbac65d0068bdcaf6b227066694b1a34"</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"reverse"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"0100000001d63e8684edd156c6a0f76fbabf0518a0034e9e705a5fc55337b9df1e073612b36400000048473044022042e65a41c09f41ffdc311bba52a01700393f839d68b654be9b74139d8afb8d6302200d496df8d8cdaa8a9dda3f4997f4d2fca0ce0cf2d5361ee4ec2ed109a97ed98501ffffffff010000000000000000256a23584557"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"00000000"</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"f35e8feeb21d35f2542f18f5399962c6f6ed8bd6c1a8e9fbf4335865316c145f"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"1c7541ea64f5325f90526abb9755177585dafca1f6168618cfcb9b518cfecad1"</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"bc1ecca4e046b51ef5291cc0bc9021bc29730b93f660bbc02e8f7e1933d9a65c"</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"c151d83f8534ae8da90a17f923b1ad48872f4b176a94178eee8598afb5b2fe32"</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"c1a4160af2cb7a2e2d5d917784f81261254c0762ae8604b7a3d5fe127ef638af"</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"9dbeb821befbf23899546ca5839429007f3f8823f0a5c67b0633c50aa8b5ac55"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"0f28de17443e2d474d8f4eb817c954d4b73607723e7bb45977badb6537b7a724"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"3934ea7a9466ae53f3036455bcebdd0b3ab5d76a17cc5cf30eb00175a3c3ebf1"</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"9000f0b3dd1ea0b68018f8bf7cfebce06e0aac097e4c65f740979d3fabce7beb"</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"ff01b2d90f0605091d529f5df9ee28fc194d5f6a5f563c779c838522040098ed"</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"dda9310a49e9873a228b72d51614e963a5a4fb694a76880b1bc18135e0de8ce7"</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="p">[</span><span class="w">
-      </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">""</span><span class="w">
-    </span><span class="p">]</span><span class="w">
-  </span><span class="p">],</span><span class="w">
-  </span><span class="p">[</span><span class="w">
-    </span><span class="s2">"block_header"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"bitcoin-mainnet"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"04000000b6dc26287d15d0633e5aa9e90440fd8ab3bdbc010d463b040000000000000000"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"e7c9ad56f0280918b58e955d"</span><span class="w">
-  </span><span class="p">]</span><span class="w">
-</span><span class="p">]</span><span class="w"></code></pre></figure>
-        </div>
-        <div class="tab-pane fade" id="B">
-          <figure class="highlight" style="height:350px; overflow:auto">
-<pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
-  </span><span class="nt">"OpenTimestamps"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.1"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-              </span><span class="s2">"20c7ba9c57f653b7c079df5171c196f494a5446d684c1b26a63bc5fc3fa2e25e"</span><span class="p">,</span><span class="w">
-              </span><span class="p">[</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"4c822a3b88741e8e83e7b9a289ffc97ba5dbb330cfbbf0cf67b94776edad9dcd"</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"414c7dd644620431dfd2636c27aadb7c59845258ab0f1efb813857b9edc38e94"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"6e8d8f6163ef68207d6432bd6b368e90fbac65d0068bdcaf6b227066694b1a34"</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"reverse"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"0100000001d63e8684edd156c6a0f76fbabf0518a0034e9e705a5fc55337b9df1e073612b36400000048473044022042e65a41c09f41ffdc311bba52a01700393f839d68b654be9b74139d8afb8d6302200d496df8d8cdaa8a9dda3f4997f4d2fca0ce0cf2d5361ee4ec2ed109a97ed98501ffffffff010000000000000000256a23584557"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"00000000"</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"f35e8feeb21d35f2542f18f5399962c6f6ed8bd6c1a8e9fbf4335865316c145f"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"1c7541ea64f5325f90526abb9755177585dafca1f6168618cfcb9b518cfecad1"</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"bc1ecca4e046b51ef5291cc0bc9021bc29730b93f660bbc02e8f7e1933d9a65c"</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"c151d83f8534ae8da90a17f923b1ad48872f4b176a94178eee8598afb5b2fe32"</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"c1a4160af2cb7a2e2d5d917784f81261254c0762ae8604b7a3d5fe127ef638af"</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"9dbeb821befbf23899546ca5839429007f3f8823f0a5c67b0633c50aa8b5ac55"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"0f28de17443e2d474d8f4eb817c954d4b73607723e7bb45977badb6537b7a724"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"3934ea7a9466ae53f3036455bcebdd0b3ab5d76a17cc5cf30eb00175a3c3ebf1"</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"9000f0b3dd1ea0b68018f8bf7cfebce06e0aac097e4c65f740979d3fabce7beb"</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"ff01b2d90f0605091d529f5df9ee28fc194d5f6a5f563c779c838522040098ed"</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">"dda9310a49e9873a228b72d51614e963a5a4fb694a76880b1bc18135e0de8ce7"</span><span class="w">
-                </span><span class="p">],</span><span class="w">
-                </span><span class="p">[</span><span class="w">
-                  </span><span class="s2">"sha256"</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="p">,</span><span class="w">
-                  </span><span class="s2">""</span><span class="w">
-                </span><span class="p">]</span><span class="w">
-              </span><span class="p">],</span><span class="w">
-              </span><span class="p">[</span><span class="w">
-                </span><span class="s2">"block_header"</span><span class="p">,</span><span class="w">
-                </span><span class="s2">"bitcoin-mainnet"</span><span class="p">,</span><span class="w">
-                </span><span class="s2">"04000000b6dc26287d15d0633e5aa9e90440fd8ab3bdbc010d463b040000000000000000"</span><span class="p">,</span><span class="w">
-                </span><span class="s2">"e7c9ad56f0280918b58e955d"</span><span class="w">
-              </span><span class="p">]</span><span class="w">
-            </span><span class="p">]</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span></code></pre>
-
-          </figure>
-
+                <div class="col-lg-10 col-lg-offset-1 text-center">
+                  Have a look at the announcement <a href="https://petertodd.org/2016/opentimestamps-announcement" class="white underline">post</a>
+                </div>
 
         </div>
     </div>
@@ -706,26 +339,34 @@
     </section>
 
 
-    <section id="libraries" class="bg-primary">
+    <section id="repositories" class="bg-primary">
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 col-lg-offset-1 text-center">
-                    <br><h2>Libraries</h2>
+                    <br><h2>Repositories</h2>
                     <hr class="small">
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-12 text-center">
                             <div>
-                                <h3>python-opentimestamps</h3>
-                                <p>The original python library from Peter Todd</p>
-                                <a href="https://github.com/petertodd/python-opentimestamps"><i class="fa fa-github fa-fw fa-inverse fa-3x"></i></a>
-
+                                <a href="https://github.com/opentimestamps/opentimestamps-client" class="white"><h3>opentimestamps-client<i class="fa fa-github fa-fw fa-inverse"></i></h3></a>
+                                <p>Client tool to perform stamping of files through a calendar server and to verify OpenTimestamps proof</p>
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 text-center">
                             <div>
-                                <h3>javascript</h3>
-                                <p>The js code running in this page to make in browser verification</p>
-                                <a href="https://github.com/RCasatta/web-opentimestamps"><i class="fa fa-github fa-fw fa-inverse fa-3x"></i></a>
+                                <a href="https://github.com/opentimestamps/opentimestamps-server" class="white"><h3>opentimestamps-server <i class="fa fa-github fa-fw fa-inverse"></i></h3></a>
+                                <p>Calendar Server receiving timestamp request from clients</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 text-center">
+                            <div>
+                                <a href="https://github.com/opentimestamps/python-opentimestamps" class="white"><h3>python-opentimestamps <i class="fa fa-github fa-fw fa-inverse"></i></h3></a>
+                                <p>Common library</p>
+
                             </div>
                         </div>
                     </div>
@@ -739,6 +380,62 @@
         <br><br>
     </section>
 
+    <section id="mailinglist">
+      <div class="container">
+          <div class="row">
+              <div class="col-lg-10 col-lg-offset-1 text-center">
+                  <br><h2>Mailing List</h2>
+                  <p>Receive news of major updates</p>
+                  <hr class="small">
+                  <div class="row">
+                    <div class="col-sm-offset-3 col-sm-6">
+                      <form class="bs-example bs-example-form" role="form">
+                      <div class="input-group">
+                        <span class="input-group-addon">@</span>
+                        <input type="text" class="form-control" placeholder="Email" >
+                      </div>
+
+                      <br>
+                      <a class="btn btn-dark" id="mailinglistsubmit">SUBSCRIBE</a>
+                      <br>
+                    </div>
+                  </div>
+
+                </form>
+              </div>
+
+          </div>
+
+      </div>
+      <!-- /.container -->
+      <br><br>
+
+    </section>
+
+    <section id="usecases" class="bg-primary">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 col-lg-offset-1 text-center">
+                    <br><h2>Use cases</h2>
+                    <hr class="small">
+
+                    <div class="row">
+                        <div class="col-sm-12 text-center">
+                            <div>
+                                <a href="" class="white"><h3>Opentimestamps for git</h3></a>
+                                <p>Inserting OpenTimestamps proof in a git commit</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+           </div>
+       </div>
+       <!-- /.container -->
+       <br><br>
+
+    </section>
+
 
     <!-- Footer -->
     <footer>
@@ -750,7 +447,8 @@
 
                     <ul class="list-unstyled">
 
-                        <li><i class="fa fa-envelope-o fa-fw"></i> <a href="mailto:info@opentimestamps.com">info@opentimestamps.com</a>
+                        <li><i class="fa fa-envelope-o fa-fw"></i>
+                          <a href="mailto:info@opentimestamps.org">info@opentimestamps.org</a>
                         </li>
                     </ul>
                     <br>
@@ -939,6 +637,7 @@ holder.ondrop = function (e) {
 
   return false;
 };
+
 
 function status(text) {
     document.getElementById('status').innerText = text ;
