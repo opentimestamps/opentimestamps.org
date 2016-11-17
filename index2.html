@@ -754,32 +754,16 @@ function document_handleFileSelect(file) {
         otsclient__version__='0.3.2-PENDING';
         user_agent="OpenTimestamps-Client"+ otsclient__version__;
         accept= "application/vnd.opentimestamps.v1";
-        var url=calendar_url+'/digest';
-        var digest=merkle_tip;
-        /*$.ajax({
-            type: "POST",
-            url: url,
-            data: digest,
-            processData: false,
-            beforeSend: function (request) {
-                request.setRequestHeader("Accept", accept);
-            },
-            success: function (data, status) {
-                alert("Data: " + data + "\nStatus: " + status);
-                console.log(data);
-                // DOWNLOAD THE FILE
-                download(filename, data);
-            }
-        });*/
-        var request =new XMLHttpRequest();
+        url=calendar_url+'/digest';
+        digest=merkle_tip;
+        var request = new XMLHttpRequest();
         request.onreadystatechange=state_change;
         request.open("POST", url, true);
         //request.setRequestHeader("User-Agent", user_agent);
         request.setRequestHeader("Accept",accept);
-        request.setRequestHeader('Access-Control-Allow-Headers', '*');
-        //request.setRequestHeader('Content-type', 'application/ecmascript');
+        request.setRequestHeader('Access-Control-Allow-Headers', 'X-Requested-With');
+        request.setRequestHeader('Content-type', 'application/ecmascript');
         request.setRequestHeader('Access-Control-Allow-Origin', '*');
-        request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         request.send(digest);
 
         function state_change()
@@ -804,9 +788,9 @@ function document_handleFileSelect(file) {
 
 
 
-    /*
-     * COMMON FUNCTIONS
-    */
+/*
+ * COMMON FUNCTIONS
+*/
     // Human file size
     function humanFileSize(bytes, si) {
         var thresh = si ? 1000 : 1024;
