@@ -2,3 +2,5 @@
 .idea/
 bower_components/
 sync.sh
+.DS_store
+_site/
