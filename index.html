@@ -705,7 +705,7 @@
       function download(filename, text) {
           var element = document.createElement('a');
           element.setAttribute("target","_blank");
-          element.href = window.URL.createObjectURL(new Blob([text], {type: 'text'}));
+          element.href = window.URL.createObjectURL(new Blob([text], {type: 'octet/stream'}));
           element.download = filename+".ots";
           document.getElementById('status').appendChild(element);
           element.click();
@@ -951,11 +951,22 @@
 
   <!-- OPENTIMESTAMPS LIBRARY -->
   <!-- build by: browserify -r javascript-opentimestamps -r bytebuffer script.js -o bundle.js
-  fix 232 lines:
+FIXES on bundle:
+
 getOutput() {
   const output = this.buffer.view.subarray(0, this.buffer.offset);
   return output;
 }
+
+ read(l) {
+    ...
+    return Utils.arrayToBytes(output.view);
+ }
+
+ const HEADER_MAGIC = '\x00OpenTimestamps\x00\x00Proof\x00\xbf\x89\xe2\xe8\x84\xe8\x92\x94';
+    const HEADER_MAGIC = [ 0x00,0x4f,0x70,0x65 ,0x6e,0x54 ,0x69,0x6d ,0x65,0x73 ,0x74,0x61,0x6d,0x70 ,0x73,0x00
+      ,0x00,0x50 ,0x72,0x6f ,0x6f,0x66 ,0x00,0xbf ,0x89,0xe2,0xe8,0x84,0xe8,0x92,0x94];
+
   -->
   <script src="bundle.js"></script>
   <script>
@@ -973,10 +984,7 @@ getOutput() {
           {
               console.log('STAMP result : ');
           console.log(timestampBytes);
-          let output = "";
-          for (let i = 0; i < timestampBytes.length; i++)
-              output += String.fromCharCode(timestampBytes[i]);
-          download(filename, output);
+          download(filename, timestampBytes);
       }
       )
       ;
@@ -996,6 +1004,9 @@ getOutput() {
       })
       ;
       }
+
+
+
   </script>
 </body>
 </html>

@@ -12692,7 +12692,7 @@ class StreamDeserializationContext {
     const output = new ByteBuffer(l);
     this.buffer.copyTo(output, 0, this.counter, l + this.counter);
     this.counter += l;
-    return Utils.arrayToBytes(output.buffer);
+    return Utils.arrayToBytes(output.view);
   }
   readBool() {
     const b = this.read(1)[0];
@@ -12845,8 +12845,8 @@ const Timestamp = require('./timestamp.js');
  * @type {string}
  * @default \x00OpenTimestamps\x00\x00Proof\x00\xbf\x89\xe2\xe8\x84\xe8\x92\x94
  */
-const HEADER_MAGIC = '\x00OpenTimestamps\x00\x00Proof\x00\xbf\x89\xe2\xe8\x84\xe8\x92\x94';
-
+const HEADER_MAGIC = [ 0x00,0x4f,0x70,0x65 ,0x6e,0x54 ,0x69,0x6d ,0x65,0x73 ,0x74,0x61,0x6d,0x70 ,0x73,0x00
+    ,0x00,0x50 ,0x72,0x6f ,0x6f,0x66 ,0x00,0xbf ,0x89,0xe2,0xe8,0x84,0xe8,0x92,0x94];
 /**
  * While the git commit timestamps have a minor version, probably better to
  * leave it out here: unlike Git commits round-tripping is an issue when
@@ -77034,3 +77034,5 @@ arguments[4][166][0].apply(exports,arguments)
 module.exports = require('./src/open-timestamps.js');
 
 },{"./src/open-timestamps.js":62}]},{},[167]);
+
+
