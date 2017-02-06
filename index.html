@@ -257,9 +257,8 @@
                         </div>
                     </div>
                     <!-- /.row (nested) -->
-                    <p id="status" class="wrap"></p>
-                    <p id="status2" class="wrap" style="margin-bottom: 0px"></p>
-                    <br><br>
+                    <br>
+                    <div id="status" class="alert alert-warning" style="display:none"></div>
                     <div id="loading" style="display:none">
                       <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
                       <span class="sr-only">Loading...</span>
@@ -528,15 +527,6 @@
           // your page initialization code here
           // the DOM will be available here
 
-
-          var state = document.getElementById('status');
-
-          if (typeof window.FileReader === 'undefined') {
-              state.className = 'fail';
-          } else {
-              state.className = 'success';
-          }
-
           /*
            *Document section
            events handle to easy file uploading : drop, drag-over, drag-leave, click, file change
@@ -664,14 +654,14 @@
           reader.readAsBinaryString(file);
 
           function crypto_callback(p) {
-              status('Hashing ' + (p*100).toFixed(0) + '% completed');
+              alert('Hashing ' + (p*100).toFixed(0) + '% completed');
           }
 
           function crypto_finish(hash) {
               document_hash = ""+hash+"";
               document_filename = file.name;
               console.log("crypto_finish " + hash);
-              status("Document hash is " + hash);
+              alert("Document hash is " + hash);
           }
       }
 
@@ -716,9 +706,8 @@
           element.href = window.URL.createObjectURL(new Blob([text], {type: 'octet/stream'}));
           element.download = document_filename+".ots";
           document.getElementById('status').appendChild(element);
+          success("OpenTimestamps receipt created and download started");
           element.click();
-          $('status').show();
-
       }
 
       function string2Bin(str) {
@@ -739,27 +728,37 @@
        */
       function danger(text) {
           $('#loading').hide();
+          hideMessages();
           $('#dangerMessage').show();
           $('#dangerMessage').html("<strong>FAIL!</strong> " +text);
       }
 
       function alert(text) {
           $('#loading').hide();
+          hideMessages();
           $('#alertMessage').show();
-          $('#alertMessage').html("<strong>ALERT!</strong> " + text);
+          $('#alertMessage').html(text);
       }
 
 
       function success(text) {
           $('#loading').hide();
+          hideMessages();
           $('#successMessage').show();
           $('#successMessage').html("<strong>SUCCESS!</strong> " + text);
       }
 
-      function status(text) {
-          document.getElementById('status').innerText = text ;
+      function loading() {
+        hideMessages()
+        $('#loading').show();
       }
 
+      function hideMessages() {
+        $('#status').hide();
+        $('#successMessage').hide();
+        $('#alertMessage').hide();
+        $('#dangerMessage').hide();
+      }
 
   </script>
   <script>
@@ -797,6 +796,7 @@ getOutput() {
 
 
       function stamp(filename, data) {
+          loading()
           // Check parameters
           const file = ByteBuffer.fromBinary(data).buffer;
           // OpenTimestamps command
@@ -812,6 +812,7 @@ getOutput() {
       }
 
       function verify(ots, file) {
+          loading()
           // Check parameters
           let bytesOts;
           if(ots instanceof Uint8Array){
@@ -825,14 +826,14 @@ getOutput() {
           const verifyPromise = OpenTimestamps.verify(bytesOts, bytesFile);
           verifyPromise.then(result => {
           if (result === undefined) {
-              status('Pending or Bad attestation');
+              alert('Pending or Bad attestation');
               upgrade(ots, file);
           } else {
-              status('Success! Bitcoin attests data existed as of ' + (new Date(result * 1000)));
+              success('Success! Bitcoin attests data existed as of ' + (new Date(result * 1000)));
           }
       }
       ).catch(err => {
-          status('Verify error');
+          danger('Verify error');
       })
       ;
       }
@@ -857,15 +858,15 @@ getOutput() {
           const upgradePromise = OpenTimestamps.upgrade(bytesOts);
           upgradePromise.then(timestampBytes => {
           if (timestampBytes === undefined) {
-              status('Upgrade error');
+              danger('Upgrade error');
           } else {
-              status('Timestamp has been successfully upgraded!');
+              success('Timestamp has been successfully upgraded!');
               download(proof_filename, timestampBytes);
               verify(timestampBytes, file)
           }
       }
       ).catch(err => {
-          status('Upgrade error');
+          success('Upgrade error');
       })
       ;
       }
