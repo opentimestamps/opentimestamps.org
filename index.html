@@ -201,7 +201,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 col-lg-offset-1 text-center">
-                    <br><h2>Stamp</h2>
+                    <!--<br><h2>Stamp</h2>
                     <hr class="small">
                     <div class="row">
                         <div class="col-sm-12 text-center">
@@ -220,29 +220,31 @@
                     </div>
 
                     <br><a href="#" class="btn btn-dark" id="stampButton">STAMP</a>
-                    <br><br>
+                    <br><br>-->
 
-                    <br><h2>Verify</h2>
+                    <br><h2>Stamp / Verify</h2>
                     <p>In-browser verification is to be considered for testing purpose only.
                         <br>for proven security system use <a href="https://github.com/opentimestamps/opentimestamps-client">OpenTimestamps client</a></p>
                     <hr class="small">
                     <div class="row">
                         <div class="col-sm-6">
                             <div>
-                                <h3>Timestamped data <a href="#verify" data-toggle="tooltip" title="The hash is calculated on your browser preserving your privacy"><upper>*</upper></a></h3>
+                                <h3>Data to timestamp <br> Timestamped data <a href="#verify" data-toggle="tooltip" title="The hash is calculated on your browser preserving your privacy"><upper>*</upper></a></h3>
 
-                                <div id="stamped_holder" class="holder" >
+                                <div id="document_holder" class="holder" >
                                     <div class="text-center">
-                                        <br><span id="stamped_filename">Drop here a document</span>
-                                        <br><span id="stamped_filesize">Or click to select one</span>
+                                        <br><span id="document_filename">Drop here a document</span>
+                                        <br><span id="document_filesize">Or click to select one</span>
                                     </div>
                                 </div>
-                                <input id="stamped_input" type="file" style="display:none">
+                                <input id="document_input" type="file" style="display:none">
+
+                                <br><a href="#stampandverify" class="btn btn-dark" id="stampButton">STAMP</a>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div>
-                                <h3>Open<wbr>Timestamps Proof</h3>
+                                <h3>Open<wbr>Timestamps Proof<br><br></h3>
                                 <div id="proof_holder" class="holder" >
                                     <div class="text-center">
                                         <br><span id="proof_filename">Drop here the OpenTimestamps Proof</span>
@@ -250,13 +252,13 @@
                                     </div>
                                 </div>
                                 <input id="proof_input" type="file" style="display:none">
+                                <br><a href="#stampandverify" class="btn btn-dark" id="verifyButton">VERIFY</a>
                             </div>
                         </div>
                     </div>
                     <!-- /.row (nested) -->
                     <p id="status" class="wrap"></p>
                     <p id="status2" class="wrap" style="margin-bottom: 0px"></p>
-                    <br><a href="#" class="btn btn-dark" id="verifyButton">VERIFY</a>
                     <br><br>
                     <div id="loading" style="display:none">
                       <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
@@ -297,7 +299,7 @@
                   <ul class="list-inline">
 
                       <li>
-                          <a href="https://github.com/RCasatta/web-opentimestamps/tree/gh-pages"><i class="fa fa-github fa-fw fa-3x"></i></a>
+                          <a href="https://github.com/eternitywall/web-opentimestamps/"><i class="fa fa-github fa-fw fa-3x"></i></a>
                       </li>
                   </ul>
                   <hr class="small">
@@ -436,8 +438,8 @@
           });
 
           $("#stampButton").click(function(event) {
-              if(filename!="" && hashfile!="") {
-                  stamp(filename, hashfile);
+              if(document_filename!="" && document_data!="") {
+                  stamp(document_filename, document_data);
               }
           });
 
@@ -519,8 +521,8 @@
           });
 
           $("#verifyButton").click(function(event) {
-              if(proof!="" && stamped!="") {
-                  verify(proof, stamped);
+              if(proof_data!="" && stamped_data!="") {
+                  verify(proof_data, stamped_data);
               }
           });
 
@@ -532,15 +534,25 @@
 
       /*
        * HANDLE UPLOADED FILE
-       */
-      var hashfile="";
-      var filename="";
-      // Hash file generation : save the hash in the hashfile global variable
+      */
+      var document_hash="";
+      var document_data="";
+      var document_filename="";
+      var stamped_filename="";
+      var stamped_data="";
+      var proof_filename="";
+      var proof_data="";
+
+      // Hash file generation : save the hash in the document_hash global variable
       function document_handleFileSelect(file) {
           // Read and crypt the file
           let reader = new FileReader();
           reader.onload = function (event) {
               var data = event.target.result;
+              document_data = ""+data+"";
+              document_filename = file.name;
+              stamped_data = ""+data+"";
+              stamped_filename = file.name;
               setTimeout(function () {
                   CryptoJS.SHA256(data, crypto_callback, crypto_finish);
               }, 200);
@@ -553,32 +565,21 @@
           }
 
           function crypto_finish(hash) {
-              hashfile = ""+hash+"";
-              filename = file.name;
+              document_hash = ""+hash+"";
+              document_filename = file.name;
               console.log("crypto_finish " + hash);
               status("Document hash is " + hash);
           }
       }
 
-      var stamped="";
-      var proof="";
-      function stamped_handleFileSelect(file) {
-          // Read and crypt the file
-          let reader = new FileReader();
-          reader.onload = function (event) {
-              var data = event.target.result;
-              stamped = ""+data+"";
-              console.log("stamped: " + stamped);
-          };
-          reader.readAsBinaryString(file);
-      }
       function proof_handleFileSelect(file) {
           // Read and crypt the file
           let reader = new FileReader();
           reader.onload = function (event) {
               var data = event.target.result;
-              proof = ""+data+"";
-              console.log("proof: " + proof);
+              proof_data = ""+data+"";
+              proof_filename = file.name;
+              console.log("proof: " + proof_data);
           };
           reader.readAsBinaryString(file);
       }
@@ -610,7 +611,7 @@
           var element = document.createElement('a');
           element.setAttribute("target","_blank");
           element.href = window.URL.createObjectURL(new Blob([text], {type: 'octet/stream'}));
-          element.download = filename+".ots";
+          element.download = document_filename+".ots";
           document.getElementById('status').appendChild(element);
           element.click();
           $('status').show();
@@ -684,10 +685,6 @@ getOutput() {
     return Utils.arrayToBytes(output.view);
  }
 
- const HEADER_MAGIC = '\x00OpenTimestamps\x00\x00Proof\x00\xbf\x89\xe2\xe8\x84\xe8\x92\x94';
-    const HEADER_MAGIC = [ 0x00,0x4f,0x70,0x65 ,0x6e,0x54 ,0x69,0x6d ,0x65,0x73 ,0x74,0x61,0x6d,0x70 ,0x73,0x00
-      ,0x00,0x50 ,0x72,0x6f ,0x6f,0x66 ,0x00,0xbf ,0x89,0xe2,0xe8,0x84,0xe8,0x92,0x94];
-
   -->
   <script src="bundle.js"></script>
   <script>
@@ -696,10 +693,10 @@ getOutput() {
       const ByteBuffer = require('bytebuffer');
 
 
-      // Stamp the hash of the file
-      function stamp(filename, hash) {
-          console.log("INFO");
-          const file = ByteBuffer.fromHex(hash).buffer;
+      function stamp(filename, data) {
+          // Check parameters
+          const file = ByteBuffer.fromBinary(data).buffer;
+          // OpenTimestamps command
           const timestampBytesPromise = OpenTimestamps.stamp(file);
           timestampBytesPromise.then(timestampBytes =>
           {
@@ -712,21 +709,60 @@ getOutput() {
       }
 
       function verify(ots, file) {
-          console.log("VERIFY");
-          const bytesOts = ByteBuffer.fromBinary(ots).buffer;
+          // Check parameters
+          let bytesOts;
+          if(ots instanceof Uint8Array){
+              bytesOts = ots;
+          } else {
+              bytesOts = ByteBuffer.fromBinary(ots).buffer;
+          }
           const bytesFile = ByteBuffer.fromBinary(file).buffer;
 
+          // OpenTimestamps command
           const verifyPromise = OpenTimestamps.verify(bytesOts, bytesFile);
           verifyPromise.then(result => {
-              console.log('VERIFY result : ' + result);
           if (result === undefined) {
               status('Pending or Bad attestation');
+              upgrade(ots, file);
           } else {
               status('Success! Bitcoin attests data existed as of ' + (new Date(result * 1000)));
           }
       }
       ).catch(err => {
-          console.log(err);
+          status('Verify error');
+      })
+      ;
+      }
+
+      let upgrade_first=true;
+      function upgrade(ots, file) {
+          // Check not loop race condition
+          if(upgrade_first==false){
+              return;
+          }
+          upgrade_first=false;
+
+          // Check parameters
+          let bytesOts;
+          if(ots instanceof Uint8Array){
+              bytesOts = ots;
+          } else {
+              bytesOts = ByteBuffer.fromBinary(ots).buffer;
+          }
+
+          // OpenTimestamps command
+          const upgradePromise = OpenTimestamps.upgrade(bytesOts);
+          upgradePromise.then(timestampBytes => {
+          if (timestampBytes === undefined) {
+              status('Upgrade error');
+          } else {
+              status('Timestamp has been successfully upgraded!');
+              download(proof_filename, timestampBytes);
+              verify(timestampBytes, file)
+          }
+      }
+      ).catch(err => {
+          status('Upgrade error');
       })
       ;
       }
