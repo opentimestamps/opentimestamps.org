@@ -544,7 +544,7 @@
           $("#document_holder").on("drop", function(event) {
               event.preventDefault();
               event.stopPropagation();
-              this.className = '';
+              $(this).removeClass('hover');
               var f = event.originalEvent.dataTransfer.files[0];
               document.getElementById('document_filename').innerText = f.name;
               document.getElementById('document_filesize').innerText = humanFileSize(f.size, true);
@@ -561,7 +561,6 @@
           $("#document_holder").on("dragleave", function(event) {
               event.preventDefault();
               event.stopPropagation();
-              $(this).removeClass('holder');
               $(this).removeClass('hover');
               return false;
           });
@@ -587,49 +586,11 @@
           });
 
 
-          /* Stamped section */
-          $("#stamped_holder").on("drop", function(event) {
-              event.preventDefault();
-              event.stopPropagation();
-              this.className = '';
-              var f = event.originalEvent.dataTransfer.files[0];
-              document.getElementById('stamped_filename').innerText = f.name;
-              document.getElementById('stamped_filesize').innerText = humanFileSize(f.size, true);
-              stamped_handleFileSelect(f);
-              return false;
-          });
-          $("#stamped_holder").on("dragover", function(event) {
-              event.preventDefault();
-              event.stopPropagation();
-              $(this).addClass('hover');
-              return false;
-          });
-
-          $("#stamped_holder").on("dragleave", function(event) {
-              event.preventDefault();
-              event.stopPropagation();
-              $(this).removeClass('holder');
-              $(this).removeClass('hover');
-              return false;
-          });
-          $("#stamped_holder").click(function(event) {
-              event.preventDefault();
-              event.stopPropagation();
-              document.getElementById('stamped_input').click();
-              return false;
-          });
-          $("#stamped_holder").change(function(event) {
-              var f = event.target.files[0];
-              document.getElementById('stamped_filename').innerText = f.name;
-              document.getElementById('stamped_filesize').innerText = humanFileSize(f.size, true);
-              stamped_handleFileSelect(f);
-          });
-
           /* Proof section */
           $("#proof_holder").on("drop", function(event) {
               event.preventDefault();
               event.stopPropagation();
-              this.className = '';
+              $(this).removeClass('hover');
               var f = event.originalEvent.dataTransfer.files[0];
               document.getElementById('proof_filename').innerText = f.name;
               document.getElementById('proof_filesize').innerText = humanFileSize(f.size, true);
@@ -646,7 +607,6 @@
           $("#proof_holder").on("dragleave", function(event) {
               event.preventDefault();
               event.stopPropagation();
-              $(this).removeClass('holder');
               $(this).removeClass('hover');
               return false;
           });
@@ -656,7 +616,7 @@
               document.getElementById('proof_input').click();
               return false;
           });
-          $("#proof_holder").change(function(event) {
+          $("#proof_input").change(function(event) {
               var f = event.target.files[0];
               document.getElementById('proof_filename').innerText = f.name;
               document.getElementById('proof_filesize').innerText = humanFileSize(f.size, true);
