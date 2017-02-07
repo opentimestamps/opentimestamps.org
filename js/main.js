@@ -173,7 +173,9 @@ $(document).scroll(function () {
 	$('#stampButton').click(function (event) {
 		if (document_filename != '' && document_data != '') {
 			stamp(document_filename, document_data);
-		}
+		} else {
+      danger("To <strong>stamp</strong> you need to drop a file in the Data field","")
+    }
 	});
           /* Proof section */
 	$('#proof_holder').on('drop', function (event) {
@@ -213,7 +215,9 @@ $(document).scroll(function () {
 	$('#verifyButton').click(function (event) {
 		if (proof_data != '' && stamped_data != '') {
 			verify(proof_data, stamped_data);
-		}
+		} else {
+      danger("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field","")
+    }
 	});
 })();
       /*
@@ -305,11 +309,14 @@ function bin2String(array) {
       /*
        * STATUS ALERT MESSAGES
        */
-function danger(text) {
+function danger(text, message) {
+  if(message===undefined) {
+    message='<strong>FAIL!</strong> ';
+  }
 	$('#loading').hide();
 	hideMessages();
 	$('#dangerMessage').show();
-	$('#dangerMessage').html('<strong>FAIL!</strong> ' + text);
+	$('#dangerMessage').html(message + text);
 }
 function alert(text) {
 	$('#loading').hide();
