@@ -1,381 +1,335 @@
-var bitcore = require('bitcore-lib');
+const OpenTimestamps = require('javascript-opentimestamps');
+const ByteBuffer = require('bytebuffer');
 
-$(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip();
-});
-
-// Closes the sidebar menu
-$("#menu-close").click(function(e) {
-    e.preventDefault();
-    $("#sidebar-wrapper").toggleClass("active");
-});
-// Opens the sidebar menu
-$("#menu-toggle").click(function(e) {
-    e.preventDefault();
-    $("#sidebar-wrapper").toggleClass("active");
-});
-// Scrolls to the selected menu item on the page
-$(function() {
-    $('a[href*=#]:not([href=#],[data-toggle],[data-target],[data-slide])').click(function() {
-        if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') || location.hostname == this.hostname) {
-            var target = $(this.hash);
-            target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-            if (target.length) {
-                $('html,body').animate({
-                    scrollTop: target.offset().top
-                }, 1000);
-                return false;
-            }
-        }
-    });
-});
-//#to-top button appears after scrolling
-var fixed = false;
-$(document).scroll(function() {
-    if ($(this).scrollTop() > 250) {
-        if (!fixed) {
-            fixed = true;
-            // $('#to-top').css({position:'fixed', display:'block'});
-            $('#to-top').show("slow", function() {
-                $('#to-top').css({
-                    position: 'fixed',
-                    display: 'block'
-                });
-            });
-        }
-    } else {
-        if (fixed) {
-            fixed = false;
-            $('#to-top').hide("slow", function() {
-                $('#to-top').css({
-                    display: 'none'
-                });
-            });
-        }
-    }
-});
-
-
-var hash;
-
-(function() {
-// your page initialization code here
-// the DOM will be available here
-var timestamped_data_holder = document.getElementById('timestamped_data_holder');
-var state = document.getElementById('status');
-
-if (typeof window.FileReader === 'undefined') {
-state.className = 'fail';
-} else {
-state.className = 'success';
+function stamp(filename, data) {
+	loading();
+    // Check parameters
+	const file = ByteBuffer.fromBinary(data).buffer;
+    // OpenTimestamps command
+	const timestampBytesPromise = OpenTimestamps.stamp(file);
+	timestampBytesPromise.then(timestampBytes => {
+		console.log('STAMP result : ');
+		console.log(timestampBytes);
+		download(filename, timestampBytes);
+	}
+)
+;
 }
 
-document.getElementById('timestamped_data_input').addEventListener('change', function(evt) {
-  var f = evt.target.files[0];
-  handleFileSelect(f);
-}, false);
+function verify(ots, file) {
+	loading();
+    // Check parameters
+	let bytesOts;
+	if (ots instanceof Uint8Array) {
+		bytesOts = ots;
+	} else {
+		bytesOts = ByteBuffer.fromBinary(ots).buffer;
+	}
+	const bytesFile = ByteBuffer.fromBinary(file).buffer;
 
-document.getElementById('verifyButton').onclick = function(e) {
-e.preventDefault();
-$('#loading').show();
-$('#status2').hide();
-$('#alertMessage').hide();
-$('#successMessage').hide();
-$('#dangerMessage').hide();
-
-if(!hash) {
-  alert("Select a document first");
-  return;
-}
-var stamp;
-try {
-  var stampString = document.getElementById('jsonstamp').value;
-  console.log("verifyButton clicked");
-  var stamp = JSON.parse(stampString);
-  if(stamp.ots1) {
-    stamp=stamp.ots1;
-  }
-  if(stamp.OpenTimestamps.path) {
-    stamp=stamp.OpenTimestamps.path;
-  }
-
-} catch(e) {
-  console.log("cannot parse as json, trying removing first two lines");
-  try {
-    //remove first two lines and retry
-    var splitted=stampString.split("\n");
-    var firstTwoRemoved=splitted.slice(2,splitted.length).join("\n");
-    stamp = JSON.parse( firstTwoRemoved );
-  } catch(e2) {
-    console.log("cannot parse as json removing first two lines");
-    try {
-      var splitted=stampString.split("\n");
-      var firstThreeRemoved=splitted.slice(3,splitted.length).join("\n");
-      stamp = JSON.parse( firstThreeRemoved );
-    } catch(e3) {
-      console.log("cannot parse as json removing first three lines");
-    }
-  }
-}
-
-if(!stamp) {
-  alert("Stamp data is not a valid");
-  return;
-}
-verify(hash,stamp);
-}
-
-})();
-
-function danger(text) {
-$('#loading').hide();
-$('#dangerMessage').show();
-$('#dangerMessage').html("<strong>FAIL!</strong> " +text);
-}
-
-function alert(text) {
-$('#loading').hide();
-$('#alertMessage').show();
-$('#alertMessage').html("<strong>ALERT!</strong> " + text);
-}
-
-
-function success(text) {
-$('#loading').hide();
-$('#successMessage').show();
-$('#successMessage').html("<strong>SUCCESS!</strong> " + text);
-}
-
-
-timestamped_data_holder.ondragover = function () { this.className = 'hover'; return false; };
-timestamped_data_holder.ondragend = function () { this.className = ''; return false; };
-timestamped_data_holder.ondrop = function (e) {
-this.className = '';
-e.preventDefault();
-var file = e.dataTransfer.files[0];
-handleFileSelect(file);
-
-return false;
-};
-
-
-function status(text) {
-document.getElementById('status').innerText = text ;
-}
-
-function crypto_callback(p) {
-status('Hashing ' + (p*100).toFixed(0) + '% completed');
-}
-
-timestamped_data_holder.onclick = function () {
-console.log("holder.onclick");
-
-document.getElementById('timestamped_data_input').click(
-);
-};
-
-function humanFileSize(bytes, si) {
-var thresh = si ? 1000 : 1024;
-if(Math.abs(bytes) < thresh) {
-    return bytes + ' B';
-}
-var units = si
-    ? ['kB','MB','GB','TB','PB','EB','ZB','YB']
-    : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
-var u = -1;
-do {
-    bytes /= thresh;
-    ++u;
-} while(Math.abs(bytes) >= thresh && u < units.length - 1);
-return bytes.toFixed(1)+' '+units[u];
-}
-
-
-function handleFileSelect(file) {
-document.getElementById('timestamped_data_name').innerText = file.name;
-document.getElementById('timestamped_data_size').innerText = humanFileSize(file.size,true);
-
-reader = new FileReader();
-reader.onload = function (event) {
-
-var data = event.target.result;
-setTimeout(function() {
-    CryptoJS.SHA256(data, crypto_callback, crypto_finish);
-  }, 200);
-};
-console.log(file);
-reader.readAsBinaryString(file);
-}
-
-
-function verify(hash, stamp) {
-try {
-var stampHash=stamp[0]
-var merklePathOperations=stamp[1];
-var timestampSignature=stamp[2];
-if(hash!=stampHash) {
-  alert("Document hash and stamp hash does not match.")
-  return;
-}
-
-var value = hash;
-for (var i = 1; i < merklePathOperations.length; i++) {
-  current = merklePathOperations[i];
-  console.log("value=" + value);
-  value = exec(current[0], current[1], value, current[2]);
-}
-
-var finalValue = finalExec(timestampSignature[0], timestampSignature[1], timestampSignature[2], value, timestampSignature[3] )
-
-console.log("Block hash=" + finalValue);
-var finalValueBuffer = new bitcore.deps.Buffer(finalValue,"hex");
-var reversed = bitcore.util.buffer.reverse(finalValueBuffer).toString("hex");
-$('#status2').text("Block hash is " + reversed);
-$('#status2').show();
-askBlock(reversed);
-
-} catch(e) {
-alert(e);
-}
-}
-
-
-function finalExec(what, chain, prefix, prec, suffix) {
-if( what=="block_header" && chain=="bitcoin-mainnet" ) {
-return exec("sha256",exec("sha256",prefix,prec,suffix),"","");
-} else {
-throw new Exception("error");
-}
-}
-function exec(what, prefix, prec, suffix) {
-value=new bitcore.deps.Buffer(prefix + prec + suffix, "hex");
-if("sha256" == what) {
-h=bitcore.crypto.Hash.sha256(value);
-return h.toString('hex');
-} else if("reverse" == what) {
-return bitcore.util.buffer.reverse(value).toString("hex");
-} else if("ripemd160" == what) {
-h=bitcore.crypto.Hash.ripemd160(value);
-return h.toString('hex');
-} else {
-throw new Exception("error");
-}
-}
-
-
-function crypto_finish(val) {
-hash=val;
-console.log("crypto_finish " + hash);
-status("Document hash is " + hash );
-
-/*document.getElementById('hashinput').value=hash ;*/
-
-}
-
-var blockProviders = ["https://insight.bitpay.com/api/block/",
-"https://www.localbitcoinschain.com/api/block/",
-//"https://blockchain.info/it/rawblock/",
-"http://vr4.synaptica.info:3000/api/block/"];
-
-var results = [];
-
-
-function askBlock(hash) {
-var promises=[];
-for(var i = 0; i< blockProviders.length ; i++) {
-var url = blockProviders[i] + hash;
-var req = makeRequest({
-  method:"GET",
-  url:url,
-  timeout: 5000
-});
-promises.push(req);
-}
-Promise.all(promises.map(softFail)).then(function(data) {
-var found=false;
-for(var i = 0; i< data.length ; i++) {
-  try {
-    var result=JSON.parse(data[i].response);
-    var time = result['time'];
-    console.log(time);
-    if(results.indexOf(time)>=0) {
-      console.log("found twice!");
-      var a = new Date(time * 1000);
-      success("Data was created on or before " + a);
-      found=true;
-    }
-    results.push(time);
-  } catch(e) {}
-}
-if(!found) {
-  danger("Can't verify the block hash with a block explorer (maybe connection problem).<br>You should manually verify the block hash");
-}
-
-});
-
-}
-
-function softFail(promise) {
-return new Promise(function(resolve, reject) {
-promise
-.then(resolve)
-.catch(resolve)
+    // OpenTimestamps command
+	const verifyPromise = OpenTimestamps.verify(bytesOts, bytesFile);
+	verifyPromise.then(result => {
+		if (result === undefined) {
+			alert('Pending or Bad attestation');
+			upgrade(ots, file);
+		} else {
+			success('Success! Bitcoin attests data existed as of ' + (new Date(result * 1000)));
+		}
+	}
+).catch(err => {
+	danger('Verify error');
 })
+;
 }
 
-function makeRequest (opts) {
-return new Promise(function (resolve, reject) {
-var now = Date.now();
-var xhr = new XMLHttpRequest();
-xhr.timeout= opts.timeout || 5000;
-xhr.open(opts.method, opts.url);
-xhr.onload = function () {
-  if (this.status >= 200 && this.status < 300) {
-    var data = {};
-    data['response']= xhr.response;
-    data['elapsed'] = Date.now() - now;
-    resolve(data);
-  } else {
-    reject({
-      status: this.status,
-      statusText: xhr.statusText,
-      m: "statusNot200",
-      opts: opts,
-      elapsed : Date.now() - now
-    });
-  }
-};
-xhr.onerror = function () {
-  reject({
-    status: this.status,
-    statusText: xhr.statusText,
-    m: "error",
-    opts: opts,
-    elapsed : Date.now() - now
-  });
-};
-xhr.ontimeout = function () {
-  reject({
-    status: this.status,
-    statusText: xhr.statusText,
-    m: "timeout",
-    opts: opts,
-    elapsed : Date.now() - now
-  });
-};
-if (opts.headers) {
-  Object.keys(opts.headers).forEach(function (key) {
-    xhr.setRequestHeader(key, opts.headers[key]);
-  });
+let upgrade_first = true;
+function upgrade(ots, file) {
+    // Check not loop race condition
+	if (upgrade_first == false) {
+		return;
+	}
+	upgrade_first = false;
+
+    // Check parameters
+	let bytesOts;
+	if (ots instanceof Uint8Array) {
+		bytesOts = ots;
+	} else {
+		bytesOts = ByteBuffer.fromBinary(ots).buffer;
+	}
+
+    // OpenTimestamps command
+	const upgradePromise = OpenTimestamps.upgrade(bytesOts);
+	upgradePromise.then(timestampBytes => {
+		if (timestampBytes === undefined) {
+			danger('Upgrade error');
+		} else {
+			success('Timestamp has been successfully upgraded!');
+			download(proof_filename, timestampBytes);
+			verify(timestampBytes, file);
+		}
+	}
+).catch(err => {
+	success('Upgrade error');
+})
+;
 }
-var params = opts.params;
-// We'll need to stringify if we've been given an object
-// If we have a string, this is skipped.
-if (params && typeof params === 'object') {
-  params = Object.keys(params).map(function (key) {
-    return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
-  }).join('&');
-}
-xhr.send(params);
+
+$(document).ready(function () {
+	$('[data-toggle="tooltip"]').tooltip();
 });
+      // Closes the sidebar menu
+$('#menu-close').click(function (e) {
+	e.preventDefault();
+	$('#sidebar-wrapper').toggleClass('active');
+});
+      // Opens the sidebar menu
+$('#menu-toggle').click(function (e) {
+	e.preventDefault();
+	$('#sidebar-wrapper').toggleClass('active');
+});
+      // Scrolls to the selected menu item on the page
+$(function () {
+	$('a[href*=#]:not([href=#],[data-toggle],[data-target],[data-slide])').click(function () {
+		if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') || location.hostname == this.hostname) {
+			var target = $(this.hash);
+			target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+			if (target.length) {
+				$('html,body').animate({
+					scrollTop: target.offset().top
+				}, 1000);
+				return false;
+			}
+		}
+	});
+});
+      // #to-top button appears after scrolling
+var fixed = false;
+$(document).scroll(function () {
+	if ($(this).scrollTop() > 250) {
+		if (!fixed) {
+			fixed = true;
+                  // $('#to-top').css({position:'fixed', display:'block'});
+			$('#to-top').show('slow', function () {
+				$('#to-top').css({
+					position: 'fixed',
+					display: 'block'
+				});
+			});
+		}
+	} else if (fixed) {
+		fixed = false;
+		$('#to-top').hide('slow', function () {
+			$('#to-top').css({
+				display: 'none'
+			});
+		});
+	}
+});
+(function () {
+          // your page initialization code here
+          // the DOM will be available here
+          /*
+           *Document section
+           events handle to easy file uploading : drop, drag-over, drag-leave, click, file change
+           */
+	$('#document_holder').on('drop', function (event) {
+		event.preventDefault();
+		event.stopPropagation();
+		$(this).removeClass('hover');
+		var f = event.originalEvent.dataTransfer.files[0];
+		document.getElementById('document_filename').innerText = f.name;
+		document.getElementById('document_filesize').innerText = humanFileSize(f.size, true);
+		document_handleFileSelect(f);
+		return false;
+	});
+	$('#document_holder').on('dragover', function (event) {
+		event.preventDefault();
+		event.stopPropagation();
+		$(this).addClass('hover');
+		return false;
+	});
+	$('#document_holder').on('dragleave', function (event) {
+		event.preventDefault();
+		event.stopPropagation();
+		$(this).removeClass('hover');
+		return false;
+	});
+	$('#document_holder').click(function (event) {
+		console.log('document_holder : click');
+		event.preventDefault();
+		event.stopPropagation();
+		document.getElementById('document_input').click();
+		return false;
+	});
+	$('#document_input').change(function (event) {
+		console.log('document_input : change');
+		var f = event.target.files[0];
+		document.getElementById('document_filename').innerText = f.name;
+		document.getElementById('document_filesize').innerText = humanFileSize(f.size, true);
+		document_handleFileSelect(f);
+	});
+	$('#stampButton').click(function (event) {
+		if (document_filename != '' && document_data != '') {
+			stamp(document_filename, document_data);
+		}
+	});
+          /* Proof section */
+	$('#proof_holder').on('drop', function (event) {
+		event.preventDefault();
+		event.stopPropagation();
+		$(this).removeClass('hover');
+		var f = event.originalEvent.dataTransfer.files[0];
+		document.getElementById('proof_filename').innerText = f.name;
+		document.getElementById('proof_filesize').innerText = humanFileSize(f.size, true);
+		proof_handleFileSelect(f);
+		return false;
+	});
+	$('#proof_holder').on('dragover', function (event) {
+		event.preventDefault();
+		event.stopPropagation();
+		$(this).addClass('hover');
+		return false;
+	});
+	$('#proof_holder').on('dragleave', function (event) {
+		event.preventDefault();
+		event.stopPropagation();
+		$(this).removeClass('hover');
+		return false;
+	});
+	$('#proof_holder').click(function (event) {
+		event.preventDefault();
+		event.stopPropagation();
+		document.getElementById('proof_input').click();
+		return false;
+	});
+	$('#proof_input').change(function (event) {
+		var f = event.target.files[0];
+		document.getElementById('proof_filename').innerText = f.name;
+		document.getElementById('proof_filesize').innerText = humanFileSize(f.size, true);
+		proof_handleFileSelect(f);
+	});
+	$('#verifyButton').click(function (event) {
+		if (proof_data != '' && stamped_data != '') {
+			verify(proof_data, stamped_data);
+		}
+	});
+})();
+      /*
+       * HANDLE UPLOADED FILE
+      */
+var document_hash = '';
+var document_data = '';
+var document_filename = '';
+var stamped_filename = '';
+var stamped_data = '';
+var proof_filename = '';
+var proof_data = '';
+      // Hash file generation : save the hash in the document_hash global variable
+function document_handleFileSelect(file) {
+          // Read and crypt the file
+	let reader = new FileReader();
+	reader.onload = function (event) {
+		var data = event.target.result;
+		document_data = String(String(data));
+		document_filename = file.name;
+		stamped_data = String(String(data));
+		stamped_filename = file.name;
+		setTimeout(function () {
+			CryptoJS.SHA256(data, crypto_callback, crypto_finish);
+		}, 200);
+	};
+	console.log(file);
+	reader.readAsBinaryString(file);
+	function crypto_callback(p) {
+		alert('Hashing ' + (p * 100).toFixed(0) + '% completed');
+	}
+	function crypto_finish(hash) {
+		document_hash = String(String(hash));
+		document_filename = file.name;
+		console.log('crypto_finish ' + hash);
+		alert('Document hash is ' + hash);
+	}
+}
+function proof_handleFileSelect(file) {
+          // Read and crypt the file
+	let reader = new FileReader();
+	reader.onload = function (event) {
+		var data = event.target.result;
+		proof_data = String(String(data));
+		proof_filename = file.name;
+		console.log('proof: ' + proof_data);
+	};
+	reader.readAsBinaryString(file);
+}
+      /*
+       * COMMON FUNCTIONS
+       */
+      // Human file size
+function humanFileSize(bytes, si) {
+	var thresh = si ? 1000 : 1024;
+	if (Math.abs(bytes) < thresh) {
+		return bytes + ' B';
+	}
+	var units = si
+                  ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+                  : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+	var u = -1;
+	do {
+		bytes /= thresh;
+		++u;
+	} while (Math.abs(bytes) >= thresh && u < units.length - 1);
+	return bytes.toFixed(1) + ' ' + units[u];
+}
+      // Download file
+function download(filename, text) {
+	var element = document.createElement('a');
+	element.setAttribute('target', '_blank');
+	element.href = window.URL.createObjectURL(new Blob([text], {type: 'octet/stream'}));
+	element.download = document_filename + '.ots';
+	document.getElementById('status').appendChild(element);
+	success('OpenTimestamps receipt created and download started');
+	element.click();
+}
+function string2Bin(str) {
+	var result = [];
+	for (var i = 0; i < str.length; i++) {
+		result.push(str.charCodeAt(i));
+	}
+	return result;
+}
+function bin2String(array) {
+	return String.fromCharCode.apply(String, array);
+}
+      /*
+       * STATUS ALERT MESSAGES
+       */
+function danger(text) {
+	$('#loading').hide();
+	hideMessages();
+	$('#dangerMessage').show();
+	$('#dangerMessage').html('<strong>FAIL!</strong> ' + text);
+}
+function alert(text) {
+	$('#loading').hide();
+	hideMessages();
+	$('#alertMessage').show();
+	$('#alertMessage').html(text);
+}
+function success(text) {
+	$('#loading').hide();
+	hideMessages();
+	$('#successMessage').show();
+	$('#successMessage').html('<strong>SUCCESS!</strong> ' + text);
+}
+function loading() {
+	hideMessages();
+	$('#loading').show();
+}
+function hideMessages() {
+	$('#status').hide();
+	$('#successMessage').hide();
+	$('#alertMessage').hide();
+	$('#dangerMessage').hide();
 }
