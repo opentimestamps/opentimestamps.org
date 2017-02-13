@@ -249,9 +249,13 @@ function document_handleFileSelect(file) {
 			document_filename = file.name;
 			stamped_data = String(String(data));
 			stamped_filename = file.name;
-			setTimeout(function () {
-				CryptoJS.SHA256(data, crypto_callback, crypto_finish);
-			}, 200);
+			if(file.size>0 && data==="") { //some browsers give empty data instead of error if file is very big
+				danger("The file is too big");
+			} else {
+				setTimeout(function () {
+					CryptoJS.SHA256(data, crypto_callback, crypto_finish);
+				}, 200);
+			}
 		} catch(err) {
 			danger("" + err);
 		}
