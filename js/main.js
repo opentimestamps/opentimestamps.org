@@ -1,12 +1,12 @@
 const OpenTimestamps = require('javascript-opentimestamps');
 const ByteBuffer = require('bytebuffer');
 
-function stamp(filename, data) {
+function stamp(filename, hash) {
 	loading();
     // Check parameters
-	const file = ByteBuffer.fromBinary(data).buffer;
+	const hashdata = ByteBuffer.fromBinary(hash).buffer;
     // OpenTimestamps command
-	const timestampBytesPromise = OpenTimestamps.stamp(file);
+	const timestampBytesPromise = OpenTimestamps.stamp(hashdata,true);
 	timestampBytesPromise.then(timestampBytes => {
 		console.log('STAMP result : ');
 		console.log(timestampBytes);
@@ -171,8 +171,8 @@ $(document).scroll(function () {
 		document_handleFileSelect(f);
 	});
 	$('#stampButton').click(function (event) {
-		if (document_filename != '' && document_data != '') {
-			stamp(document_filename, document_data);
+		if (document_filename != '' && document_hash != '') {
+			stamp(document_filename, document_hash);
 		} else {
       danger("To <strong>stamp</strong> you need to drop a file in the Data field","")
     }
