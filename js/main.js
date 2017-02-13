@@ -4,7 +4,7 @@ const ByteBuffer = require('bytebuffer');
 function stamp(filename, hash) {
 	loading();
     // Check parameters
-	const hashdata = ByteBuffer.fromBinary(hash).buffer;
+	const hashdata = ByteBuffer.fromHex(hash).buffer;
     // OpenTimestamps command
 	const timestampBytesPromise = OpenTimestamps.stamp(hashdata,true);
 	timestampBytesPromise.then(timestampBytes => {
