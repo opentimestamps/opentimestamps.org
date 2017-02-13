@@ -243,14 +243,18 @@ function document_handleFileSelect(file) {
           // Read and crypt the file
 	let reader = new FileReader();
 	reader.onload = function (event) {
-		var data = event.target.result;
-		document_data = String(String(data));
-		document_filename = file.name;
-		stamped_data = String(String(data));
-		stamped_filename = file.name;
-		setTimeout(function () {
-			CryptoJS.SHA256(data, crypto_callback, crypto_finish);
-		}, 200);
+		try {
+			var data = event.target.result;
+			document_data = String(String(data));
+			document_filename = file.name;
+			stamped_data = String(String(data));
+			stamped_filename = file.name;
+			setTimeout(function () {
+				CryptoJS.SHA256(data, crypto_callback, crypto_finish);
+			}, 200);
+		} catch(err) {
+			danger("" + err);
+		}
 	};
 	console.log(file);
 	reader.readAsBinaryString(file);
