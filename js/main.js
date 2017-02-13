@@ -242,6 +242,7 @@ var proof_data = '';
 function document_handleFileSelect(file) {
           // Read and crypt the file
 	let reader = new FileReader();
+
 	reader.onload = function (event) {
 		try {
 			var data = event.target.result;
@@ -249,19 +250,21 @@ function document_handleFileSelect(file) {
 			document_filename = file.name;
 			stamped_data = String(String(data));
 			stamped_filename = file.name;
-			if(file.size>0 && data==="") { //some browsers give empty data instead of error if file is very big
-				danger("The file is too big");
-			} else {
-				setTimeout(function () {
-					CryptoJS.SHA256(data, crypto_callback, crypto_finish);
-				}, 200);
-			}
+			setTimeout(function () {
+				CryptoJS.SHA256(data, crypto_callback, crypto_finish);
+			}, 200);
+
 		} catch(err) {
 			danger("" + err);
 		}
 	};
 	console.log(file);
-	reader.readAsBinaryString(file);
+	if(file.size>100*1024*1024) {
+		danger("File bigger than 100Mb are not supported in the browser at the moment");
+	} else {
+		reader.readAsBinaryString(file);
+	}
+
 	function crypto_callback(p) {
 		alert('Hashing ' + (p * 100).toFixed(0) + '% completed');
 	}
