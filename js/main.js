@@ -20,8 +20,10 @@ function stamp(filename, hash) {
 		console.log(timestampBytes);
 		download(filename, timestampBytes);
 	}
-)
-;
+	).catch(err => {
+		console.log("err " + err);
+		danger("" + err);
+	});
 }
 
 function verify(ots, file) {
