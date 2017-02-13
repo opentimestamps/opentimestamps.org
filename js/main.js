@@ -1,10 +1,18 @@
 const OpenTimestamps = require('javascript-opentimestamps');
 const ByteBuffer = require('bytebuffer');
 
+arrayToBytes = function (buffer) {
+  const bytes = [];
+  for (let c = 0; c < buffer.length; c++) {
+    bytes.push(parseInt(buffer[c], 10));
+  }
+  return bytes;
+};
+
 function stamp(filename, hash) {
 	loading();
     // Check parameters
-	const hashdata = ByteBuffer.fromHex(hash).buffer;
+	const hashdata = arrayToBytes( ByteBuffer.fromHex(hash).view ) ;
     // OpenTimestamps command
 	const timestampBytesPromise = OpenTimestamps.stamp(hashdata,true);
 	timestampBytesPromise.then(timestampBytes => {
