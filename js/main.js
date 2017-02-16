@@ -1,5 +1,4 @@
 const OpenTimestamps = require('javascript-opentimestamps');
-const ByteBuffer = require('bytebuffer');
 
 arrayToBytes = function (buffer) {
   const bytes = [];
@@ -12,7 +11,7 @@ arrayToBytes = function (buffer) {
 function stamp(filename, hash) {
 	loading();
     // Check parameters
-	const hashdata = arrayToBytes( ByteBuffer.fromHex(hash).view ) ;
+	const hashdata = Buffer.from(hash,'hex');
     // OpenTimestamps command
 	const timestampBytesPromise = OpenTimestamps.stamp(hashdata,true);
 	timestampBytesPromise.then(timestampBytes => {
@@ -33,9 +32,9 @@ function verify(ots, file) {
 	if (ots instanceof Uint8Array) {
 		bytesOts = ots;
 	} else {
-		bytesOts = ByteBuffer.fromBinary(ots).buffer;
+		bytesOts = Buffer.from(hash);
 	}
-	const bytesFile = ByteBuffer.fromBinary(file).buffer;
+	const bytesFile = Buffer.from(file);
 
     // OpenTimestamps command
 	const verifyPromise = OpenTimestamps.verify(bytesOts, bytesFile);
@@ -63,10 +62,10 @@ function upgrade(ots, file) {
 
     // Check parameters
 	let bytesOts;
-	if (ots instanceof Uint8Array) {
+	if ((ots instanceof Uint8Array)||(ots instanceof Buffer)) {
 		bytesOts = ots;
 	} else {
-		bytesOts = ByteBuffer.fromBinary(ots).buffer;
+		bytesOts = Buffer.from(ots);
 	}
 
     // OpenTimestamps command
