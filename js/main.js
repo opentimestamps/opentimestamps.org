@@ -8,10 +8,18 @@ arrayToBytes = function (buffer) {
   return bytes;
 };
 
+hexToBytes = function (hex) {
+	const bytes = [];
+	for (let c = 0; c < hex.length; c += 2) {
+		bytes.push(parseInt(hex.substr(c, 2), 16));
+	}
+	return bytes;
+};
+
 function stamp(filename, hash) {
 	loading();
     // Check parameters
-	const hashdata = Buffer.from(hash,'hex');
+	const hashdata = new Uint8Array(hexToBytes(hash));
     // OpenTimestamps command
 	const timestampBytesPromise = OpenTimestamps.stamp(hashdata,true);
 	timestampBytesPromise.then(timestampBytes => {
@@ -20,28 +28,23 @@ function stamp(filename, hash) {
 		download(filename, timestampBytes);
 	}
 	).catch(err => {
-		console.log("err " + err);
+		console.log("err "+err);
 		danger("" + err);
 	});
 }
 
-function verify(ots, file) {
+function verify(ots, hash) {
 	loading();
     // Check parameters
-	let bytesOts;
-	if (ots instanceof Uint8Array) {
-		bytesOts = ots;
-	} else {
-		bytesOts = Buffer.from(hash);
-	}
-	const bytesFile = Buffer.from(file);
+	const bytesOts = ots;
+	const bytesHash = new Uint8Array(hexToBytes(hash));
 
     // OpenTimestamps command
-	const verifyPromise = OpenTimestamps.verify(bytesOts, bytesFile);
+	const verifyPromise = OpenTimestamps.verify(bytesOts, bytesHash, true);
 	verifyPromise.then(result => {
 		if (result === undefined) {
 			alert('Pending or Bad attestation');
-			upgrade(ots, file);
+			upgrade(ots, hash);
 		} else {
 			success('Success! Bitcoin attests data existed as of ' + (new Date(result * 1000)));
 		}
@@ -53,7 +56,7 @@ function verify(ots, file) {
 }
 
 let upgrade_first = true;
-function upgrade(ots, file) {
+function upgrade(ots, hash) {
     // Check not loop race condition
 	if (upgrade_first == false) {
 		return;
@@ -61,12 +64,7 @@ function upgrade(ots, file) {
 	upgrade_first = false;
 
     // Check parameters
-	let bytesOts;
-	if ((ots instanceof Uint8Array)||(ots instanceof Buffer)) {
-		bytesOts = ots;
-	} else {
-		bytesOts = Buffer.from(ots);
-	}
+	const bytesOts = ots
 
     // OpenTimestamps command
 	const upgradePromise = OpenTimestamps.upgrade(bytesOts);
@@ -76,7 +74,7 @@ function upgrade(ots, file) {
 		} else {
 			success('Timestamp has been successfully upgraded!');
 			download(proof_filename, timestampBytes);
-			verify(timestampBytes, file);
+			verify(timestampBytes, hash);
 		}
 	}
 ).catch(err => {
@@ -222,8 +220,8 @@ $(document).scroll(function () {
 		proof_handleFileSelect(f);
 	});
 	$('#verifyButton').click(function (event) {
-		if (proof_data != '' && stamped_data != '') {
-			verify(proof_data, stamped_data);
+		if (proof_data != '' && document_hash != '') {
+			verify(proof_data, document_hash);
 		} else {
       danger("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field","")
     }
