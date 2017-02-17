@@ -13,7 +13,7 @@
       <a href="#" class="header-logo"></a>
       <div class="header-nav-open"></div>
       <nav class="header-nav">
-        <a href="#intro" class="header-nav-i">Intro</a>
+        <!-- <a href="#intro" class="header-nav-i">Intro</a> -->
         <a href="#stamp-and-verify" class="header-nav-i">Stamp and Verify</a>
         <a href="#how-it-works" class="header-nav-i">How it works</a>
         <a href="#members" class="header-nav-i">Members</a>
@@ -79,14 +79,14 @@
           announcements
         </p>
       </a>
-      <a href="#use-cases" class="navigation-i">
+      <!--<a href="#use-cases" class="navigation-i">
         <span class="navigation-icon navigation-icon_use-cases"></span>
         <p class="navigation-title">Use cases</p>
         <p class="navigation-description">
           What can you do with
           timestamping?
         </p>
-      </a>
+      </a>-->
     </div>
   </section>
 
@@ -138,12 +138,24 @@
     <div class="container">
       <h3 class="how-it-works-title">How it Works?</h3>
       <p class="how-it-works-description">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-        laboris nisi ut aliquip ex ea commodo consequat.
-        <br><br>
-        Have a look at the <a href="#">announcement post</a>
+        A timestamps proves that some data existed prior to some point in time, OpenTimestamps defines a set of operations to describe a timestamp which could be done in different way. At the time of writing timestamping on the Bitcoin blockchain is supported. <a href="https://petertodd.org/2016/opentimestamps-announcement">More.</a>
       </p>
+      <br>
+      <p class="how-it-works-description">
+        Anyone could realize a timestamp with the permissionless blockchain by paying the transaction fees, for your convenience we offers calendar servers that perform this operation for you. This servers are free to use and they don't requrie any registration or api key.
+      </p>
+
+        <pre>
+          git clone python-opentimestamps
+          pip3 install -r requirements
+          ./ots stamp my-file
+        </pre>
+        <pre>
+          npm install -g javascript-opentimestamps
+          ots-cli.js stamp my-file
+        </pre>
+
+
     </div>
   </section>
 
@@ -173,7 +185,7 @@
   </section>
 
   <!-- REPOSITORIES -->
-  <section class="repositories" id="repositories">
+  <section class="repositories" id="code-repositories">
     <h3 class="repositories-block-title">Repositories</h3>
     <div class="container">
       <div href="#" class="repositories-i">
@@ -222,6 +234,8 @@
   </section>
 
   <!-- USE CASES -->
+
+  <!--
   <section class="use-cases" id="use-cases">
     <div class="container">
       <h3 class="use-cases-title">Use cases</h3>
@@ -234,6 +248,8 @@
       </p>
     </div>
   </section>
+  -->
+
   <footer class="footer">
     <div class="container">
       <a href="#" class="footer-logo"></a>
@@ -241,5 +257,8 @@
     </div>
   </footer>
   <script src="./assets/javascripts/application.js"></script>
+  <script src="./assets/javascripts/bundle.js"></script>
+  <script src="./assets/javascripts/crypto.js"></script>
+  <script src="./assets/javascripts/main.js"></script>
 </body>
 </html>
