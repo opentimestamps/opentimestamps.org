@@ -11,16 +11,17 @@ hexToBytes = function (hex) {
 function stamp(filename, hash) {
 	loading();
     // Check parameters
-	const hashdata = hexToBytes(hash);
+
+	const hashdata = new Uint8Array(hexToBytes(hash));
+
     // OpenTimestamps command
 	const timestampBytesPromise = OpenTimestamps.stamp(hashdata,true);
 	timestampBytesPromise.then(timestampBytes => {
 		console.log('STAMP result : ');
 		console.log(timestampBytes);
 		download(filename, timestampBytes);
-	}
-	).catch(err => {
-		console.log("err " + err);
+	}).catch(err => {
+		console.log("err "+err);
 		danger("" + err);
 	});
 }
@@ -29,13 +30,13 @@ function verify(ots, hash) {
 	loading();
     // Check parameters
 	const bytesOts = ots;
-	const bytesHash = hexToBytes(hash);
-  // OpenTimestamps command
+	const bytesHash = new Uint8Array(hexToBytes(hash));
+	// OpenTimestamps command
 	const verifyPromise = OpenTimestamps.verify(bytesOts, bytesHash, true);
 	verifyPromise.then(result => {
 		if (result === undefined) {
 			alert('Pending or Bad attestation');
-			upgrade(ots, file);
+			upgrade(ots, hash);
 		} else {
 			success('Success! Bitcoin attests data existed as of ' + (new Date(result * 1000)));
 		}
@@ -47,22 +48,17 @@ function verify(ots, hash) {
 }
 
 let upgrade_first = true;
-function upgrade(ots, file) {
+function upgrade(ots, hash) {
     // Check not loop race condition
 	if (upgrade_first == false) {
 		return;
 	}
 	upgrade_first = false;
 
-    // Check parameters
-	let bytesOts;
-	if (ots instanceof Uint8Array) {
-		bytesOts = ots;
-	} else {
-		bytesOts = hexToBytes(ots);
-	}
+	// Check parameters
+	const bytesOts = ots
 
-    // OpenTimestamps command
+	// OpenTimestamps command
 	const upgradePromise = OpenTimestamps.upgrade(bytesOts);
 	upgradePromise.then(timestampBytes => {
 		if (timestampBytes === undefined) {
@@ -70,13 +66,11 @@ function upgrade(ots, file) {
 		} else {
 			success('Timestamp has been successfully upgraded!');
 			download(proof_filename, timestampBytes);
-			verify(timestampBytes, file);
+			verify(timestampBytes, hash);
 		}
-	}
-).catch(err => {
+	}).catch(err => {
 	success('Upgrade error');
-})
-;
+	});
 }
 
 $(document).ready(function () {
