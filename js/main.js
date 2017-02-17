@@ -1,9 +1,9 @@
 const OpenTimestamps = require('javascript-opentimestamps');
 
-arrayToBytes = function (buffer) {
+hexToBytes = function (hex) {
   const bytes = [];
-  for (let c = 0; c < buffer.length; c++) {
-    bytes.push(parseInt(buffer[c], 10));
+  for (let c = 0; c < hex.length; c += 2) {
+    bytes.push(parseInt(hex.substr(c, 2), 16));
   }
   return bytes;
 };
@@ -11,7 +11,7 @@ arrayToBytes = function (buffer) {
 function stamp(filename, hash) {
 	loading();
     // Check parameters
-	const hashdata = Buffer.from(hash,'hex');
+	const hashdata = hexToBytes(hash);
     // OpenTimestamps command
 	const timestampBytesPromise = OpenTimestamps.stamp(hashdata,true);
 	timestampBytesPromise.then(timestampBytes => {
@@ -25,19 +25,13 @@ function stamp(filename, hash) {
 	});
 }
 
-function verify(ots, file) {
+function verify(ots, hash) {
 	loading();
     // Check parameters
-	let bytesOts;
-	if (ots instanceof Uint8Array) {
-		bytesOts = ots;
-	} else {
-		bytesOts = Buffer.from(hash);
-	}
-	const bytesFile = Buffer.from(file);
-
-    // OpenTimestamps command
-	const verifyPromise = OpenTimestamps.verify(bytesOts, bytesFile);
+	const bytesOts = ots;
+	const bytesHash = hexToBytes(hash);
+  // OpenTimestamps command
+	const verifyPromise = OpenTimestamps.verify(bytesOts, bytesHash, true);
 	verifyPromise.then(result => {
 		if (result === undefined) {
 			alert('Pending or Bad attestation');
@@ -62,10 +56,10 @@ function upgrade(ots, file) {
 
     // Check parameters
 	let bytesOts;
-	if ((ots instanceof Uint8Array)||(ots instanceof Buffer)) {
+	if (ots instanceof Uint8Array) {
 		bytesOts = ots;
 	} else {
-		bytesOts = Buffer.from(ots);
+		bytesOts = hexToBytes(ots);
 	}
 
     // OpenTimestamps command
@@ -222,8 +216,8 @@ $(document).scroll(function () {
 		proof_handleFileSelect(f);
 	});
 	$('#verifyButton').click(function (event) {
-		if (proof_data != '' && stamped_data != '') {
-			verify(proof_data, stamped_data);
+		if (proof_data != '' && document_hash != '') {
+			verify(proof_data, document_hash);
 		} else {
       danger("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field","")
     }
