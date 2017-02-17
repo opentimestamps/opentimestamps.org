@@ -1,0 +1,37 @@
+html,
+body,
+p, h1, h2, h3 {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+}
+
+a {
+  text-decoration: none;
+}
+
+input,
+button {
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+}
+
+strong {
+  font-weight: bold;
+}
+
+.hidden {
+  overflow: hidden;
+}
+
+.container {
+  @extend %container;
+}
+
+.title {
+  font-size: 24px;
+}

@@ -1,0 +1,101 @@
+.repositories {
+  @include round-icons-block;
+  background-color: #f9f9f9;
+
+  @media (max-width: $container-responsive--width) {
+    padding: 40px 0;
+  }
+
+  $this: &;
+
+  &-block-title {
+    @extend %block-title;
+    margin: 25px 0 15px;
+
+    @media (max-width: $container-responsive--width) {
+      margin-top: 0;
+    }
+  }
+
+  &-i {
+    width: 48%;
+    margin-right: 4%;
+    margin-top: 35px;
+    margin-bottom: 35px;
+
+    @media (max-width: $container-responsive--width) {
+      display: block;
+      width: 320px;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    &:nth-child(2n) {
+      margin-right: 0;
+    }
+  }
+
+  &-icon {
+    @media (max-width: $container-responsive--width) {
+      top: 0;
+      margin-top: 0;
+    }
+
+    &:before {
+      @include image-2x('../images/repositories@2x.png', 36px, 131px);
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 32px;
+      height: 32px;
+      margin: -16px 0 0 -16px;
+      background-image: url(../images/repositories.png);
+    }
+
+    &_server:before {
+      background-position: 0 0;
+    }
+
+    &_client:before {
+      background-position: 0 -32px;
+    }
+
+    &_javascript:before {
+      background-position: 0 -64px;
+    }
+
+    &_python:before {
+      width: 36px;
+      height: 35px;
+      margin: -18px 0 0 -17.5px;
+      background-position: 0 -96px;
+    }
+  }
+
+  &-link {
+    @include image-2x('../images/github@2x.png', 24px, 23px);
+    position: absolute;
+    left: 100px;
+    bottom: -30px;
+    padding-left: 34px;
+    background-image: url(../images/github.png);
+    background-repeat: no-repeat;
+    background-position: left center;
+    color: #004eaa;
+    line-height: 24px;
+    font-size: 14px;
+
+    @media (max-width: $container-responsive--width) {
+      position: relative;
+      left: auto;
+      bottom: auto;
+      display: block;
+      margin-top: 10px;
+    }
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

@@ -1,0 +1,160 @@
+.navigation {
+  @include round-icons-block;
+
+  @media (max-width: $container-responsive--width) {
+    padding: 15px 0;
+  }
+
+  $this: &;
+
+  &-i {
+    width: 26.66%;
+    margin-right: 10%;
+    margin-top: 25px;
+    margin-bottom: 25px;
+
+    @media (max-width: $container-responsive--width) {
+      width: 45%;
+    }
+
+    @media (max-width: 600px) {
+      display: block;
+      width: 240px;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    &:nth-child(3n) {
+      margin-right: 0;
+
+      @media (max-width: $container-responsive--width) {
+        margin-right: 10%;
+      }
+
+      @media (max-width: 600px) {
+        margin-right: 0;
+      }
+    }
+
+    &:nth-child(2n) {
+      @media (max-width: $container-responsive--width) {
+        margin-right: 0;
+      }
+    }
+  }
+
+  &-icon {
+    #{$this}-i:hover & {
+      border-color: transparent;
+      background-color: #004eaa;
+
+      &:before {
+        opacity: 0;
+      }
+    }
+
+    &:before,
+    &:after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      background-image: url(../images/navigation.svg);
+    }
+
+    &:before {
+      z-index: 2;
+      transition: 0.3s opacity;
+    }
+
+    &_stamp-and-verify:before,
+    &_stamp-and-verify:after {
+      width: 32px;
+      height: 22px;
+      margin: -11px 0 0 -16px;
+    }
+
+    &_stamp-and-verify:before {
+      background-position: 0 -180px;
+    }
+
+    &_stamp-and-verify:after {
+      background-position: 0 -202px;
+    }
+
+    &_how-it-works:before,
+    &_how-it-works:after {
+      width: 38px;
+      height: 38px;
+      margin: -19px 0 0 -19px;
+    }
+
+    &_how-it-works:before {
+      background-position: 0 0;
+    }
+
+    &_how-it-works:after {
+      background-position: 0 -38px
+    }
+
+    &_members:before,
+    &_members:after {
+      width: 32px;
+      height: 32px;
+      margin: -16px 0 0 -16px;
+    }
+
+    &_members:before {
+      background-position: 0 -288px;
+    }
+
+    &_members:after {
+      background-position: 0 -320px;
+    }
+
+    &_repositories:before,
+    &_repositories:after {
+      width: 32px;
+      height: 26px;
+      margin: -13px 0 0 -16px;
+    }
+
+    &_repositories:before {
+      background-position: 0 -128px;
+    }
+
+    &_repositories:after {
+      background-position: 0 -154px;
+    }
+
+    &_mailing-list:before,
+    &_mailing-list:after {
+      width: 32px;
+      height: 26px;
+      margin: -13px 0 0 -16px;
+    }
+
+    &_mailing-list:before {
+      background-position: 0 -76px;
+    }
+
+    &_mailing-list:after {
+      background-position: 0 -102px;
+    }
+
+    &_use-cases:before,
+    &_use-cases:after {
+      width: 24px;
+      height: 32px;
+      margin: -16px 0 0 -12px;
+    }
+
+    &_use-cases:before {
+      background-position: 0 -224px;
+    }
+
+    &_use-cases:after {
+      background-position: 0 -256px;
+    }
+  }
+}

@@ -1,0 +1,116 @@
+.header {
+  text-align: right;
+  line-height: 80px;
+
+  @media (max-width: $container-responsive--width) {
+    text-align: left;
+  }
+
+  &-logo {
+    $logo--height: 48px;
+
+    @include image-2x('../images/logos@2x.png', 175px, 77px);
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 50%;
+    width: 175px;
+    height: $logo--height;
+    margin-top: -#{$logo--height / 2};
+    background-image: url(../images/logos.png);
+    background-position: 0 -29px;
+
+    @media (max-width: $container-responsive--width) {
+      position: relative;
+      left: auto;
+      top: auto;
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0;
+    }
+  }
+
+  &-nav {
+    $nav-i--font-size: 13px;
+
+    display: inline-block;
+    vertical-align: top;
+    font-size: 0;
+
+    @media (max-width: $container-responsive--width) {
+      transition: transform 0.4s ease 0s;
+      transform: translateX(100%);
+      position: fixed;
+      z-index: 1000;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      display: block;
+      padding: 20px 0;
+      background-color: #222;
+      text-align: left;
+    }
+
+    &.open {
+      transition: transform 0.4s ease 0s;
+      transform: translateX(0);
+    }
+
+    &-open {
+      display: none;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      width: 25px;
+      height: 18px;
+      margin-top: -9px;
+      background-image: url(../images/menu.svg);
+      background-size: 100% 100%;
+
+      @media (max-width: $container-responsive--width) {
+        display: block;
+      }
+    }
+
+    &-i {
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+      transition: 0.3s color;
+      margin-left: 20px;
+      color: #888;
+      text-transform: uppercase;
+      line-height: $nav-i--font-size;
+      font-size: $nav-i--font-size;
+
+      @media (max-width: $container-responsive--width) {
+        display: block;
+        margin: 0 0 20px 0;
+        padding: 0 20px;
+        color: #999;
+        line-height: $nav-i--font-size + 5px;
+        font-size: $nav-i--font-size + 5px;
+      }
+
+      &:hover {
+        color: #333;
+
+        &:before {
+          background-color: #004eaa;
+        }
+      }
+
+      &:before {
+        pointer-events: none;
+        content: '';
+        transition: 0.3s background-color;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: -#{ceil(($header--height - $nav-i--font-size) / 2)};
+        height: 4px;
+        background-color: transparent;
+      }
+    }
+  }
+}

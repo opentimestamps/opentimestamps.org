@@ -1,0 +1,10 @@
+.how-it-works {
+  @include blue-block;
+
+  .container {
+    padding: 80px 380px 80px 0;
+    background-image: url(../images/how-it-works.png);
+    background-repeat: no-repeat;
+    background-position: right 100px center;
+  }
+}

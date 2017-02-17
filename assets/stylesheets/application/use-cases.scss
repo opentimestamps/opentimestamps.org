@@ -1,0 +1,10 @@
+.use-cases {
+  @include blue-block;
+
+  .container {
+    padding: 80px 380px 80px 0;
+    background-image: url(../images/use-cases.png);
+    background-repeat: no-repeat;
+    background-position: right 100px center;
+  }
+}

@@ -1,0 +1,121 @@
+.stamp-and-verify {
+  padding: 80px 0;
+  background-color: #f9f9f9;
+
+  @media (max-width: $container-responsive--width) {
+    padding: 40px 0;
+  }
+
+  .container {
+    position: relative;
+    overflow: hidden;
+
+    &:before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: #dadada;
+
+      @media (max-width: $container-responsive--width) {
+        display: none;
+      }
+    }
+  }
+
+  &-block-title {
+    @extend %block-title;
+    margin-bottom: 40px;
+    text-align: left;
+
+    @media (max-width: $container-responsive--width) {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  }
+
+  &-title {
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  &-description {
+    margin-bottom: 25px;
+    color: #888;
+    font-size: 12px;
+  }
+
+  &-stamp,
+  &-verify {
+    float: left;
+    width: 50%;
+    box-sizing: border-box;
+
+    @media (max-width: $container-responsive--width) {
+      float: auto;
+      width: 100%;
+      padding: 0 !important;
+    }
+  }
+
+  &-stamp {
+    padding-right: 60px;
+
+    @media (max-width: $container-responsive--width) {
+      margin-bottom: 40px;
+    }
+  }
+
+  &-verify {
+    padding-left: 60px;
+  }
+
+  &-drop-zone {
+    cursor: pointer;
+    position: relative;
+    transition: 0.3s border-color;
+    height: 160px;
+    padding-top: 96px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 3px dashed #95b5d9;
+    background-color: #fff;
+    background-image: url(../images/upload.svg);
+    background-repeat: no-repeat;
+    background-position: center top 30px;
+    color: #004eaa;
+    line-height: 20px;
+    text-align: center;
+
+    &:hover {
+      border-color: #004eaa;
+    }
+  }
+
+  &-result {
+    padding-left: 40px;
+  }
+
+  &-button {
+    cursor: pointer;
+    outline: none;
+    margin: 30px 0 0;
+    padding: 0 20px;
+    border: 0;
+    background-color: #004eaa;
+    color: #fff;
+    line-height: 40px;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+
+    @media (max-width: $mobile--width) {
+      width: 100%;
+      font-weight: bold;
+    }
+  }
+}
