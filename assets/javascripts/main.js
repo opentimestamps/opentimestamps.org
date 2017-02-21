@@ -88,7 +88,7 @@ $('#menu-toggle').click(function (e) {
 });
       // Scrolls to the selected menu item on the page
 $(function () {
-	$('a[href*=#]:not([href=#],[data-toggle],[data-target],[data-slide])').click(function () {
+	$('a[href*=\\#]:not([href=\\#],[data-toggle],[data-target],[data-slide])').click(function () {
 		if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') || location.hostname == this.hostname) {
 			var target = $(this.hash);
 			target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
@@ -230,7 +230,7 @@ var proof_data = '';
       // Hash file generation : save the hash in the document_hash global variable
 function document_handleFileSelect(file) {
           // Read and crypt the file
-	let reader = new FileReader();
+	var reader = new FileReader();
 
 	reader.onload = function (event) {
 		try {
@@ -247,7 +247,6 @@ function document_handleFileSelect(file) {
 			danger("" + err);
 		}
 	};
-	console.log(file);
 	if(file.size>100*1024*1024) {
 		danger("File bigger than 100Mb are not supported in the browser at the moment");
 	} else {
@@ -261,12 +260,15 @@ function document_handleFileSelect(file) {
 		document_hash = String(String(hash));
 		document_filename = file.name;
 		console.log('crypto_finish ' + hash);
+		$("#document_filename").html(file.name);
+		$("#document_filesize").html(humanFileSize(file.size, true));
+		$("#document_hash").html(document_hash);
 		alert('Document hash is ' + hash);
 	}
 }
 function proof_handleFileSelect(file) {
           // Read and crypt the file
-	let reader = new FileReader();
+	var reader = new FileReader();
 	reader.onload = function (event) {
 		var data = event.target.result;
 		proof_data = String(String(data));
@@ -317,6 +319,7 @@ function bin2String(array) {
       /*
        * STATUS ALERT MESSAGES
        */
+
 function danger(text, message) {
   if(message===undefined) {
     message='<strong>FAIL!</strong> ';
