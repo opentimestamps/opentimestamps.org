@@ -74,7 +74,7 @@ function upgrade(ots, hash) {
 }
 
 $(document).ready(function () {
-	$('[data-toggle="tooltip"]').tooltip();
+//	$('[data-toggle="tooltip"]').tooltip();
 });
       // Closes the sidebar menu
 $('#menu-close').click(function (e) {
