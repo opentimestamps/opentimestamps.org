@@ -106,10 +106,10 @@
         <input id="document_input" type="file" style="display:none">
         <div class="stamp-and-verify-result result result_stamp">
           <p class="result-title">
-            <span id="document_filename">File max supported size 100MB</span>
+            <span id="document_filename">Max file size is 100MB</span>
             <span id="document_filesize"></span>
           </p>
-          <p class="result-description" id="document_hash">ECMAScript 6 browser compatibility required.</p>
+          <p class="result-description" id="document_hash">Timestamping proof download will start automatically after pressing the button</p>
         </div>
         <button type="button" class="stamp-and-verify-button" id="stampButton">Stamp</button>
       </div>
@@ -125,11 +125,12 @@
         </div>
         <input id="proof_input" type="file" style="display:none">
         <div class="stamp-and-verify-result result result_verify">
-          <p class="result-description">
-            <span id="proof_filename">In-browser verification is to be considered for testing purpose only.</span>
+          <p class="result-title">
+            <span id="proof_filename"></span>
             <span id="proof_filesize"></span>
           </p>
-          <p class="result-description">For proven security system use <a href="#">OpenTimestamps client</a></p>
+
+          <p class="result-description">In-browser verification is to be considered for testing purpose only.<br>For proven security system use <a href="#">OpenTimestamps client</a></p>
           </p>
         </div>
         <button type="button" class="stamp-and-verify-button" id="verifyButton">Verify</button>

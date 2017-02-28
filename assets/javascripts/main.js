@@ -137,7 +137,7 @@ $(document).scroll(function () {
 		$(this).removeClass('hover');
 		var f = event.originalEvent.dataTransfer.files[0];
 		document.getElementById('document_filename').innerText = f.name;
-		document.getElementById('document_filesize').innerText = humanFileSize(f.size, true);
+		document.getElementById('document_filesize').innerText = "(" +  humanFileSize(f.size, true) + ")";
 		document_handleFileSelect(f);
 		return false;
 	});
@@ -164,7 +164,7 @@ $(document).scroll(function () {
 		console.log('document_input : change');
 		var f = event.target.files[0];
 		document.getElementById('document_filename').innerText = f.name;
-		document.getElementById('document_filesize').innerText = humanFileSize(f.size, true);
+		document.getElementById('document_filesize').innerText = "(" + humanFileSize(f.size, true) + ")";
 		document_handleFileSelect(f);
 	});
 	$('#stampButton').click(function (event) {
@@ -261,9 +261,8 @@ function document_handleFileSelect(file) {
 		document_filename = file.name;
 		console.log('crypto_finish ' + hash);
 		$("#document_filename").html(file.name);
-		$("#document_filesize").html(humanFileSize(file.size, true));
-		$("#document_hash").html(document_hash);
-		alert('Document hash is ' + hash);
+		$("#document_filesize").html("(" + humanFileSize(file.size, true) + ")");
+		$("#document_hash").html("File hash: " + document_hash);
 	}
 }
 function proof_handleFileSelect(file) {
