@@ -1,10 +1,76 @@
 .how-it-works {
   @include blue-block;
+  background-size: cover;
+  background-position: center center;
 
   .container {
-    padding: 80px 380px 80px 0;
+    padding: 80px 380px 0 0;
     background-image: url(../images/how-it-works.png);
     background-repeat: no-repeat;
-    background-position: right 100px center;
+    background-position: right 100px bottom;
+  }
+
+  &-example {
+    @extend %container;
+    margin-top: 30px;
+    padding-bottom: 80px;
+    color: #fff;
+
+    @media (max-width: $container-responsive--width) {
+      padding-bottom: 40px;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      line-height: 20px;
+      font-size: 14px;
+    }
+
+    .example-tabs {
+      margin-bottom: 30px;
+      font-size: 0;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #fff;
+
+      &-i {
+        cursor: pointer;
+        position: relative;
+        transition: 0.3s color;
+        display: inline-block;
+        margin-right: 40px;
+        text-transform: uppercase;
+        color: #b3c1dc;
+        font-size: 14px;
+        font-weight: bold;
+
+        &:after {
+          content: '';
+          transition: 0.3s background-color;
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: -15px;
+          height: 4px;
+          background-color: transparent;
+        }
+
+        &.active {
+          cursor: default;
+          color: #fff;
+
+          &:after {
+            background-color: #fff;
+          }
+        }
+      }
+    }
+
+    .example-content {
+      display: none;
+
+      &.active {
+        display: block;
+      }
+    }
   }
 }

@@ -1,11 +1,9 @@
 .navigation {
-  @include round-icons-block;
+  @include round-icons-block(&);
 
   @media (max-width: $container-responsive--width) {
     padding: 15px 0;
   }
-
-  $this: &;
 
   &-i {
     width: 26.66%;
@@ -44,29 +42,11 @@
   }
 
   &-icon {
-    #{$this}-i:hover & {
-      border-color: transparent;
-      background-color: #004eaa;
-
-      &:before {
-        opacity: 0;
-      }
-    }
-
     &:before,
     &:after {
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 50%;
       background-image: url(../images/navigation.svg);
     }
-
-    &:before {
-      z-index: 2;
-      transition: 0.3s opacity;
-    }
-
+    
     &_stamp-and-verify:before,
     &_stamp-and-verify:after {
       width: 32px;

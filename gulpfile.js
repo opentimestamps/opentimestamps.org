@@ -16,7 +16,7 @@ gulp.task('sass', function() {
     .pipe(sassGlob())
     .pipe(sass().on('error', sass.logError))
     .pipe(autoprefixer())
-    //.pipe(uglifycss())
+    .pipe(uglifycss())
     .pipe(gulp.dest('assets/stylesheets/'));
 });
 

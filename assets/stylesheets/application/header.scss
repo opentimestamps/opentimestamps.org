@@ -93,10 +93,12 @@
       }
 
       &:hover {
-        color: #333;
+        @media (min-width: $container-responsive--width) {
+          color: #333;
 
-        &:before {
-          background-color: #004eaa;
+          &:before {
+            background-color: #004eaa;
+          }
         }
       }
 

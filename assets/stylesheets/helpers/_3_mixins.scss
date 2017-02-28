@@ -9,7 +9,7 @@
   }
 }
 
-@mixin round-icons-block {
+@mixin round-icons-block($context) {
   & {
     padding: 55px 0;
     font-size: 0;
@@ -35,6 +35,28 @@
     border: 2px solid fade-out(#004eaa, 0.6);
     border-radius: 50%;
     background-color: #fff;
+
+    #{$context}-i:hover & {
+      border-color: transparent;
+      background-color: #004eaa;
+
+      &:before {
+        opacity: 0;
+      }
+    }
+
+    &:before,
+    &:after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+    }
+
+    &:before {
+      z-index: 2;
+      transition: 0.3s opacity;
+    }
   }
 
   &-title {
@@ -65,7 +87,6 @@
       padding: 40px 0 !important;
       background-image: none !important;
     }
-
   }
 
   & {
