@@ -1,0 +1,64 @@
+.statuses {
+  position: relative;
+  margin-top: 20px;
+  border-width: 1px;
+  border-style: solid;
+  padding: 15px 15px 15px 50px;
+
+  &:before {
+    @include image-2x('../images/statuses@2x.png', 24px, 72px);
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 17px;
+    background-image: url(../images/statuses.png);
+  }
+
+  &_stamping,
+  &_hashing,
+  &_success {
+    border-color: #004eaa;
+    background-color: #f2f6fb;
+    color: #004eaa;
+  }
+
+  &_stamping,
+  &_hashing {
+    &:before {
+      width: 18px;
+      height: 24px;
+      background-position: 0 -24px;
+    }
+  }
+
+  &_success {
+    &:before {
+      width: 24px;
+    	height: 24px;
+    	background-position: 0 -48px;
+    }
+  }
+
+  &_failure {
+    border-color: #d1071a;
+    background-color: #f8f1f2;
+    color: #d1071a;
+
+    &:before {
+      width: 24px;
+    	height: 24px;
+    	background-position: 0 0;
+    }
+  }
+
+  &-title {
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  &-description {
+    font-size: 12px;
+  }
+}

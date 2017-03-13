@@ -91,9 +91,9 @@
   </section>
 
   <!-- STAMP AND VERIFY -->
-  <section class="stamp-and-verify" id="stamp-and-verify">
+  <section class="stamp-and-verify">
     <div class="container">
-      <div class="stamp-and-verify-stamp">
+      <div class="stamp-and-verify-stamp" id="stamp">
         <p class="stamp-and-verify-block-title">Stamp</p>
         <p class="stamp-and-verify-title">Data to timestamp</p>
         <p class="stamp-and-verify-description">
@@ -111,9 +111,31 @@
           </p>
           <p class="result-description" id="document_hash">Timestamping proof download will start automatically after pressing the button</p>
         </div>
+
+        <div class="statuses-container">
+          <div class="statuses statuses_hashing">
+            <p class="statuses-title">52%</p>
+            <p class="statuses-description">
+              Hashing
+            </p>
+          </div>
+          <div class="statuses statuses_success">
+            <p class="statuses-title">Success!</p>
+            <p class="statuses-description">
+              OpenTimestamps receipt created and download started
+            </p>
+          </div>
+          <div class="statuses statuses_failure">
+            <p class="statuses-title">Failure!</p>
+            <p class="statuses-description">
+              To stamp you need to drop a file in the Data field
+            </p>
+          </div>
+        </div>
+
         <button type="button" class="stamp-and-verify-button" id="stampButton">Stamp</button>
       </div>
-      <div class="stamp-and-verify-verify">
+      <div class="stamp-and-verify-verify" id="verify">
         <p class="stamp-and-verify-block-title">Verify</p>
         <p class="stamp-and-verify-title">Timestamped data</p>
         <p class="stamp-and-verify-description">
@@ -133,6 +155,28 @@
           <p class="result-description">In-browser verification is to be considered for testing purpose only.<br>For proven security system use <a href="#">OpenTimestamps client</a></p>
           </p>
         </div>
+
+        <div class="statuses-container">
+          <div class="statuses statuses_hashing">
+            <p class="statuses-title">52%</p>
+            <p class="statuses-description">
+              Hashing
+            </p>
+          </div>
+          <div class="statuses statuses_success">
+            <p class="statuses-title">Success!</p>
+            <p class="statuses-description">
+              OpenTimestamps receipt created and download started
+            </p>
+          </div>
+          <div class="statuses statuses_failure">
+            <p class="statuses-title">Failure!</p>
+            <p class="statuses-description">
+              To stamp you need to drop a file in the Data field
+            </p>
+          </div>
+        </div>
+
         <button type="button" class="stamp-and-verify-button" id="verifyButton">Verify</button>
       </div>
     </div>

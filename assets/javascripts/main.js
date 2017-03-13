@@ -9,7 +9,7 @@ hexToBytes = function (hex) {
 };
 
 function stamp(filename, hash) {
-	loading();
+	loadingStamp('0%','Hashing');
     // Check parameters
 
 	const hashdata = new Uint8Array(hexToBytes(hash));
@@ -22,12 +22,12 @@ function stamp(filename, hash) {
 		download(filename, timestampBytes);
 	}).catch(err => {
 		console.log("err "+err);
-		danger("" + err);
+		failureStamp("" + err);
 	});
 }
 
 function verify(ots, hash) {
-	loading();
+	loadingStamp('0%','Verify');
     // Check parameters
 	const bytesOts = ots;
 	const bytesHash = new Uint8Array(hexToBytes(hash));
@@ -35,14 +35,14 @@ function verify(ots, hash) {
 	const verifyPromise = OpenTimestamps.verify(bytesOts, bytesHash, true);
 	verifyPromise.then(result => {
 		if (result === undefined) {
-			alert('Pending or Bad attestation');
+			failureVerify('Pending or Bad attestation');
 			upgrade(ots, hash);
 		} else {
-			success('Success! Bitcoin attests data existed as of ' + (new Date(result * 1000)));
+			successVerify('Success! Bitcoin attests data existed as of ' + (new Date(result * 1000)));
 		}
 	}
 ).catch(err => {
-	danger('Verify error');
+	failureVerify('Verify error');
 })
 ;
 }
@@ -62,18 +62,19 @@ function upgrade(ots, hash) {
 	const upgradePromise = OpenTimestamps.upgrade(bytesOts);
 	upgradePromise.then(timestampBytes => {
 		if (timestampBytes === undefined) {
-			danger('Upgrade error');
+			failureVerify('Upgrade error');
 		} else {
-			success('Timestamp has been successfully upgraded!');
+			successVerify('Timestamp has been successfully upgraded!');
 			download(proof_filename, timestampBytes);
 			verify(timestampBytes, hash);
 		}
 	}).catch(err => {
-	success('Upgrade error');
+		failureStamp('Upgrade error');
 	});
 }
 
 $(document).ready(function () {
+	hideMessages();
 //	$('[data-toggle="tooltip"]').tooltip();
 });
       // Closes the sidebar menu
@@ -171,8 +172,8 @@ $(document).scroll(function () {
 		if (document_filename != '' && document_hash != '') {
 			stamp(document_filename, document_hash);
 		} else {
-      danger("To <strong>stamp</strong> you need to drop a file in the Data field","")
-    }
+			failureStamp("To <strong>stamp</strong> you need to drop a file in the Data field","")
+    	}
 	});
           /* Proof section */
 	$('#proof_holder').on('drop', function (event) {
@@ -213,7 +214,7 @@ $(document).scroll(function () {
 		if (proof_data != '' && document_hash != '') {
 			verify(proof_data, document_hash);
 		} else {
-      danger("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field","")
+			failureStamp("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field","")
     }
 	});
 })();
@@ -244,17 +245,17 @@ function document_handleFileSelect(file) {
 			}, 200);
 
 		} catch(err) {
-			danger("" + err);
+			failureStamp("" + err);
 		}
 	};
 	if(file.size>100*1024*1024) {
-		danger("File bigger than 100Mb are not supported in the browser at the moment");
+		failureStamp("File bigger than 100Mb are not supported in the browser at the moment");
 	} else {
 		reader.readAsBinaryString(file);
 	}
 
 	function crypto_callback(p) {
-		alert('Hashing ' + (p * 100).toFixed(0) + '% completed');
+		loadingStamp((p * 100).toFixed(0)+'%','Hashing');
 	}
 	function crypto_finish(hash) {
 		document_hash = String(String(hash));
@@ -302,7 +303,7 @@ function download(filename, text) {
 	element.href = window.URL.createObjectURL(new Blob([text], {type: 'octet/stream'}));
 	element.download = document_filename + '.ots';
 	document.getElementById('status').appendChild(element);
-	success('OpenTimestamps receipt created and download started');
+	successStamp('OpenTimestamps receipt created and download started');
 	element.click();
 }
 function string2Bin(str) {
@@ -319,34 +320,50 @@ function bin2String(array) {
        * STATUS ALERT MESSAGES
        */
 
-function danger(text, message) {
-  if(message===undefined) {
-    message='<strong>FAIL!</strong> ';
-  }
-	$('#loading').hide();
+
+function loadingStamp(title, text){
 	hideMessages();
-	$('#dangerMessage').show();
-	$('#dangerMessage').html(message + text);
+	$('#stamp .statuses_hashing .statuses-title').html(title);
+	$('#stamp .statuses_hashing .statuses-description').html(text);
+	$('#stamp .statuses_hashing').show();
 }
-function alert(text) {
-	$('#loading').hide();
+function successStamp(text){
 	hideMessages();
-	$('#alertMessage').show();
-	$('#alertMessage').html(text);
+	$('#stamp .statuses_success .statuses-title').html("SUCCESS!");
+	$('#stamp .statuses_success .statuses-description').html(text);
+	$('#stamp .statuses_success').show();
 }
-function success(text) {
-	$('#loading').hide();
+function failureStamp(text){
 	hideMessages();
-	$('#successMessage').show();
-	$('#successMessage').html('<strong>SUCCESS!</strong> ' + text);
+	$('#stamp .statuses_failure .statuses-title').html("FAILURE!");
+	$('#stamp .statuses_failure .statuses-description').html(text);
+	$('#stamp .statuses_failure').show();
 }
-function loading() {
+
+function loadingVerify(title, text){
 	hideMessages();
-	$('#loading').show();
+	$('#verify .statuses_hashing .statuses-title').html(title);
+	$('#verify .statuses_hashing .statuses-description').html(text);
+	$('#verify .statuses_hashing').show();
 }
+function successVerify(text){
+	hideMessages();
+	$('#verify .statuses_success .statuses-title').html("SUCCESS!");
+	$('#verify .statuses_success .statuses-description').html(text);
+	$('#verify .statuses_success').show();
+}
+function failureVerify(text){
+	hideMessages();
+	$('#verify .statuses_failure .statuses-title').html("FAILURE!");
+	$('#verify .statuses_failure .statuses-description').html(text);
+	$('#verify .statuses_failure').show();
+}
+
 function hideMessages() {
-	$('#status').hide();
-	$('#successMessage').hide();
-	$('#alertMessage').hide();
-	$('#dangerMessage').hide();
+	$('#stamp .statuses_hashing').hide();
+	$('#stamp .statuses_failure').hide();
+	$('#stamp .statuses_success').hide();
+	$('#verify .statuses_hashing').hide();
+	$('#verify .statuses_failure').hide();
+	$('#verify .statuses_success').hide();
 }
