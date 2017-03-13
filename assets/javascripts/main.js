@@ -27,7 +27,7 @@ function stamp(filename, hash) {
 }
 
 function verify(ots, hash) {
-	loadingStamp('0%','Verify');
+	loadingVerify('0%','Verify');
     // Check parameters
 	const bytesOts = ots;
 	const bytesHash = new Uint8Array(hexToBytes(hash));
@@ -258,6 +258,7 @@ function document_handleFileSelect(file) {
 		loadingStamp((p * 100).toFixed(0)+'%','Hashing');
 	}
 	function crypto_finish(hash) {
+		hideMessages();
 		document_hash = String(String(hash));
 		document_filename = file.name;
 		console.log('crypto_finish ' + hash);
@@ -268,6 +269,7 @@ function document_handleFileSelect(file) {
 }
 function proof_handleFileSelect(file) {
           // Read and crypt the file
+
 	var reader = new FileReader();
 	reader.onload = function (event) {
 		var data = event.target.result;
