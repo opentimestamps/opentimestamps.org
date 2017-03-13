@@ -38,7 +38,7 @@ function verify(ots, hash) {
 			failureVerify('Pending or Bad attestation');
 			upgrade(ots, hash);
 		} else {
-			successVerify('Success! Bitcoin attests data existed as of ' + (new Date(result * 1000)));
+			successVerify('Bitcoin attests data existed as of ' + (new Date(result * 1000)));
 		}
 	}
 ).catch(err => {
