@@ -49,7 +49,7 @@
 
     &:before,
     &:after {
-      @include image-2x('../images/repositories@2x.png', 36px, 262px);
+      @include image-2x('../images/repositories@2x.png', 36px, 326px);
       width: 32px;
       height: 32px;
       margin: -16px 0 0 -16px;
@@ -58,11 +58,11 @@
 
     &_server {
       &:before {
-        background-position: 0 0;
+        background-position: 0 -230px;
       }
 
       &:after {
-        background-position: 0 -131px;
+        background-position: 0 -198px;
       }
     }
 
@@ -72,17 +72,17 @@
       }
 
       &:after {
-        background-position: 0 -163px;
+        background-position: 0 0;
       }
     }
 
     &_javascript {
       &:before {
-        background-position: 0 -64px;
+        background-position: 0 -96px;
       }
 
       &:after {
-        background-position: 0 -195px;
+        background-position: 0 -64px;
       }
     }
 
@@ -95,11 +95,27 @@
       }
 
       &:before {
-        background-position: 0 -96px;
+        background-position: 0 -163px;
       }
 
       &:after {
-        background-position: 0 -227px;
+        background-position: 0 -128px;
+      }
+    }
+
+    &_java {
+      &:before,
+      &:after {
+        width: 25px;
+        margin-left: -12.5px;
+      }
+
+      &:before {
+        background-position: 0 -294px;
+      }
+
+      &:after {
+        background-position: 0 -262px;
       }
     }
   }
