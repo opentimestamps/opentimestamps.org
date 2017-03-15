@@ -10,6 +10,7 @@ const addsrc = require('gulp-add-src');
 const order = require('gulp-order');
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
+const minify = require('gulp-minify');
 
 gulp.task('sass', function() {
   return gulp.src(['assets/stylesheets/application.scss', 'assets/stylesheets/certificate.scss'])
@@ -18,6 +19,19 @@ gulp.task('sass', function() {
     .pipe(autoprefixer())
     .pipe(uglifycss())
     .pipe(gulp.dest('assets/stylesheets/'));
+});
+
+gulp.task('compress', function() {
+  gulp.src('assets/javascripts/bundle.js')
+    .pipe(minify({
+        ext:{
+            src:'.js',
+            min:'-min.js'
+        },
+        exclude: ['tasks'],
+        ignoreFiles: ['-min.js']
+    }))
+    .pipe(gulp.dest('assets/javascripts'))
 });
 
 gulp.task('javascript', function() {
