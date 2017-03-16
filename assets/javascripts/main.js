@@ -172,7 +172,7 @@ $(document).scroll(function () {
 		if (document_filename != '' && document_hash != '') {
 			stamp(document_filename, document_hash);
 		} else {
-			failureStamp("To <strong>stamp</strong> you need to drop a file in the Data field","")
+			failureStamp("To <strong>stamp</strong> you need to drop a file in the Data field")
     	}
 	});
           /* Proof section */
@@ -214,7 +214,7 @@ $(document).scroll(function () {
 		if (proof_data != '' && document_hash != '') {
 			verify(proof_data, document_hash);
 		} else {
-			failureStamp("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field","")
+			failureVerify("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
     }
 	});
 })();
