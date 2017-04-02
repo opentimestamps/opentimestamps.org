@@ -1,6 +1,9 @@
 .idea/
 bower_components/
 sync.sh
+sync-draft.sh
 .DS_store
 _site/
 node_modules/
+assets/javascripts/bundle.js
+
