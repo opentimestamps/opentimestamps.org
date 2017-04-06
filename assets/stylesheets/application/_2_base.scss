@@ -35,3 +35,12 @@ strong {
 .title {
   font-size: 24px;
 }
+
+pre {
+  word-break: break-all; /* webkit */
+  word-wrap: break-word;
+  white-space: pre;
+  white-space: -moz-pre-wrap; /* fennec */
+  white-space: pre-wrap;
+  white-space: pre\9; /* IE7+ */
+}
