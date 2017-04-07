@@ -1,5 +1,5 @@
 .members {
-  padding: 80px 0;
+  padding: 80px 0 30px;
   font-size: 0;
 
   @media (max-width: $container-responsive--width) {
@@ -25,6 +25,7 @@
     vertical-align: top;
     width: 33.33%;
     height: 130px;
+    margin-bottom: 50px;
     box-sizing: border-box;
     padding: 0 10px;
     line-height: 130px;
