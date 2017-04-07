@@ -6,8 +6,8 @@
   }
 
   &-i {
-    width: 26.66%;
-    margin-right: 10%;
+    width: 27.66%;
+    margin-right: 8.5%;
     margin-top: 25px;
     margin-bottom: 25px;
 
@@ -26,7 +26,7 @@
       margin-right: 0;
 
       @media (max-width: $container-responsive--width) {
-        margin-right: 10%;
+        margin-right: 8.5%;
       }
 
       @media (max-width: 600px) {
@@ -46,7 +46,7 @@
     &:after {
       background-image: url(../images/navigation.svg);
     }
-    
+
     &_stamp-and-verify:before,
     &_stamp-and-verify:after {
       width: 32px;
