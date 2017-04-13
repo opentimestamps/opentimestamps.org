@@ -1,46 +1,46 @@
 const OpenTimestamps = require('javascript-opentimestamps');
 
 hexToBytes = function (hex) {
-  const bytes = [];
-  for (let c = 0; c < hex.length; c += 2) {
-    bytes.push(parseInt(hex.substr(c, 2), 16));
-  }
-  return bytes;
+	const bytes = [];
+	for (let c = 0; c < hex.length; c += 2) {
+		bytes.push(parseInt(hex.substr(c, 2), 16));
+	}
+	return bytes;
 };
 
 function stamp(filename, hash) {
 	loadingStamp('0%','Hashing');
-    // Check parameters
+	// Check parameters
 
 	const hashdata = new Uint8Array(hexToBytes(hash));
 
-    // OpenTimestamps command
+	// OpenTimestamps command
 	const timestampBytesPromise = OpenTimestamps.stamp(hashdata,true);
 	timestampBytesPromise.then(timestampBytes => {
 		console.log('STAMP result : ');
-		console.log(timestampBytes);
-		download(filename, timestampBytes);
-	}).catch(err => {
-		console.log("err "+err);
-		failureStamp("" + err);
-	});
+	console.log(timestampBytes);
+	download(filename, timestampBytes);
+}).catch(err => {
+	console.log("err "+err);
+failureStamp("" + err);
+});
 }
 
 function verify(ots, hash) {
 	loadingVerify('0%','Verify');
-    // Check parameters
+	// Check parameters
 	const bytesOts = ots;
 	const bytesHash = new Uint8Array(hexToBytes(hash));
 	// OpenTimestamps command
 	const verifyPromise = OpenTimestamps.verify(bytesOts, bytesHash, true);
 	verifyPromise.then(result => {
 		if (result === undefined) {
-			failureVerify('Pending or Bad attestation');
-			upgrade(ots, hash);
-		} else {
-			successVerify('Bitcoin attests data existed as of ' + (new Date(result * 1000)));
-		}
+		failureVerify('Pending or Bad attestation');
+		upgrade(ots, hash);
+	} else {
+		successVerify('Bitcoin attests data existed as of ' + (new Date(result * 1000)));
 	}
+}
 ).catch(err => {
 	failureVerify('Verify error');
 })
@@ -49,7 +49,7 @@ function verify(ots, hash) {
 
 let upgrade_first = true;
 function upgrade(ots, hash) {
-    // Check not loop race condition
+	// Check not loop race condition
 	if (upgrade_first == false) {
 		return;
 	}
@@ -62,32 +62,32 @@ function upgrade(ots, hash) {
 	const upgradePromise = OpenTimestamps.upgrade(bytesOts);
 	upgradePromise.then(timestampBytes => {
 		if (timestampBytes === undefined) {
-			failureVerify('Upgrade error');
-		} else {
-			successVerify('Timestamp has been successfully upgraded!');
-			download(proof_filename, timestampBytes);
-			verify(timestampBytes, hash);
-		}
-	}).catch(err => {
-		failureStamp('Upgrade error');
-	});
+		failureVerify('Upgrade error');
+	} else {
+		successVerify('Timestamp has been successfully upgraded!');
+		download(window.proof_filename, timestampBytes);
+		verify(timestampBytes, hash);
+	}
+}).catch(err => {
+	failureStamp('Upgrade error');
+});
 }
 
 $(document).ready(function () {
 	hideMessages();
 //	$('[data-toggle="tooltip"]').tooltip();
 });
-      // Closes the sidebar menu
+// Closes the sidebar menu
 $('#menu-close').click(function (e) {
 	e.preventDefault();
 	$('#sidebar-wrapper').toggleClass('active');
 });
-      // Opens the sidebar menu
+// Opens the sidebar menu
 $('#menu-toggle').click(function (e) {
 	e.preventDefault();
 	$('#sidebar-wrapper').toggleClass('active');
 });
-      // Scrolls to the selected menu item on the page
+// Scrolls to the selected menu item on the page
 $(function () {
 	$('a[href*=\\#]:not([href=\\#],[data-toggle],[data-target],[data-slide])').click(function () {
 		if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') || location.hostname == this.hostname) {
@@ -102,13 +102,13 @@ $(function () {
 		}
 	});
 });
-      // #to-top button appears after scrolling
+// #to-top button appears after scrolling
 var fixed = false;
 $(document).scroll(function () {
 	if ($(this).scrollTop() > 250) {
 		if (!fixed) {
 			fixed = true;
-                  // $('#to-top').css({position:'fixed', display:'block'});
+			// $('#to-top').css({position:'fixed', display:'block'});
 			$('#to-top').show('slow', function () {
 				$('#to-top').css({
 					position: 'fixed',
@@ -126,12 +126,12 @@ $(document).scroll(function () {
 	}
 });
 (function () {
-          // your page initialization code here
-          // the DOM will be available here
-          /*
-           *Document section
-           events handle to easy file uploading : drop, drag-over, drag-leave, click, file change
-           */
+	// your page initialization code here
+	// the DOM will be available here
+	/*
+	 *Document section
+	 events handle to easy file uploading : drop, drag-over, drag-leave, click, file change
+	 */
 	$('#document_holder').on('drop', function (event) {
 		event.preventDefault();
 		event.stopPropagation();
@@ -169,13 +169,13 @@ $(document).scroll(function () {
 		document_handleFileSelect(f);
 	});
 	$('#stampButton').click(function (event) {
-		if (document_filename != '' && document_hash != '') {
-			stamp(document_filename, document_hash);
+		if (window.document_hash != '') {
+			stamp(window.document_filename, window.document_hash);
 		} else {
 			failureStamp("To <strong>stamp</strong> you need to drop a file in the Data field")
-    	}
+		}
 	});
-          /* Proof section */
+	/* Proof section */
 	$('#proof_holder').on('drop', function (event) {
 		event.preventDefault();
 		event.stopPropagation();
@@ -211,35 +211,50 @@ $(document).scroll(function () {
 		proof_handleFileSelect(f);
 	});
 	$('#verifyButton').click(function (event) {
-		if (proof_data != '' && document_hash != '') {
-			verify(proof_data, document_hash);
+		if (window.proof_data != '' && window.document_hash != '') {
+			verify(window.proof_data, window.document_hash);
 		} else {
 			failureVerify("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
-    }
+		}
 	});
+
+
+	// Handle digest parameters
+	const digest = getParameterByName('digest');
+	if(digest) {
+		window.document_data = "";
+		window.document_hash = String(String(digest));
+		window.document_filename = "";
+		showHash();
+	}
+
 })();
-      /*
-       * HANDLE UPLOADED FILE
-      */
-var document_hash = '';
-var document_data = '';
-var document_filename = '';
-var stamped_filename = '';
-var stamped_data = '';
-var proof_filename = '';
-var proof_data = '';
-      // Hash file generation : save the hash in the document_hash global variable
+
+/*
+ * GLOBAL VARIABLES : define in window scope
+ var document_hash = '';
+ var document_data = '';
+ var document_filename = '';
+ var stamped_filename = '';
+ var stamped_data = '';
+ var proof_filename = '';
+ var proof_data = '';
+ */
+
+/*
+ * Hash file generation : save the hash in the document_hash global variable
+ */
 function document_handleFileSelect(file) {
-          // Read and crypt the file
+	// Read and crypt the file
 	var reader = new FileReader();
 
 	reader.onload = function (event) {
 		try {
 			var data = event.target.result;
-			document_data = String(String(data));
-			document_filename = file.name;
-			stamped_data = String(String(data));
-			stamped_filename = file.name;
+			window.document_data = String(String(data));
+			window.document_filename = file.name;
+			window.stamped_data = String(String(data));
+			window.stamped_filename = file.name;
 			setTimeout(function () {
 				CryptoJS.SHA256(data, crypto_callback, crypto_finish);
 			}, 200);
@@ -258,39 +273,63 @@ function document_handleFileSelect(file) {
 		loadingStamp((p * 100).toFixed(0)+'%','Hashing');
 	}
 	function crypto_finish(hash) {
-		hideMessages();
-		document_hash = String(String(hash));
-		document_filename = file.name;
 		console.log('crypto_finish ' + hash);
-		$("#document_filename").html(file.name);
-		$("#document_filesize").html("(" + humanFileSize(file.size, true) + ")");
-		$("#document_hash").html("File hash: " + document_hash);
+		window.document_hash = String(String(hash));
+		showHash();
 	}
 }
+
+function showHash(){
+	hideMessages();
+	if(window.document_filename="") {
+		$("#document_filename").html(window.document_filename);
+		$("#document_filesize").html("(" + humanFileSize(filesize, true) + ")");
+		$("#document_hash").html("File hash: " + window.document_hash);
+	} else {
+		$("#document_filename").html(window.document_filename);
+		$("#document_filesize").html("( Unknown size )");
+		$("#document_hash").html("From hash: " + window.document_hash);
+	}
+}
+
+
+function getParameterByName(name, url) {
+	if (!url) {
+		url = window.location.href;
+	}
+	name = name.replace(/[\[\]]/g, "\\$&");
+	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		results = regex.exec(url);
+	if (!results) return null;
+	if (!results[2]) return '';
+	return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
 function proof_handleFileSelect(file) {
-          // Read and crypt the file
+	// Read and crypt the file
 
 	var reader = new FileReader();
 	reader.onload = function (event) {
 		var data = event.target.result;
-		proof_data = String(String(data));
-		proof_filename = file.name;
-		console.log('proof: ' + proof_data);
+		window.proof_data = String(String(data));
+		window.proof_filename = file.name;
+		console.log('proof: ' + window.proof_data);
 	};
 	reader.readAsBinaryString(file);
 }
-      /*
-       * COMMON FUNCTIONS
-       */
-      // Human file size
+
+/*
+ * COMMON FUNCTIONS
+ */
+// Human file size
 function humanFileSize(bytes, si) {
 	var thresh = si ? 1000 : 1024;
 	if (Math.abs(bytes) < thresh) {
 		return bytes + ' B';
 	}
 	var units = si
-                  ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-                  : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+		? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+		: ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
 	var u = -1;
 	do {
 		bytes /= thresh;
@@ -298,12 +337,12 @@ function humanFileSize(bytes, si) {
 	} while (Math.abs(bytes) >= thresh && u < units.length - 1);
 	return bytes.toFixed(1) + ' ' + units[u];
 }
-      // Download file
+// Download file
 function download(filename, text) {
 	var element = document.createElement('a');
 	element.setAttribute('target', '_blank');
 	element.href = window.URL.createObjectURL(new Blob([text], {type: 'octet/stream'}));
-	element.download = document_filename + '.ots';
+	element.download = filename + '.ots';
 	document.getElementById('status').appendChild(element);
 	successStamp('OpenTimestamps receipt created and download started');
 	element.click();
@@ -318,9 +357,9 @@ function string2Bin(str) {
 function bin2String(array) {
 	return String.fromCharCode.apply(String, array);
 }
-      /*
-       * STATUS ALERT MESSAGES
-       */
+/*
+ * STATUS ALERT MESSAGES
+ */
 
 
 function loadingStamp(title, text){
