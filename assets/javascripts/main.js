@@ -19,6 +19,8 @@ function stamp(filename, hash) {
 		console.log('STAMP result : ');
 		console.log(timestampBytes);
 		download(filename, timestampBytes);
+		Document.progressStop();
+		successStamp('OpenTimestamps receipt created and download started');
 	}).catch(err => {
 		console.log("err "+err);
 		failureStamp("" + err);
@@ -412,7 +414,6 @@ function download(filename, text) {
 	element.href = window.URL.createObjectURL(new Blob([text], {type: 'octet/stream'}));
 	element.download = filename + '.ots';
 	document.getElementById('status').appendChild(element);
-	successStamp('OpenTimestamps receipt created and download started');
 	element.click();
 }
 function string2Bin(str) {
@@ -454,7 +455,6 @@ function getParameterByName(name, url) {
 
 
 function loadingStamp(title, text){
-	hideMessages();
 	$('#stamp .statuses_hashing .statuses-title').html(title);
 	$('#stamp .statuses_hashing .statuses-description').html(text);
 	$('#stamp .statuses_hashing').show();
@@ -473,7 +473,6 @@ function failureStamp(text){
 }
 
 function loadingVerify(title, text){
-	hideMessages();
 	$('#verify .statuses_hashing .statuses-title').html(title);
 	$('#verify .statuses_hashing .statuses-description').html(text);
 	$('#verify .statuses_hashing').show();
