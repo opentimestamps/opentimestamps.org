@@ -2,32 +2,31 @@ const OpenTimestamps = require('javascript-opentimestamps');
 
 hexToBytes = function (hex) {
 	const bytes = [];
-	for (let c = 0; c < hex.length; c += 2) {
+	for (var c = 0; c < hex.length; c += 2) {
 		bytes.push(parseInt(hex.substr(c, 2), 16));
 	}
 	return bytes;
 };
 
 function stamp(filename, hash) {
-	loadingStamp('0%','Hashing');
+	Document.progressStart();
 	// Check parameters
-
 	const hashdata = new Uint8Array(hexToBytes(hash));
 
 	// OpenTimestamps command
 	const timestampBytesPromise = OpenTimestamps.stamp(hashdata,true);
 	timestampBytesPromise.then(timestampBytes => {
 		console.log('STAMP result : ');
-	console.log(timestampBytes);
-	download(filename, timestampBytes);
-}).catch(err => {
-	console.log("err "+err);
-failureStamp("" + err);
-});
+		console.log(timestampBytes);
+		download(filename, timestampBytes);
+	}).catch(err => {
+		console.log("err "+err);
+		failureStamp("" + err);
+		Document.progressStop();
+	});
 }
 
-function verify(ots, hash) {
-	loadingVerify('0%','Verify');
+function verify(ots, hash, filename) {
 	// Check parameters
 	const bytesOts = ots;
 	const bytesHash = new Uint8Array(hexToBytes(hash));
@@ -36,19 +35,21 @@ function verify(ots, hash) {
 	verifyPromise.then(result => {
 		if (result === undefined) {
 		failureVerify('Pending or Bad attestation');
-		upgrade(ots, hash);
+		upgrade(ots, hash, filename);
 	} else {
 		successVerify('Bitcoin attests data existed as of ' + (new Date(result * 1000)));
+		Proof.progressStop();
 	}
 }
 ).catch(err => {
 	failureVerify('Verify error');
+	Proof.progressStop();
 })
 ;
 }
 
 let upgrade_first = true;
-function upgrade(ots, hash) {
+function upgrade(ots, hash, filename) {
 	// Check not loop race condition
 	if (upgrade_first == false) {
 		return;
@@ -56,20 +57,22 @@ function upgrade(ots, hash) {
 	upgrade_first = false;
 
 	// Check parameters
-	const bytesOts = ots
+	const bytesOts = ots;
 
 	// OpenTimestamps command
 	const upgradePromise = OpenTimestamps.upgrade(bytesOts);
 	upgradePromise.then(timestampBytes => {
 		if (timestampBytes === undefined) {
 		failureVerify('Upgrade error');
+		Proof.progressStop();
 	} else {
 		successVerify('Timestamp has been successfully upgraded!');
-		download(window.proof_filename, timestampBytes);
-		verify(timestampBytes, hash);
+		download(filename, timestampBytes);
+		verify(timestampBytes, hash, filename);
 	}
 }).catch(err => {
 	failureStamp('Upgrade error');
+	Proof.progressStop();
 });
 }
 
@@ -125,6 +128,151 @@ $(document).scroll(function () {
 		});
 	}
 });
+
+
+
+/*
+ * GLOBAL DOCUMENT OBJ
+ */
+
+var Document = {
+	setHash : function(hash){
+		this.filename = undefined;
+		this.filesize = undefined;
+		this.hash = hash;
+
+	},
+	setFile : function(file){
+		this.hash = undefined;
+		this.filename = file.name;
+		this.filesize = file.size;
+	},
+	upload : function (file) {
+		var self = this;
+		// Read and crypt the file
+		var reader = new FileReader();
+		reader.onload = function (event) {
+			try {
+				var data = event.target.result;
+				setTimeout(function () {
+					CryptoJS.SHA256(data, crypto_callback, crypto_finish);
+				}, 200);
+
+			} catch (err) {
+				failureStamp("" + err);
+			}
+		};
+		if (file.size > 100 * 1024 * 1024) {
+			failureStamp("File bigger than 100Mb are not supported in the browser at the moment");
+		} else {
+			reader.readAsBinaryString(file);
+		}
+		function crypto_callback(p) {
+			loadingStamp((p * 100).toFixed(0) + '%', 'Hashing');
+		}
+		function crypto_finish(hash) {
+			console.log('crypto_finish ' + hash);
+			self.hash = String(String(hash));
+			self.show();
+		}
+	},
+	show : function(){
+		hideMessages();
+		if(this.filename) {
+			$("#document_filename").html(this.filename);
+		} else {
+			$("#document_filename").html("Unknown name");
+		}
+		if(this.filesize) {
+			$("#document_filesize").html(" " + humanFileSize(this.filesize, true));
+		} else {
+			$("#document_filesize").html("");
+		}
+		if(this.hash) {
+			$("#document_hash").html("From hash: " + this.hash);
+		} else {
+			$("#document_hash").html("");
+		}
+	},
+	progressStart : function(){
+		this.percent = 0;
+		var self = this;
+		this.interval = setInterval(() => {
+			self.percent += parseInt(self.percent/3) + 1;
+		if (self.percent > 100) {
+			self.percent = 100;
+		}
+		loadingStamp(self.percent + ' %', 'Stamping')
+		}, 100);
+	},
+	progressStop : function(){
+		clearInterval(this.interval);
+	}
+};
+
+
+/*
+ * GLOBAL PROOF OBJ
+ */
+var Proof = {
+	setFile : function(file){
+		this.data = undefined;
+		this.filename = file.name;
+		this.filesize = file.size;
+	},
+	setArray : function(buffer){
+		this.data = buffer;
+		this.filename = undefined;
+		this.filesize = undefined;
+	},
+	upload: function (file) {
+		// Read and crypt the file
+		var self = this;
+		var reader = new FileReader();
+		reader.onload = function (event) {
+			var data = event.target.result;
+			self.data = String(String(data));
+			self.filename = file.name;
+			self.filesize = file.size;
+			console.log('proof: ' + self.data);
+			self.show();
+		};
+		reader.readAsBinaryString(file);
+	},
+	show: function() {
+		hideMessages();
+		if (this.filename) {
+			$("#proof_filename").html(this.filename);
+		} else {
+			$("#proof_filename").html("Unknown name");
+		}
+		if (this.filesize) {
+			$("#proof_filesize").html(" " + humanFileSize(this.filesize, true));
+		} else {
+			$("#proof_filesize").html(" " + humanFileSize(this.data.length, true));
+		}
+	},
+	progressStart : function(){
+		this.percent = 0;
+
+		var self = this;
+		this.interval = setInterval(() => {
+				self.percent += parseInt(self.percent/3) + 1;
+				if (self.percent > 100) {
+					self.percent = 100;
+				}
+				loadingVerify(self.percent + ' %', 'Verify')
+			}, 100);
+	},
+	progressStop : function(){
+		clearInterval(this.interval);
+	}
+};
+
+/*
+* STARTUP FUNCTION
+*/
+
 (function () {
 	// your page initialization code here
 	// the DOM will be available here
@@ -132,14 +280,15 @@ $(document).scroll(function () {
 	 *Document section
 	 events handle to easy file uploading : drop, drag-over, drag-leave, click, file change
 	 */
+
 	$('#document_holder').on('drop', function (event) {
 		event.preventDefault();
 		event.stopPropagation();
 		$(this).removeClass('hover');
 		var f = event.originalEvent.dataTransfer.files[0];
-		document.getElementById('document_filename').innerText = f.name;
-		document.getElementById('document_filesize').innerText = "(" +  humanFileSize(f.size, true) + ")";
-		document_handleFileSelect(f);
+		Document.setFile(f);
+		Document.show();
+		Document.upload(f);
 		return false;
 	});
 	$('#document_holder').on('dragover', function (event) {
@@ -162,15 +311,14 @@ $(document).scroll(function () {
 		return false;
 	});
 	$('#document_input').change(function (event) {
-		console.log('document_input : change');
 		var f = event.target.files[0];
-		document.getElementById('document_filename').innerText = f.name;
-		document.getElementById('document_filesize').innerText = "(" + humanFileSize(f.size, true) + ")";
-		document_handleFileSelect(f);
+		Document.setFile(f);
+		Document.show();
+		Document.upload(f);
 	});
 	$('#stampButton').click(function (event) {
-		if (window.document_hash != '') {
-			stamp(window.document_filename, window.document_hash);
+		if (Document.hash) {
+			stamp(Document.filename, Document.hash);
 		} else {
 			failureStamp("To <strong>stamp</strong> you need to drop a file in the Data field")
 		}
@@ -181,9 +329,9 @@ $(document).scroll(function () {
 		event.stopPropagation();
 		$(this).removeClass('hover');
 		var f = event.originalEvent.dataTransfer.files[0];
-		document.getElementById('proof_filename').innerText = f.name;
-		document.getElementById('proof_filesize').innerText = humanFileSize(f.size, true);
-		proof_handleFileSelect(f);
+		Proof.setFile(f);
+		Proof.show();
+		Proof.upload(f);
 		return false;
 	});
 	$('#proof_holder').on('dragover', function (event) {
@@ -206,117 +354,37 @@ $(document).scroll(function () {
 	});
 	$('#proof_input').change(function (event) {
 		var f = event.target.files[0];
-		document.getElementById('proof_filename').innerText = f.name;
-		document.getElementById('proof_filesize').innerText = humanFileSize(f.size, true);
-		proof_handleFileSelect(f);
+		Proof.setFile(f);
+		Proof.show();
+		Proof.upload(f);
 	});
 	$('#verifyButton').click(function (event) {
-		if (window.proof_data != '' && window.document_hash != '') {
-			verify(window.proof_data, window.document_hash);
+		if (Proof.data && Document.hash) {
+			Proof.progressStart();
+			verify(Proof.data, Document.hash, Proof.filename);
 		} else {
 			failureVerify("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
 		}
 	});
 
-
-	// Handle digest parameters
+	// Handle GET parameters
 	const digest = getParameterByName('digest');
 	if(digest) {
-		window.document_data = "";
-		window.document_hash = String(String(digest));
-		window.document_filename = "";
-		showHash();
+		Document.setHash(digest);
+		Document.show();
+	}
+	const ots = getParameterByName('ots');
+	if(ots) {
+		Proof.setArray(hex2ascii(ots));
+		Proof.show();
+	}
+	// autorun proof
+	if(digest && ots){
+		$('#verifyButton').click();
 	}
 
 })();
 
-/*
- * GLOBAL VARIABLES : define in window scope
- var document_hash = '';
- var document_data = '';
- var document_filename = '';
- var stamped_filename = '';
- var stamped_data = '';
- var proof_filename = '';
- var proof_data = '';
- */
-
-/*
- * Hash file generation : save the hash in the document_hash global variable
- */
-function document_handleFileSelect(file) {
-	// Read and crypt the file
-	var reader = new FileReader();
-
-	reader.onload = function (event) {
-		try {
-			var data = event.target.result;
-			window.document_data = String(String(data));
-			window.document_filename = file.name;
-			window.stamped_data = String(String(data));
-			window.stamped_filename = file.name;
-			setTimeout(function () {
-				CryptoJS.SHA256(data, crypto_callback, crypto_finish);
-			}, 200);
-
-		} catch(err) {
-			failureStamp("" + err);
-		}
-	};
-	if(file.size>100*1024*1024) {
-		failureStamp("File bigger than 100Mb are not supported in the browser at the moment");
-	} else {
-		reader.readAsBinaryString(file);
-	}
-
-	function crypto_callback(p) {
-		loadingStamp((p * 100).toFixed(0)+'%','Hashing');
-	}
-	function crypto_finish(hash) {
-		console.log('crypto_finish ' + hash);
-		window.document_hash = String(String(hash));
-		showHash();
-	}
-}
-
-function showHash(){
-	hideMessages();
-	if(window.document_filename="") {
-		$("#document_filename").html(window.document_filename);
-		$("#document_filesize").html("(" + humanFileSize(filesize, true) + ")");
-		$("#document_hash").html("File hash: " + window.document_hash);
-	} else {
-		$("#document_filename").html(window.document_filename);
-		$("#document_filesize").html("( Unknown size )");
-		$("#document_hash").html("From hash: " + window.document_hash);
-	}
-}
-
-
-function getParameterByName(name, url) {
-	if (!url) {
-		url = window.location.href;
-	}
-	name = name.replace(/[\[\]]/g, "\\$&");
-	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-		results = regex.exec(url);
-	if (!results) return null;
-	if (!results[2]) return '';
-	return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-
-function proof_handleFileSelect(file) {
-	// Read and crypt the file
-
-	var reader = new FileReader();
-	reader.onload = function (event) {
-		var data = event.target.result;
-		window.proof_data = String(String(data));
-		window.proof_filename = file.name;
-		console.log('proof: ' + window.proof_data);
-	};
-	reader.readAsBinaryString(file);
-}
 
 /*
  * COMMON FUNCTIONS
@@ -357,6 +425,29 @@ function string2Bin(str) {
 function bin2String(array) {
 	return String.fromCharCode.apply(String, array);
 }
+
+function hex2ascii(hexx) {
+	var hex = hexx.toString();//force conversion
+	var str = '';
+	for (var i = 0; i < hex.length; i += 2)
+		str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+	return str;
+}
+
+// get parameters
+function getParameterByName(name, url) {
+	if (!url) {
+		url = window.location.href;
+	}
+	name = name.replace(/[\[\]]/g, "\\$&");
+	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		results = regex.exec(url);
+	if (!results) return null;
+	if (!results[2]) return '';
+	return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+
 /*
  * STATUS ALERT MESSAGES
  */
