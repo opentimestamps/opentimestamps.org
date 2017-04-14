@@ -38,10 +38,12 @@ function verify(ots, hash, filename) {
 		upgrade(ots, hash, filename);
 	} else {
 		successVerify('Bitcoin attests data existed as of ' + (new Date(result * 1000)));
+		Proof.progressStop();
 	}
 }
 ).catch(err => {
 	failureVerify('Verify error');
+	Proof.progressStop();
 })
 ;
 }
@@ -62,6 +64,7 @@ function upgrade(ots, hash, filename) {
 	upgradePromise.then(timestampBytes => {
 		if (timestampBytes === undefined) {
 		failureVerify('Upgrade error');
+		Proof.progressStop();
 	} else {
 		successVerify('Timestamp has been successfully upgraded!');
 		download(filename, timestampBytes);
@@ -69,6 +72,7 @@ function upgrade(ots, hash, filename) {
 	}
 }).catch(err => {
 	failureStamp('Upgrade error');
+	Proof.progressStop();
 });
 }
 
@@ -233,6 +237,18 @@ var Proof = {
 		} else {
 			$("#proof_filesize").html("");
 		}
+	},
+	progressStart : function(){
+		if(this.percent == undefined){
+			this.percent = 0;
+		}else {
+			this.percent++;
+		}
+		var self = this;
+		this.interval = setInterval(() => loadingVerify(self.interval+' %','Verify'), 500);
+	},
+	progressStop : function(){
+		clearInterval(this.interval);
 	}
 };
 
@@ -327,7 +343,7 @@ var Proof = {
 	});
 	$('#verifyButton').click(function (event) {
 		if (Proof.data && Document.hash) {
-			loadingVerify('0%','Verify');
+			Proof.progressStart();
 			verify(Proof.data, Document.hash, Proof.filename);
 		} else {
 			failureVerify("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
