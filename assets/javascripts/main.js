@@ -239,13 +239,16 @@ var Proof = {
 		}
 	},
 	progressStart : function(){
-		if(this.percent == undefined){
-			this.percent = 0;
-		}else {
-			this.percent++;
-		}
+		this.percent = 0;
+
 		var self = this;
-		this.interval = setInterval(() => loadingVerify(self.interval+' %','Verify'), 500);
+		this.interval = setInterval(() => {
+				self.percent += parseInt(self.percent/3) + 1;
+				if (self.percent > 100) {
+					self.percent = 100;
+				}
+				loadingVerify(self.percent + ' %', 'Verify')
+			}, 100);
 	},
 	progressStop : function(){
 		clearInterval(this.interval);
