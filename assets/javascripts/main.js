@@ -23,8 +23,8 @@ function stamp(filename, hash) {
 		successStamp('OpenTimestamps receipt created and download started');
 	}).catch(err => {
 		console.log("err "+err);
-		failureStamp("" + err);
 		Document.progressStop();
+		failureStamp("" + err);
 	});
 }
 
@@ -50,8 +50,8 @@ function verify(ots, hash, filename) {
 	}
 }
 ).catch(err => {
-	failureVerify('Verify error');
 	Proof.progressStop();
+	failureVerify('Verify error');
 })
 ;
 }
@@ -193,12 +193,12 @@ var Document = {
 		if(this.filesize) {
 			$("#document_filesize").html(" " + humanFileSize(this.filesize, true));
 		} else {
-			$("#document_filesize").html("");
+			$("#document_filesize").html("&nbsp;");
 		}
 		if(this.hash) {
-			$("#document_hash").html("From hash: " + this.hash);
+			$("#document_hash").html("Hash: " + this.hash);
 		} else {
-			$("#document_hash").html("");
+			$("#document_hash").html("&nbsp;");
 		}
 	},
 	progressStart : function(){
