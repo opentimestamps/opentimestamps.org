@@ -102,7 +102,7 @@
         <p class="stamp-and-verify-block-title">Stamp</p>
         <p class="stamp-and-verify-title">Data to timestamp</p>
         <p class="stamp-and-verify-description">
-          The hash is calculated on your browser preserving your privacy
+
         </p>
         <div class="stamp-and-verify-drop-zone" id="document_holder">
           Drop here a document<br>
@@ -114,7 +114,9 @@
             <span id="document_filename">Max file size is 100MB</span>
             <span id="document_filesize"></span>
           </p>
-          <p class="result-description" id="document_hash">Timestamping proof download will start automatically after pressing the button</p>
+          <p class="result-description" id="document_hash">
+            The hash is calculated on your browser preserving your privacy. <a href="https://github.com/opentimestamps/opentimestamps.org/pull/7">More</a>.
+            Timestamping proof download will start automatically after pressing the button
         </div>
 
         <div class="statuses-container">
@@ -144,10 +146,10 @@
         <p class="stamp-and-verify-block-title">Verify</p>
         <p class="stamp-and-verify-title">Timestamped data</p>
         <p class="stamp-and-verify-description">
-          The hash is calculated on your browser preserving your privacy
+
         </p>
         <div class="stamp-and-verify-drop-zone" id="proof_holder">
-          Drop here a document<br>
+          Drop here <i>.ots</i> receipt<br>
           Or click to select one
         </div>
         <input id="proof_input" type="file" style="display:none">
@@ -211,7 +213,7 @@
       </p>
       <br>
       <p class="how-it-works-description">
-        Anyone could realize a timestamp with the permissionless blockchain by paying the transaction fees, for your convenience we offer calendar servers that perform this operation for you. These servers are free to use and they don't require any registration or api key.
+        Anyone could realize a timestamp with the permissionless blockchain by paying the transaction fees, for your convenience we offer calendar servers that perform this operation for you. These servers are <strong>free to use</strong> and they don't require any registration or api key.
       </p>
       </div>
       <div class="how-it-works-example">
@@ -332,7 +334,7 @@ $ java -jar target/OtsCli.jar stamp my-file
         <div class="repositories-icon repositories-icon_javascript"></div>
         <p class="repositories-title">Javascript</p>
         <p class="repositories-description">
-          Common library & Client tool
+          Common library &amp; Client tool
         </p>
         <span class="repositories-name">
           javascript-opentimestamps
@@ -342,7 +344,7 @@ $ java -jar target/OtsCli.jar stamp my-file
         <div class="repositories-icon repositories-icon_java"></div>
         <p class="repositories-title">Java</p>
         <p class="repositories-description">
-          Common library & Client tool
+          Common library &amp; Client tool
         </p>
         <span class="repositories-name">
           java-opentimestamps
