@@ -2,28 +2,28 @@ const OpenTimestamps = require('javascript-opentimestamps');
 
 hexToBytes = function (hex) {
 	const bytes = [];
-	for (let c = 0; c < hex.length; c += 2) {
+	for (var c = 0; c < hex.length; c += 2) {
 		bytes.push(parseInt(hex.substr(c, 2), 16));
 	}
 	return bytes;
 };
 
 function stamp(filename, hash) {
-	loadingStamp('0%','Hashing');
+	Document.progressStart();
 	// Check parameters
-
 	const hashdata = new Uint8Array(hexToBytes(hash));
 
 	// OpenTimestamps command
 	const timestampBytesPromise = OpenTimestamps.stamp(hashdata,true);
 	timestampBytesPromise.then(timestampBytes => {
 		console.log('STAMP result : ');
-	console.log(timestampBytes);
-	download(filename, timestampBytes);
-}).catch(err => {
-	console.log("err "+err);
-failureStamp("" + err);
-});
+		console.log(timestampBytes);
+		download(filename, timestampBytes);
+	}).catch(err => {
+		console.log("err "+err);
+		failureStamp("" + err);
+		Document.progressStop();
+	});
 }
 
 function verify(ots, hash, filename) {
@@ -193,6 +193,20 @@ var Document = {
 		} else {
 			$("#document_hash").html("");
 		}
+	},
+	progressStart : function(){
+		this.percent = 0;
+		var self = this;
+		this.interval = setInterval(() => {
+			self.percent += parseInt(self.percent/3) + 1;
+		if (self.percent > 100) {
+			self.percent = 100;
+		}
+		loadingStamp(self.percent + ' %', 'Stamping')
+		}, 100);
+	},
+	progressStop : function(){
+		clearInterval(this.interval);
 	}
 };
 
