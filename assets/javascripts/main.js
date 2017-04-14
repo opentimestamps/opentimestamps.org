@@ -36,11 +36,17 @@ function verify(ots, hash, filename) {
 	const verifyPromise = OpenTimestamps.verify(bytesOts, bytesHash, true);
 	verifyPromise.then(result => {
 		if (result === undefined) {
-		failureVerify('Pending or Bad attestation');
-		upgrade(ots, hash, filename);
+
+		if (!Proof.upgraded) {
+			upgrade(ots, hash, filename);
+			Proof.upgraded = true;
+		} else {
+			Proof.progressStop();
+			failureVerify('Pending or Bad attestation');
+		}
 	} else {
-		successVerify('Bitcoin attests data existed as of ' + (new Date(result * 1000)));
 		Proof.progressStop();
+		successVerify('Bitcoin attests data existed as of ' + (new Date(result * 1000)));
 	}
 }
 ).catch(err => {
@@ -50,13 +56,11 @@ function verify(ots, hash, filename) {
 ;
 }
 
-let upgrade_first = true;
 function upgrade(ots, hash, filename) {
 	// Check not loop race condition
-	if (upgrade_first == false) {
-		return;
+	if (Proof.upgraded == true) {
+		return false;
 	}
-	upgrade_first = false;
 
 	// Check parameters
 	const bytesOts = ots;
@@ -65,17 +69,18 @@ function upgrade(ots, hash, filename) {
 	const upgradePromise = OpenTimestamps.upgrade(bytesOts);
 	upgradePromise.then(timestampBytes => {
 		if (timestampBytes === undefined) {
-		failureVerify('Upgrade error');
 		Proof.progressStop();
+		failureVerify('Upgrade error');
 	} else {
 		successVerify('Timestamp has been successfully upgraded!');
 		download(filename, timestampBytes);
 		verify(timestampBytes, hash, filename);
 	}
 }).catch(err => {
-	failureStamp('Upgrade error');
 	Proof.progressStop();
+	failureStamp('Upgrade error');
 });
+return true;
 }
 
 $(document).ready(function () {
@@ -363,6 +368,7 @@ var Proof = {
 	$('#verifyButton').click(function (event) {
 		if (Proof.data && Document.hash) {
 			Proof.progressStart();
+			Proof.upgraded = false;
 			verify(Proof.data, Document.hash, Proof.filename);
 		} else {
 			failureVerify("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
