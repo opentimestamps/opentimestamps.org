@@ -181,7 +181,7 @@ var Document = {
 		if(this.filename) {
 			$("#document_filename").html(this.filename);
 		} else {
-			$("#document_filename").html("");
+			$("#document_filename").html("Unknown name");
 		}
 		if(this.filesize) {
 			$("#document_filesize").html(" " + humanFileSize(this.filesize, true));
@@ -230,12 +230,12 @@ var Proof = {
 		if (this.filename) {
 			$("#proof_filename").html(this.filename);
 		} else {
-			$("#proof_filename").html("");
+			$("#proof_filename").html("Unknown name");
 		}
 		if (this.filesize) {
 			$("#proof_filesize").html(" " + humanFileSize(this.filesize, true));
 		} else {
-			$("#proof_filesize").html("");
+			$("#proof_filesize").html(" " + humanFileSize(this.data.length, true));
 		}
 	},
 	progressStart : function(){
