@@ -374,6 +374,13 @@ var Proof = {
 			failureVerify("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
 		}
 	});
+	$('#infoButton').click(function (event) {
+		if (Proof.data) {
+			location.href = "./info.html?ots="+bytesToHex(string2Bin(Proof.data));
+		} else {
+			failureVerify("To <strong>info</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
+		}
+	});
 
 	// Handle GET parameters
 	const digest = getParameterByName('digest');
@@ -433,6 +440,19 @@ function bin2String(array) {
 	return String.fromCharCode.apply(String, array);
 }
 
+function ascii2hex(str) {
+	var arr = [];
+	for (var i = 0, l = str.length; i < l; i ++) {
+		var hex = Number(str.charCodeAt(i)).toString(16);
+		if (hex<0x10) {
+			arr.push("0" + hex);
+		} else {
+			arr.push(hex);
+		}
+	}
+	return arr.join('');
+}
+
 function hex2ascii(hexx) {
 	var hex = hexx.toString();//force conversion
 	var str = '';
@@ -440,6 +460,16 @@ function hex2ascii(hexx) {
 		str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
 	return str;
 }
+
+function bytesToHex (bytes) {
+	const hex = [];
+	for (var i = 0; i < bytes.length; i++) {
+		hex.push((bytes[i] >>> 4).toString(16));
+		hex.push((bytes[i] & 0xF).toString(16));
+	}
+	return hex.join('');
+};
+
 
 // get parameters
 function getParameterByName(name, url) {
