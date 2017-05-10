@@ -91,12 +91,10 @@ function printAttestation (item,fork){
     if(item.type == "BitcoinBlockHeaderAttestation"){
         title = "Bitcoin Attestation";
         content = 'Merkle root of Bitcoin block ' +
-            '<strong>'+item.param+'</strong>' +
-            /*
+            '<a href="">'+item.param+'</a>' +
             '<div class="badge">' +
             '<a href="#" class="copy"></a>' +
             '<p class="hash">'+item.merkle+'</p>'+
-            */
             '</div>';
         color="green";
     } else if(item.type == "EthereumBlockHeaderAttestation"){
@@ -123,12 +121,10 @@ function printAttestation (item,fork){
     $(first).html(title);
     $(first).appendTo(div);
 
-
     var second = document.createElement('div');
     $(second).addClass("table-value table-value_copy");
     $(second).append(content);
     $(second).appendTo(div);
-
 
     return div;
 }
@@ -277,7 +273,7 @@ function download(filename, text) {
     element.setAttribute('target', '_blank');
     element.href = window.URL.createObjectURL(new Blob([text], {type: 'octet/stream'}));
     element.download = filename + '.ots';
-    document.getElementById('status').appendChild(element);
+    //document.getElementById('status').appendChild(element);
     element.click();
 }
 var clipboard = new Clipboard('.copy', {
