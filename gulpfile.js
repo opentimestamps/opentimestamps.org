@@ -14,7 +14,7 @@ const babili = require('gulp-babili');
 var exec = require('gulp-exec');
 
 gulp.task('sass', function() {
-  return gulp.src(['assets/stylesheets/application.scss', 'assets/stylesheets/certificate.scss'])
+  return gulp.src(['assets/stylesheets/application.scss', 'assets/stylesheets/certificate.scss','assets/stylesheets/timestamp-of.scss'])
     .pipe(sassGlob())
     .pipe(sass().on('error', sass.logError))
     .pipe(autoprefixer())

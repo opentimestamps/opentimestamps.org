@@ -93,7 +93,7 @@ function printAttestation (item,fork){
         content = 'Merkle root of Bitcoin block ' +
             '<a href="">'+item.param+'</a>' +
             '<div class="badge">' +
-            '<a href="#" class="copy"></a>' +
+            '<a class="copy"></a>' +
             '<p class="hash">'+item.merkle+'</p>'+
             '</div>';
         color="green";
@@ -102,7 +102,7 @@ function printAttestation (item,fork){
         content = 'Merkle root of Ethereum block ' +
             '<a href="">'+item.param+'</a>' +
             '<div class="badge">' +
-            '<a href="#" class="copy"></a>' +
+            '<a class="copy"></a>' +
             '<p class="hash">'+item.merkle+'</p>'+
             '</div>';
         color="gold";
@@ -149,7 +149,7 @@ function printMerkle (merkle,fork){
         $(second).find(".badge").append('<p class="step">'+fork+'</p>');
     }
     $(second).find(".badge").append('<p class="hash">'+content+'</p>');
-    $(second).find(".badge").append('<a href="#" class="copy"></a>');
+    $(second).find(".badge").append('<a class="copy"></a>');
     $(second).appendTo(div);
 
     return div;
@@ -178,7 +178,7 @@ function printTx (tx,fork){
         $(second).find(".badge").append('<p class="step">'+fork+'</p>');
     }
     $(second).find(".badge").append('<p class="hash">'+content+'</p>');
-    $(second).find(".badge").append('<a href="#" class="copy"></a>');
+    $(second).find(".badge").append('<a class="copy"></a>');
     $(second).appendTo(div);
 
     return div;
@@ -272,21 +272,14 @@ function download(filename, text) {
     var element = document.createElement('a');
     element.setAttribute('target', '_blank');
     element.href = window.URL.createObjectURL(new Blob([text], {type: 'octet/stream'}));
-    element.download = filename + '.ots';
+    element.download = filename;
     //document.getElementById('status').appendChild(element);
     element.click();
 }
 var clipboard = new Clipboard('.copy', {
-    text: function() {
-        var text = $(this).parent().find(".hash").html();
+    text: function(event) {
+        var text = $(event).parent().find(".hash").html();
         console.log(text);
         return text;
     }
 });
-/*
-$('.copy').click( function(e){
-    var text = $(this).parent().find(".hash").html();
-    e.clipboardData.setData('text/plain', text);
-    e.preventDefault();
-});
-*/
