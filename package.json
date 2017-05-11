@@ -21,7 +21,7 @@
     "gulp-uglifycss": "^1.0.6",
     "gulp-exec": "^2.1.3",
     "http-server": "^0.9.0",
-    "javascript-opentimestamps": "^0.1.15"
+    "javascript-opentimestamps": "^0.1.16"
   },
   "scripts": {
     "sass": "gulp sass",
