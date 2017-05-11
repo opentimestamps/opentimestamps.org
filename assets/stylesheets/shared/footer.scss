@@ -1,0 +1,13 @@
+.footer {
+  padding: 25px 0;
+  background-color: #003b80;
+
+  &-logo {
+    @include image-2x('../images/logos@2x.png', 175px, 77px);
+    display: block;
+    width: 119px;
+    height: 29px;
+    background-image: url(../images/logos.png);
+    background-position: 0 0;
+  }
+}

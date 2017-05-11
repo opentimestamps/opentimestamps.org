@@ -1,0 +1,39 @@
+.gold {
+  &:before {
+    background-color: #ee8f13;
+  }
+}
+
+.purple {
+  &:before {
+    background-color: #9c38e1;
+  }
+}
+
+.dark-blue {
+  &:before {
+    background-color: #004eaa;
+  }
+}
+
+.blue {
+  &:before {
+    background-color: #159dfc;
+  }
+}
+
+.green {
+  &:before {
+    background-color: #2db253;
+  }
+}
+
+.grey {
+  &:before {
+    background-color: #777777;
+  }
+}
+
+span.green {
+  color: #2db253;
+}

@@ -1,0 +1,18 @@
+.header {
+  line-height: 80px;
+
+  &-logo {
+    $logo--height: 48px;
+
+    @include image-2x('../images/logos@2x.png', 175px, 77px);
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 50%;
+    width: 175px;
+    height: $logo--height;
+    margin-top: -#{$logo--height / 2};
+    background-image: url(../images/logos.png);
+    background-position: 0 -29px;
+  }
+}
