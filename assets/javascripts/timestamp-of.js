@@ -91,19 +91,17 @@ function printAttestation (item,fork){
     if(item.type == "BitcoinBlockHeaderAttestation"){
         title = "Bitcoin Attestation";
         content = 'Merkle root of Bitcoin block ' +
-            '<a href="">'+item.param+'</a>' +
-            '<div class="badge">' +
+            '<strong class="hash" style="display: inline;">'+item.param+'</strong>' +
             '<a class="copy"></a>' +
-            '<p class="hash">'+item.merkle+'</p>'+
+            //'<p>'+item.merkle+'</p>'+
             '</div>';
         color="green";
     } else if(item.type == "EthereumBlockHeaderAttestation"){
         title = "Ethereum Attestation";
         content = 'Merkle root of Ethereum block ' +
-            '<a href="">'+item.param+'</a>' +
-            '<div class="badge">' +
+            '<strong class="hash" style="display: inline;">'+item.param+'</strong>' +
             '<a class="copy"></a>' +
-            '<p class="hash">'+item.merkle+'</p>'+
+            //'<p>'+item.merkle+'</p>'+
             '</div>';
         color="gold";
     } else if(item.type == "PendingAttestation"){
@@ -280,6 +278,16 @@ var clipboard = new Clipboard('.copy', {
     text: function(event) {
         var text = $(event).parent().find(".hash").html();
         console.log(text);
+
+        $(".clipboard-copy")
+          .css('display','block')
+          .find('.badge-copy .hash')
+          .html(text);
+
+        setTimeout(function(){
+          $(".clipboard-copy").css('display','none');
+        },3000)
+
         return text;
     }
 });
