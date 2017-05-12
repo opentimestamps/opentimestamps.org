@@ -20,9 +20,17 @@ if(obj.result=="KO"){
 $("#digest").html(obj.hash);
 $("#type").html(obj.op);
 $("#title_digest").html(obj.hash.substring(0, 12));
-$("#download").click(function(e){
-    download('Timestamp.ots',hex2ascii(ots));
+$("#download").click(function(){
+    download('Timestamp.ots',hexToBytes(bytes));
 });
+
+function hexToBytes (hex) {
+    const bytes = [];
+    for (var c = 0; c < hex.length; c += 2) {
+        bytes.push(parseInt(hex.substr(c, 2), 16));
+    }
+    return bytes;
+};
 
 
 var timestamp = obj.timestamp;
@@ -265,15 +273,21 @@ function ascii2hex(str) {
     }
     return arr.join('');
 }
-
 function download(filename, text) {
+    // convet to Uint8Array
+    var ab = new ArrayBuffer(text.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < text.length; i++) {
+        ia[i] = text[i];
+    }
+
     var element = document.createElement('a');
     element.setAttribute('target', '_blank');
-    element.href = window.URL.createObjectURL(new Blob([text], {type: 'octet/stream'}));
+    element.href = window.URL.createObjectURL(new Blob([ia], {type: 'application/pdf'}));
     element.download = filename;
-    //document.getElementById('status').appendChild(element);
     element.click();
 }
+
 var clipboard = new Clipboard('.copy', {
     text: function(event) {
         var text = $(event).parent().find(".hash").html();
