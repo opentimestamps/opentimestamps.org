@@ -59,7 +59,7 @@ function print(timestamp){
     }
 
     if(timestamp.ops.length > 1){
-        var subdiv = printFork(timestamp.fork);
+        var subdiv = printFork(timestamp.fork,timestamp.ops.length);
         $(container).append(subdiv);
 
         var div = document.createElement('div');
@@ -182,12 +182,12 @@ function printTx (tx,fork){
     return div;
 }
 
-function printFork (fork){
+function printFork (fork,totfork){
     var div = document.createElement('div');
     $(div).addClass("table-i");
 
     var title="Fork";
-    var content="Fork in 2 paths";
+    var content="Fork in " + totfork + " paths";
     var color="blue";
 
     var first = document.createElement('div');
