@@ -5,5 +5,7 @@ sync-draft.sh
 .DS_store
 _site/
 node_modules/
-assets/javascripts/bundle.js
+assets/javascripts/index.bundle.js
+assets/javascripts/info.bundle.js
+assets/javascripts/application.js
 
