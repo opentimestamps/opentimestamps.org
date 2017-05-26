@@ -1,6 +1,6 @@
 const OpenTimestamps = require('javascript-opentimestamps');
 
-hexToBytes = function (hex) {
+function hexToBytes(hex) {
 	const bytes = [];
 	for (var c = 0; c < hex.length; c += 2) {
 		bytes.push(parseInt(hex.substr(c, 2), 16));
