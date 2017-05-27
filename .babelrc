@@ -10,14 +10,6 @@
         "chrome >= 40",
         "chromium >= 40"
         ],
-
-      "targets": {
-        "ie": 9,
-        "safari": 8,
-        "firefox": 40,
-        "chrome": 40,
-        "chromium": 40
-      },
       "modules": false,
       "debug": true,
       "useBuiltIns": true
