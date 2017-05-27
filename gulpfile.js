@@ -58,8 +58,8 @@ gulp.task('index', function() {
         stdout: true // default = true, false means don't write stdout
     };
     return gulp.src('./')
-        .pipe(exec('browserify -r javascript-opentimestamps assets/javascripts/page/index.js -o assets/javascripts/index.bundle.js', options))
-        .pipe(exec('babel assets/javascripts/index.bundle.js -o assets/javascripts/index.bundle.js', options))
+        .pipe(exec('./node_modules/browserify/bin/cmd.js -r javascript-opentimestamps assets/javascripts/page/index.js -o assets/javascripts/index.bundle.js', options))
+        .pipe(exec('./node_modules/babel-cli/bin/babel.js assets/javascripts/index.bundle.js -o assets/javascripts/index.bundle.js', options))
         .pipe(exec.reporter(reportOptions));
 
     /*NOTE: babelify run babel with .babelrc file, but doesn't convert the code
@@ -84,8 +84,8 @@ gulp.task('info', function() {
         stdout: true // default = true, false means don't write stdout
     };
     return gulp.src('./')
-        .pipe(exec('browserify -r javascript-opentimestamps assets/javascripts/page/info.js -o assets/javascripts/info.bundle.js', options))
-        .pipe(exec('babel assets/javascripts/info.bundle.js -o assets/javascripts/info.bundle.js', options))
+        .pipe(exec('./node_modules/browserify/bin/cmd.js -r javascript-opentimestamps assets/javascripts/page/info.js -o assets/javascripts/info.bundle.js', options))
+        .pipe(exec('./node_modules/babel-cli/bin/babel.js assets/javascripts/info.bundle.js -o assets/javascripts/info.bundle.js', options))
         .pipe(exec.reporter(reportOptions));
 
     /*NOTE: babelify run babel with .babelrc file, but doesn't convert the code
