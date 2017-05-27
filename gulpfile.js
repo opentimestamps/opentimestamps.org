@@ -13,6 +13,7 @@ const uglify = require('gulp-uglify');
 const babili = require('gulp-babili');
 const connect = require('gulp-connect');
 const clean = require('gulp-clean');
+const exec = require('gulp-exec');
 const browserify = require("browserify");
 const babelify = require("babelify");
 const source = require('vinyl-source-stream');
@@ -44,8 +45,8 @@ gulp.task('compress', function() {
       }))
     .pipe(gulp.dest('assets/javascripts'))
 });
-/*
-gulp.task('browserify', function() {
+
+gulp.task('index', function() {
     var options = {
         continueOnError: false, // default = false, true means don't emit error event
         pipeStdout: false, // default = false, true means stdout is written to file.contents
@@ -55,29 +56,50 @@ gulp.task('browserify', function() {
         err: true, // default = true, false means don't write err
         stderr: true, // default = true, false means don't write stderr
         stdout: true // default = true, false means don't write stdout
-    }
+    };
     return gulp.src('./')
-        .pipe(exec('browserify -r javascript-opentimestamps script.js -o assets/javascripts/bundle.js', options))
+        .pipe(exec('browserify -r javascript-opentimestamps assets/javascripts/page/index.js -o assets/javascripts/index.bundle.js', options))
+        .pipe(exec('babel assets/javascripts/index.bundle.js -o assets/javascripts/index.bundle.js', options))
         .pipe(exec.reporter(reportOptions));
-});*/
 
-gulp.task('index', function() {
-    return browserify({ debug: true })
-        .transform(babelify)
-        .require("assets/javascripts/page/index.js", { entry: true })
-        .bundle()
-        .pipe(source('index.bundle.js'))
-        .pipe(gulp.dest('assets/javascripts'));
+    /*NOTE: babelify run babel with .babelrc file, but doesn't convert the code
+    gulp.task('index', function() {
+        return browserify({ debug: true, entries: ["assets/javascripts/page/index.js"] })
+            .transform(babelify)
+            .bundle()
+            .pipe(source('index.bundle.js'))
+            .pipe(gulp.dest('./assets/javascripts'));
+    });*/
 });
 
 gulp.task('info', function() {
-    return browserify({ debug: true })
-        .transform(babelify)
-        .require("assets/javascripts/page/info.js", { entry: true })
-        .bundle()
-        .pipe(source('info.bundle.js'))
-        .pipe(gulp.dest('assets/javascripts'));
+    var options = {
+        continueOnError: false, // default = false, true means don't emit error event
+        pipeStdout: false, // default = false, true means stdout is written to file.contents
+        customTemplatingThing: "test" // content passed to gutil.template()
+    };
+    var reportOptions = {
+        err: true, // default = true, false means don't write err
+        stderr: true, // default = true, false means don't write stderr
+        stdout: true // default = true, false means don't write stdout
+    };
+    return gulp.src('./')
+        .pipe(exec('browserify -r javascript-opentimestamps assets/javascripts/page/info.js -o assets/javascripts/info.bundle.js', options))
+        .pipe(exec('babel assets/javascripts/info.bundle.js -o assets/javascripts/info.bundle.js', options))
+        .pipe(exec.reporter(reportOptions));
+
+    /*NOTE: babelify run babel with .babelrc file, but doesn't convert the code
+     gulp.task('info', function() {
+     return browserify({ debug: true })
+     .transform(babelify)
+     .require("assets/javascripts/page/info.js", { entry: true })
+     .bundle()
+     .pipe(source('info.bundle.js'))
+     .pipe(gulp.dest('assets/javascripts'));
+     });*/
 });
+
+
 
 gulp.task('javascript', function() {
     return gulp.src('assets/javascripts/application/*.js')

@@ -11,11 +11,15 @@
         "chromium >= 40"
         ],
 
-      //"targets": {
-      //  "browsers": "> 5%"
-      //}
+      "targets": {
+        "ie": 9,
+        "safari": 8,
+        "firefox": 40,
+        "chrome": 40,
+        "chromium": 40
+      },
       "modules": false,
-      //"debug": true,
+      "debug": true,
       "useBuiltIns": true
     }]
   ]
