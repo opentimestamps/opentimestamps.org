@@ -219,13 +219,13 @@ function printTimestamp (op,arg,result,fork){
     var div = document.createElement('div');
     $(div).addClass("table-i");
 
-    let content = result;
+    var content = result;
     if(arg.length>0){
-        let start = content.indexOf(arg);
-        let end = start+arg.length;
+        var start = content.indexOf(arg);
+        var end = start+arg.length;
         content = result.substring(0, start)+"<span class='green'>"+arg+"</span>"+result.substring(end, result.length)
     }
-    let title = op+"("+((arg.length>0)?arg.substring(0, 6)+'...':'')+")";
+    var title = op+"("+((arg.length>0)?arg.substring(0, 6)+'...':'')+")";
     var color="purple";
 
     var first = document.createElement('div');
