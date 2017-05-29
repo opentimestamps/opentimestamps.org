@@ -22,8 +22,6 @@ const runSequence = require('run-sequence');
 gulp.task('clean', function () {
     return gulp.src('assets/stylesheets/*.css', {read: false})
         .pipe(addsrc('assets/javascripts/application.js'))
-        .pipe(addsrc('assets/javascripts/index.bundle.js'))
-        .pipe(addsrc('assets/javascripts/info.bundle.js'))
         .pipe(clean({force: true}))
 });
 
@@ -35,71 +33,6 @@ gulp.task('sass', function() {
     .pipe(uglifycss())
     .pipe(gulp.dest('assets/stylesheets/'));
 });
-
-gulp.task('compress', function() {
-  gulp.src('assets/javascripts/bundle.js')
-      .pipe(babili({
-          mangle: {
-              keepClassNames: true
-          }
-      }))
-    .pipe(gulp.dest('assets/javascripts'))
-});
-
-gulp.task('index', function() {
-    var options = {
-        continueOnError: false, // default = false, true means don't emit error event
-        pipeStdout: false, // default = false, true means stdout is written to file.contents
-        customTemplatingThing: "test" // content passed to gutil.template()
-    };
-    var reportOptions = {
-        err: true, // default = true, false means don't write err
-        stderr: true, // default = true, false means don't write stderr
-        stdout: true // default = true, false means don't write stdout
-    };
-    return gulp.src('./')
-        .pipe(exec('./node_modules/browserify/bin/cmd.js -r javascript-opentimestamps assets/javascripts/page/index.js -o assets/javascripts/index.bundle.js', options))
-        .pipe(exec('./node_modules/babel-cli/bin/babel.js assets/javascripts/index.bundle.js -o assets/javascripts/index.bundle.js', options))
-        .pipe(exec.reporter(reportOptions));
-
-    /*NOTE: babelify run babel with .babelrc file, but doesn't convert the code
-    gulp.task('index', function() {
-        return browserify({ debug: true, entries: ["assets/javascripts/page/index.js"] })
-            .transform(babelify)
-            .bundle()
-            .pipe(source('index.bundle.js'))
-            .pipe(gulp.dest('./assets/javascripts'));
-    });*/
-});
-
-gulp.task('info', function() {
-    var options = {
-        continueOnError: false, // default = false, true means don't emit error event
-        pipeStdout: false, // default = false, true means stdout is written to file.contents
-        customTemplatingThing: "test" // content passed to gutil.template()
-    };
-    var reportOptions = {
-        err: true, // default = true, false means don't write err
-        stderr: true, // default = true, false means don't write stderr
-        stdout: true // default = true, false means don't write stdout
-    };
-    return gulp.src('./')
-        .pipe(exec('./node_modules/browserify/bin/cmd.js -r javascript-opentimestamps assets/javascripts/page/info.js -o assets/javascripts/info.bundle.js', options))
-        .pipe(exec('./node_modules/babel-cli/bin/babel.js assets/javascripts/info.bundle.js -o assets/javascripts/info.bundle.js', options))
-        .pipe(exec.reporter(reportOptions));
-
-    /*NOTE: babelify run babel with .babelrc file, but doesn't convert the code
-     gulp.task('info', function() {
-     return browserify({ debug: true })
-     .transform(babelify)
-     .require("assets/javascripts/page/info.js", { entry: true })
-     .bundle()
-     .pipe(source('info.bundle.js'))
-     .pipe(gulp.dest('assets/javascripts'));
-     });*/
-});
-
-
 
 gulp.task('javascript', function() {
     return gulp.src('assets/javascripts/application/*.js')
@@ -115,7 +48,7 @@ gulp.task('javascript', function() {
 });
 
 gulp.task('default', function(done) {
-    runSequence('clean','sass','javascript', 'index', 'info', function(){
+    runSequence('clean','sass','javascript', function(){
         done();
     });
 });
@@ -123,8 +56,6 @@ gulp.task('default', function(done) {
 gulp.task('watch', function() {
     gulp.watch('assets/stylesheets/**/*.scss', ['sass']);
     gulp.watch('assets/javascripts/application/*.js', ['javascript']);
-    gulp.watch('assets/javascripts/page/index.js', ['index']);
-    gulp.watch('assets/javascripts/page/info.js', ['info']);
 });
 
 gulp.task('server', function() {
