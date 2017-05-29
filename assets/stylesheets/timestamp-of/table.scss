@@ -33,6 +33,7 @@
   &-name {
     position: relative;
     word-break: break-all;
+    min-width: 130px;
 
     &:before {
       content: '';
@@ -110,4 +111,23 @@
       text-decoration: underline;
     }
   }
+}
+
+.badge-copy {
+    overflow: hidden;
+    display: table;
+    border-radius: 5px;
+    border: 1px solid #e1e1e1;
+    background-color: #f7f7f7;
+    line-height: 18px;
+    padding: 5px 10px 5px 10px;
+}
+
+.clipboard-copy {
+    position: fixed;
+    left: 10%;
+    right: 10%;
+    margin-bottom: 20px;
+    bottom: 0px;
+    text-align: center;
 }

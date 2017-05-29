@@ -49,7 +49,7 @@
 
     &:before,
     &:after {
-      @include image-2x('../images/repositories@2x.png', 36px, 326px);
+      @include image-2x('../images/repositories@2x.png', 36px, 398px);
       width: 32px;
       height: 32px;
       margin: -16px 0 0 -16px;
@@ -116,6 +116,23 @@
 
       &:after {
         background-position: 0 -262px;
+      }
+    }
+
+    &_rust {
+      &:before,
+      &:after {
+        width: 36px;
+        height: 36px;
+        margin: -18px 0 0 -18px;
+      }
+
+      &:before {
+        background-position: 0 -362px;
+      }
+
+      &:after {
+        background-position: 0 -326px;
       }
     }
   }

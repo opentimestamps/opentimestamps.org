@@ -20,9 +20,17 @@ if(obj.result=="KO"){
 $("#digest").html(obj.hash);
 $("#type").html(obj.op);
 $("#title_digest").html(obj.hash.substring(0, 12));
-$("#download").click(function(e){
-    download('Timestamp.ots',hex2ascii(ots));
+$("#download").click(function(){
+    download('Timestamp.ots',hexToBytes(bytes));
 });
+
+function hexToBytes (hex) {
+    const bytes = [];
+    for (var c = 0; c < hex.length; c += 2) {
+        bytes.push(parseInt(hex.substr(c, 2), 16));
+    }
+    return bytes;
+};
 
 
 var timestamp = obj.timestamp;
@@ -59,7 +67,7 @@ function print(timestamp){
     }
 
     if(timestamp.ops.length > 1){
-        var subdiv = printFork(timestamp.fork);
+        var subdiv = printFork(timestamp.fork,timestamp.ops.length);
         $(container).append(subdiv);
 
         var div = document.createElement('div');
@@ -91,19 +99,17 @@ function printAttestation (item,fork){
     if(item.type == "BitcoinBlockHeaderAttestation"){
         title = "Bitcoin Attestation";
         content = 'Merkle root of Bitcoin block ' +
-            '<a href="">'+item.param+'</a>' +
-            '<div class="badge">' +
+            '<strong class="hash" style="display: inline;">'+item.param+'</strong>' +
             '<a class="copy"></a>' +
-            '<p class="hash">'+item.merkle+'</p>'+
+            //'<p>'+item.merkle+'</p>'+
             '</div>';
         color="green";
     } else if(item.type == "EthereumBlockHeaderAttestation"){
         title = "Ethereum Attestation";
         content = 'Merkle root of Ethereum block ' +
-            '<a href="">'+item.param+'</a>' +
-            '<div class="badge">' +
+            '<strong class="hash" style="display: inline;">'+item.param+'</strong>' +
             '<a class="copy"></a>' +
-            '<p class="hash">'+item.merkle+'</p>'+
+            //'<p>'+item.merkle+'</p>'+
             '</div>';
         color="gold";
     } else if(item.type == "PendingAttestation"){
@@ -184,12 +190,12 @@ function printTx (tx,fork){
     return div;
 }
 
-function printFork (fork){
+function printFork (fork,totfork){
     var div = document.createElement('div');
     $(div).addClass("table-i");
 
     var title="Fork";
-    var content="Fork in 2 paths";
+    var content="Fork in " + totfork + " paths";
     var color="blue";
 
     var first = document.createElement('div');
@@ -267,19 +273,35 @@ function ascii2hex(str) {
     }
     return arr.join('');
 }
-
 function download(filename, text) {
+    // convet to Uint8Array
+    var ab = new ArrayBuffer(text.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < text.length; i++) {
+        ia[i] = text[i];
+    }
+
     var element = document.createElement('a');
     element.setAttribute('target', '_blank');
-    element.href = window.URL.createObjectURL(new Blob([text], {type: 'octet/stream'}));
+    element.href = window.URL.createObjectURL(new Blob([ia], {type: 'application/pdf'}));
     element.download = filename;
-    //document.getElementById('status').appendChild(element);
     element.click();
 }
+
 var clipboard = new Clipboard('.copy', {
     text: function(event) {
         var text = $(event).parent().find(".hash").html();
         console.log(text);
+
+        $(".clipboard-copy")
+          .css('display','block')
+          .find('.badge-copy .hash')
+          .html(text);
+
+        setTimeout(function(){
+          $(".clipboard-copy").css('display','none');
+        },3000)
+
         return text;
     }
 });
