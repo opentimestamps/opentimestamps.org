@@ -10,12 +10,9 @@ const addsrc = require('gulp-add-src');
 const order = require('gulp-order');
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
-const babili = require('gulp-babili');
 const connect = require('gulp-connect');
 const clean = require('gulp-clean');
-const exec = require('gulp-exec');
-const browserify = require("browserify");
-const babelify = require("babelify");
+const bower = require('gulp-bower');
 const source = require('vinyl-source-stream');
 const runSequence = require('run-sequence');
 
@@ -47,8 +44,12 @@ gulp.task('javascript', function() {
         .pipe(gulp.dest('assets/javascripts'));
 });
 
+gulp.task('bower', function() {
+    return bower();
+});
+
 gulp.task('default', function(done) {
-    runSequence('clean','sass','javascript', function(){
+    runSequence('clean','sass','javascript','bower', function(){
         done();
     });
 });
