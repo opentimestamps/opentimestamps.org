@@ -10,8 +10,17 @@ const addsrc = require('gulp-add-src');
 const order = require('gulp-order');
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
-const babili = require('gulp-babili');
-var exec = require('gulp-exec');
+const connect = require('gulp-connect');
+const clean = require('gulp-clean');
+const bower = require('gulp-bower');
+const source = require('vinyl-source-stream');
+const runSequence = require('run-sequence');
+
+gulp.task('clean', function () {
+    return gulp.src('assets/stylesheets/*.css', {read: false})
+        .pipe(addsrc('assets/javascripts/application.js'))
+        .pipe(clean({force: true}))
+});
 
 gulp.task('sass', function() {
   return gulp.src(['assets/stylesheets/application.scss', 'assets/stylesheets/certificate.scss','assets/stylesheets/timestamp-of.scss'])
@@ -22,46 +31,36 @@ gulp.task('sass', function() {
     .pipe(gulp.dest('assets/stylesheets/'));
 });
 
-gulp.task('compress', function() {
-  gulp.src('assets/javascripts/bundle.js')
-      .pipe(babili({
-          mangle: {
-              keepClassNames: true
-          }
-      }))
-    .pipe(gulp.dest('assets/javascripts'))
-});
-
-gulp.task('browserify', function() {
-    var options = {
-        continueOnError: false, // default = false, true means don't emit error event
-        pipeStdout: false, // default = false, true means stdout is written to file.contents
-        customTemplatingThing: "test" // content passed to gutil.template()
-    };
-    var reportOptions = {
-        err: true, // default = true, false means don't write err
-        stderr: true, // default = true, false means don't write stderr
-        stdout: true // default = true, false means don't write stdout
-    }
-    return gulp.src('./')
-        .pipe(exec('browserify -r javascript-opentimestamps script.js -o assets/javascripts/bundle.js', options))
-        .pipe(exec.reporter(reportOptions));
-});
-
 gulp.task('javascript', function() {
-  return gulp.src('assets/javascripts/application/*.js')
-    .pipe(addsrc('assets/javascripts/vendor/index.js'))
-    .pipe(order([
-      "assets/javascripts/vendor/index.js",
-      "assets/javascripts/application/*.js"
-    ], {base: '.'}))
-    .pipe(include())
-    .pipe(concat('application.js'))
-    // .pipe(uglify())
-    .pipe(gulp.dest('assets/javascripts'));
+    return gulp.src('assets/javascripts/application/*.js')
+        .pipe(addsrc('assets/javascripts/vendor/index.js'))
+        .pipe(order([
+            "assets/javascripts/vendor/index.js",
+            "assets/javascripts/application/*.js"
+        ], {base: '.'}))
+        .pipe(include())
+        .pipe(concat('application.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest('assets/javascripts'));
+});
+
+gulp.task('bower', function() {
+    return bower();
+});
+
+gulp.task('default', function(done) {
+    runSequence('clean','sass','javascript','bower', function(){
+        done();
+    });
 });
 
 gulp.task('watch', function() {
-  gulp.watch('assets/stylesheets/**/*.scss', ['sass']);
-  gulp.watch('assets/javascripts/application/*.js', ['javascript']);
+    gulp.watch('assets/stylesheets/**/*.scss', ['sass']);
+    gulp.watch('assets/javascripts/application/*.js', ['javascript']);
+});
+
+gulp.task('server', function() {
+    connect.server({
+        //livereload: true
+    });
 });

@@ -1,0 +1,10 @@
+{
+  "name": "opentimestamps.org",
+  "description": "Official OpenTimestamps website",
+  "version": "0.0.1",
+  "homepage": "https://opentimestamps.org",
+  "license": "LGPL",
+  "dependencies": {
+    "bower-opentimestamps": "^1.0.2"
+  }
+}
