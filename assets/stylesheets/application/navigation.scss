@@ -44,97 +44,93 @@
   &-icon {
     &:before,
     &:after {
-      background-image: url(../images/navigation.svg);
+      @include image-2x('../images/navigation@2x.png', 32px, 340px);
+      transform: translate(-50%, -50%);
+      background-image: url(../images/navigation.png);
     }
 
     &_stamp-and-verify:before,
     &_stamp-and-verify:after {
       width: 32px;
       height: 22px;
-      margin: -11px 0 0 -16px;
     }
 
     &_stamp-and-verify:before {
-      background-position: 0 -180px;
+      background-position: 0 -318px;
     }
 
     &_stamp-and-verify:after {
-      background-position: 0 -202px;
+      background-position: 0 -296px;
     }
 
     &_how-it-works:before,
     &_how-it-works:after {
-      width: 38px;
-      height: 38px;
-      margin: -19px 0 0 -19px;
+      width: 32px;
+      height: 32px;
     }
 
     &_how-it-works:before {
-      background-position: 0 0;
+      background-position: 0 -32px;
     }
 
     &_how-it-works:after {
-      background-position: 0 -38px
+      background-position: 0 0;
     }
 
     &_members:before,
     &_members:after {
       width: 32px;
       height: 32px;
-      margin: -16px 0 0 -16px;
     }
 
     &_members:before {
-      background-position: 0 -288px;
+      background-position: 0 -212px;
     }
 
     &_members:after {
-      background-position: 0 -320px;
+      background-position: 0 -180px;
     }
 
     &_repositories:before,
     &_repositories:after {
       width: 32px;
       height: 26px;
-      margin: -13px 0 0 -16px;
     }
 
     &_repositories:before {
-      background-position: 0 -128px;
+      background-position: 0 -270px;
     }
 
     &_repositories:after {
-      background-position: 0 -154px;
+      background-position: 0 -244px;
     }
 
     &_mailing-list:before,
     &_mailing-list:after {
       width: 32px;
       height: 26px;
-      margin: -13px 0 0 -16px;
     }
 
     &_mailing-list:before {
-      background-position: 0 -76px;
+      background-position: 0 -154px;
     }
 
     &_mailing-list:after {
-      background-position: 0 -102px;
+      background-position: 0 -128px;
     }
 
-    &_use-cases:before,
-    &_use-cases:after {
-      width: 24px;
+    &_internet-archive:before,
+    &_internet-archive:after {
+      width: 30px;
       height: 32px;
-      margin: -16px 0 0 -12px;
     }
 
-    &_use-cases:before {
-      background-position: 0 -224px;
+    &_internet-archive:before {
+      background-position: 0 -96px;
     }
 
-    &_use-cases:after {
-      background-position: 0 -256px;
+    &_internet-archive:after {
+      background-position: 0 -64px;
     }
   }
 }
