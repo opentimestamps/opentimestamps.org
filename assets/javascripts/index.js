@@ -420,15 +420,13 @@ function humanFileSize(bytes, si) {
 	} while (Math.abs(bytes) >= thresh && u < units.length - 1);
 	return bytes.toFixed(1) + ' ' + units[u];
 }
+
 // Download file
 function download(filename, text) {
-	var element = document.createElement('a');
-	element.setAttribute('target', '_blank');
-	element.href = window.URL.createObjectURL(new Blob([text], {type: 'octet/stream'}));
-	element.download = filename + '.ots';
-	document.getElementById('status').appendChild(element);
-	element.click();
+	var blob = new Blob([text], {type: "octet/stream"});
+	saveAs(blob,  filename + '.ots');
 }
+
 function string2Bin(str) {
 	var result = [];
 	for (var i = 0; i < str.length; i++) {
