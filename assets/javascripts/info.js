@@ -273,19 +273,11 @@ function ascii2hex(str) {
     }
     return arr.join('');
 }
-function download(filename, text) {
-    // convet to Uint8Array
-    var ab = new ArrayBuffer(text.length);
-    var ia = new Uint8Array(ab);
-    for (var i = 0; i < text.length; i++) {
-        ia[i] = text[i];
-    }
 
-    var element = document.createElement('a');
-    element.setAttribute('target', '_blank');
-    element.href = window.URL.createObjectURL(new Blob([ia], {type: 'application/pdf'}));
-    element.download = filename;
-    element.click();
+// Download file
+function download(filename, text) {
+    var blob = new Blob([text], {type: "octet/stream"});
+    saveAs(blob,  filename + '.ots');
 }
 
 var clipboard = new Clipboard('.copy', {
