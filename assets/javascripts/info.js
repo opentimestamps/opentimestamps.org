@@ -15,13 +15,11 @@ if(obj.result=="KO"){
     $("#error").html(obj.error);
 }
 
-
-
 $("#digest").html(obj.hash);
 $("#type").html(obj.op);
 $("#title_digest").html(obj.hash.substring(0, 12));
 $("#download").click(function(){
-    download('Timestamp.ots',hexToBytes(bytes));
+    download('Timestamp.ots', new Uint8Array( hexToBytes(bytes) ));
 });
 
 function hexToBytes (hex) {
