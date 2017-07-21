@@ -158,7 +158,7 @@ var Document = {
 		this.filesize = file.size;
 		this.hashType = (hashType === undefined)? "SHA256" : hashType;
 	},
-	upload : function (file) {
+	/*upload : function (file) {
 		var self = this;
 		// Read and crypt the file
 		var reader = new FileReader();
@@ -186,6 +186,58 @@ var Document = {
 			self.hash = String(String(hash));
 			self.show();
 		}
+	},*/
+	upload : function (file) {
+
+		function parseFile(file, callbackProgress, callbackFinal) {
+			var chunkSize  = 1024*1024; // bytes
+			var offset     = 0;
+			var timeout;
+
+			var size=chunkSize;
+			var partial;
+			while (offset < file.size) {
+				partial = file.slice(offset, offset+size);
+
+				var reader = new FileReader;
+				reader.size = chunkSize;
+				reader.offset = offset;
+				reader.onload = function(evt) {
+					//console.log(this.offset, this.size, this.result);
+					callbackProgress(evt.target.result);
+
+					if(timeout !== undefined){
+						clearTimeout(timeout);
+					}
+					timeout = setTimeout(function () {
+						callbackFinal();
+					}, 5*1000);
+				};
+				reader.readAsArrayBuffer(partial);
+				offset += chunkSize;
+			}
+		}
+
+		var self = this;
+		var counter = 0;
+		var shaObj = new jsSHA("SHA-256", "ARRAYBUFFER");
+		console.log("file length: "+file.size);
+		parseFile(file,
+			function (data) {
+
+				shaObj.update(data);
+				counter += data.byteLength;
+				loadingStamp((( counter / file.size)*100).toFixed(0) + '%', 'Hashing');
+				//console.log((( counter / file.size)*100).toFixed(0) + '%', 'Hashing');
+
+			}, function (data) {
+
+				self.hash = shaObj.getHash("HEX");
+				console.log('crypto_finish ' + self.hash);
+				self.show();
+
+			});
+
 	},
 	show : function(){
 		hideMessages();
@@ -297,6 +349,9 @@ var Proof = {
 		event.stopPropagation();
 		$(this).removeClass('hover');
 		var f = event.originalEvent.dataTransfer.files[0];
+		if (f === undefined){
+			return;
+		}
 		Document.setFile(f);
 		Document.show();
 		Document.upload(f);
@@ -323,6 +378,9 @@ var Proof = {
 	});
 	$('#document_input').change(function (event) {
 		var f = event.target.files[0];
+		if (f === undefined){
+			return;
+		}
 		Document.setFile(f);
 		Document.show();
 		Document.upload(f);
@@ -340,6 +398,9 @@ var Proof = {
 		event.stopPropagation();
 		$(this).removeClass('hover');
 		var f = event.originalEvent.dataTransfer.files[0];
+		if (f === undefined){
+			return;
+		}
 		Proof.setFile(f);
 		Proof.show();
 		Proof.upload(f);
@@ -365,6 +426,9 @@ var Proof = {
 	});
 	$('#proof_input').change(function (event) {
 		var f = event.target.files[0];
+		if (f === undefined){
+			return;
+		}
 		Proof.setFile(f);
 		Proof.show();
 		Proof.upload(f);
