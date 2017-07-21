@@ -189,39 +189,52 @@ var Document = {
 	},*/
 	upload : function (file) {
 
+		var lastOffset = 0;
+		function callbackRead(reader, file, evt, callbackProgress, callbackFinal){
+			if(lastOffset === reader.offset) {
+				console.log("order",reader.offset, reader.size, reader.result);
+				lastOffset = reader.offset+reader.size;
+				callbackProgress(evt.target.result);
+				if ( reader.offset + reader.size >= file.size ){
+					callbackFinal();
+				}
+			} else {
+				console.log("not in order",reader.offset, reader.size, reader.result);
+				timeout = setTimeout(function () {
+					callbackRead(reader,file,evt, callbackProgress, callbackFinal);
+				}, 100);
+			}
+		}
+
 		function parseFile(file, callbackProgress, callbackFinal) {
 			var chunkSize  = 1024*1024; // bytes
 			var offset     = 0;
-			var timeout;
 
 			var size=chunkSize;
 			var partial;
+			var index = 0;
 			while (offset < file.size) {
 				partial = file.slice(offset, offset+size);
 
 				var reader = new FileReader;
 				reader.size = chunkSize;
 				reader.offset = offset;
+				reader.index = index;
 				reader.onload = function(evt) {
-					//console.log(this.offset, this.size, this.result);
-					callbackProgress(evt.target.result);
-
-					if(timeout !== undefined){
-						clearTimeout(timeout);
-					}
-					timeout = setTimeout(function () {
-						callbackFinal();
-					}, 5*1000);
+					callbackRead(this, file, evt, callbackProgress, callbackFinal);
 				};
 				reader.readAsArrayBuffer(partial);
 				offset += chunkSize;
+				index += 1;
 			}
 		}
 
-		var self = this;
 		var counter = 0;
+		var self = this;
 		var shaObj = new jsSHA("SHA-256", "ARRAYBUFFER");
 		console.log("file length: "+file.size);
+		loadingStamp('0%', 'Hashing');
+
 		parseFile(file,
 			function (data) {
 
