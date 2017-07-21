@@ -1,23 +1,25 @@
 const OpenTimestamps = require('javascript-opentimestamps');
 
-function hexToBytes(hex) {
-	const bytes = [];
-	for (var c = 0; c < hex.length; c += 2) {
-		bytes.push(parseInt(hex.substr(c, 2), 16));
-	}
-	return bytes;
-};
-
-function stamp(filename, hash) {
+function stamp(filename, hash, hashType) {
 	Document.progressStart();
-	// Check parameters
-	const hashdata = new Uint8Array(hexToBytes(hash));
 
-	// OpenTimestamps command
-	const timestampBytesPromise = OpenTimestamps.stamp(hashdata,true);
-	timestampBytesPromise.then(timestampBytes => {
+	var op;
+	if (hashType == "SHA1"){
+		op = new OpenTimestamps.Ops.OpSHA1();
+	}else if (hashType == "SHA256"){
+		op = new OpenTimestamps.Ops.OpSHA256();
+	}else if (hashType == "RIPEMD160"){
+		op = new OpenTimestamps.Ops.OpRIPEMD160();
+	} else {
+		op = new OpenTimestamps.Ops.OpSHA256();
+	}
+	const detached = OpenTimestamps.DetachedTimestampFile.fromHash(op, hexToBytes(hash));
+
+	OpenTimestamps.stamp(detached).then( ()=>{
 		console.log('STAMP result : ');
-		console.log(timestampBytes);
+		const ctx = new OpenTimestamps.Context.StreamSerialization();
+		detached.serialize(ctx);
+		const timestampBytes = ctx.getOutput();
 		download(filename, timestampBytes);
 		Document.progressStop();
 		successStamp('OpenTimestamps receipt created and download started');
@@ -28,59 +30,60 @@ function stamp(filename, hash) {
 	});
 }
 
-function verify(ots, hash, filename) {
-	// Check parameters
-	const bytesOts = ots;
-	const bytesHash = new Uint8Array(hexToBytes(hash));
+function verify(ots, hash, hashType, filename) {
 	// OpenTimestamps command
-	const verifyPromise = OpenTimestamps.verify(bytesOts, bytesHash, true);
-	verifyPromise.then(result => {
+	var op;
+	if (hashType == "SHA1"){
+		op = new OpenTimestamps.Ops.OpSHA1();
+	}else if (hashType == "SHA256"){
+		op = new OpenTimestamps.Ops.OpSHA256();
+	}else if (hashType == "RIPEMD160"){
+		op = new OpenTimestamps.Ops.OpRIPEMD160();
+	} else {
+		op = new OpenTimestamps.Ops.OpSHA256();
+	}
+	const detached = OpenTimestamps.DetachedTimestampFile.fromHash(op, hexToBytes(hash));
+	const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(ots));
+	OpenTimestamps.verify(detachedOts,detached).then( (result)=>{
 		if (result === undefined) {
-
-		if (!Proof.upgraded) {
-			upgrade(ots, hash, filename);
-			Proof.upgraded = true;
+			if (!Proof.upgraded) {
+				upgrade(ots, hash, hashType, filename);
+				Proof.upgraded = true;
+			} else {
+				Proof.progressStop();
+				failureVerify('Pending or Bad attestation');
+			}
 		} else {
 			Proof.progressStop();
-			failureVerify('Pending or Bad attestation');
+			successVerify('Bitcoin attests data existed as of ' + (new Date(result * 1000)));
 		}
-	} else {
+	}).catch(err => {
 		Proof.progressStop();
-		successVerify('Bitcoin attests data existed as of ' + (new Date(result * 1000)));
-	}
-}
-).catch(err => {
-	Proof.progressStop();
-	failureVerify('Verify error');
-})
-;
+		failureVerify('Verify error');
+	});
 }
 
-function upgrade(ots, hash, filename) {
+function upgrade(ots, hash, hashType, filename) {
 	// Check not loop race condition
 	if (Proof.upgraded == true) {
 		return false;
 	}
 
-	// Check parameters
-	const bytesOts = ots;
-
 	// OpenTimestamps command
-	const upgradePromise = OpenTimestamps.upgrade(bytesOts);
-	upgradePromise.then(timestampBytes => {
-		if (timestampBytes === undefined) {
+	const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(ots));
+	OpenTimestamps.upgrade(detachedOts).then( (changed)=>{
+		if(changed){
+			successVerify('Timestamp has been successfully upgraded!');
+			download(filename, timestampBytes);
+			verify(timestampBytes, hash, hashType, filename);
+		} else {
+			Proof.progressStop();
+			failureVerify('File not changed');
+		}
+	}).catch(err => {
 		Proof.progressStop();
-		failureVerify('Upgrade error');
-	} else {
-		successVerify('Timestamp has been successfully upgraded!');
-		download(filename, timestampBytes);
-		verify(timestampBytes, hash, filename);
-	}
-}).catch(err => {
-	Proof.progressStop();
-	failureStamp('Upgrade error');
-});
-return true;
+		failureVerify('Pending or Bad Attestation');
+	});
 }
 
 $(document).ready(function () {
@@ -143,16 +146,17 @@ $(document).scroll(function () {
  */
 
 var Document = {
-	setHash : function(hash){
+	setHash : function(hash,hashType){
 		this.filename = undefined;
 		this.filesize = undefined;
 		this.hash = hash;
-
+		this.hashType = (hashType === undefined)? "SHA256" : hashType;
 	},
-	setFile : function(file){
+	setFile : function(file,hashType){
 		this.hash = undefined;
 		this.filename = file.name;
 		this.filesize = file.size;
+		this.hashType = (hashType === undefined)? "SHA256" : hashType;
 	},
 	upload : function (file) {
 		var self = this;
@@ -325,7 +329,7 @@ var Proof = {
 	});
 	$('#stampButton').click(function (event) {
 		if (Document.hash) {
-			stamp(Document.filename, Document.hash);
+			stamp(Document.filename, Document.hash, Document.hashType);
 		} else {
 			failureStamp("To <strong>stamp</strong> you need to drop a file in the Data field")
 		}
@@ -369,7 +373,7 @@ var Proof = {
 		if (Proof.data && Document.hash) {
 			Proof.progressStart();
 			Proof.upgraded = false;
-			verify(Proof.data, Document.hash, Proof.filename);
+			verify(Proof.data, Document.hash, Document.hashType, Proof.filename);
 		} else {
 			failureVerify("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
 		}
@@ -385,7 +389,7 @@ var Proof = {
 	// Handle GET parameters
 	const digest = getParameterByName('digest');
 	if(digest) {
-		Document.setHash(digest);
+		Document.setHash(digest, "SHA256");
 		Document.show();
 	}
 	const ots = getParameterByName('ots');
@@ -466,6 +470,14 @@ function bytesToHex (bytes) {
 		hex.push((bytes[i] & 0xF).toString(16));
 	}
 	return hex.join('');
+};
+
+function hexToBytes(hex) {
+	const bytes = [];
+	for (var c = 0; c < hex.length; c += 2) {
+		bytes.push(parseInt(hex.substr(c, 2), 16));
+	}
+	return bytes;
 };
 
 
