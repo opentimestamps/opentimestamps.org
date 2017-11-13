@@ -46,8 +46,19 @@
 
     &:before {
       width: 24px;
-    	height: 24px;
-    	background-position: 0 0;
+      height: 24px;
+      background-position: 0 0;
+    }
+  }
+  &_warning {
+    border-color: #faebcc;
+    background-color: #fcf8e3;
+    color: #8a6d3b;
+
+    &:before {
+      width: 0px;
+      height: 0px;
+      background-position: 0 0;
     }
   }
 

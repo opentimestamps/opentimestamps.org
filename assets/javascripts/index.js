@@ -51,7 +51,7 @@ function verify(ots, hash, hashType, filename) {
 				Proof.upgraded = true;
 			} else {
 				Proof.progressStop();
-				failureVerify('Pending or Bad attestation');
+				warningVerify('Pending or Bad attestation');
 			}
 		} else {
 			Proof.progressStop();
@@ -82,7 +82,7 @@ function upgrade(ots, hash, hashType, filename) {
 		}
 	}).catch(err => {
 		Proof.progressStop();
-		failureVerify('Pending or Bad Attestation');
+		warningVerify('Pending or Bad Attestation');
 	});
 }
 
@@ -612,6 +612,12 @@ function failureVerify(text){
 	$('#verify .statuses_failure .statuses-description').html(text);
 	$('#verify .statuses_failure').show();
 }
+function warningVerify(text){
+    hideMessages();
+    $('#verify .statuses_warning .statuses-title').html("WARNING!");
+    $('#verify .statuses_warning .statuses-description').html(text);
+    $('#verify .statuses_warning').show();
+}
 
 function hideMessages() {
 	$('#stamp .statuses_hashing').hide();
@@ -620,4 +626,5 @@ function hideMessages() {
 	$('#verify .statuses_hashing').hide();
 	$('#verify .statuses_failure').hide();
 	$('#verify .statuses_success').hide();
+    $('#verify .statuses_warning').hide();
 }
