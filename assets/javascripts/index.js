@@ -614,7 +614,7 @@ function failureVerify(text){
 }
 function warningVerify(text){
     hideMessages();
-    $('#verify .statuses_warning .statuses-title').html("WARNING!");
+    $('#verify .statuses_warning .statuses-title').html("PENDING!");
     $('#verify .statuses_warning .statuses-description').html(text);
     $('#verify .statuses_warning').show();
 }
