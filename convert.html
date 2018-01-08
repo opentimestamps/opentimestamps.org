@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta property="og:title" content="OpenTimestamps: a timestamping proof standard">
+    <meta property="og:description" content="OpenTimestamps aims to be a standard format for blockchain timestamping. The format is flexible enough to be vendor and blockchain independent.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://opentimestamps.org/">
+    <meta property="og:image" content="./assets/images/og.jpg">
+    <title>OpenTimestamps</title>
+    <link rel="stylesheet" href="./assets/stylesheets/application.css" media="screen" title="no title">
+</head>
+<body>
+<header class="header">
+    <div class="container">
+        <a href="#" class="header-logo"></a>
+        <div class="header-nav-open"></div>
+        <nav class="header-nav">
+            <!-- <a href="#intro" class="header-nav-i">Intro</a> -->
+            <a href="#stamp-and-verify" class="header-nav-i">Stamp and Verify</a>
+            <a href="#how-it-works" class="header-nav-i">How it works</a>
+            <a href="#members" class="header-nav-i">Members</a>
+            <a href="#code-repositories" class="header-nav-i">Code repositories</a>
+            <!-- <a href="#use-cases" class="header-nav-i">Use cases</a> -->
+            <a href="https://lists.opentimestamps.org" class="header-nav-i">Mailing lists</a>
+        </nav>
+    </div>
+</header>
+
+
+
+<!-- STAMP AND VERIFY -->
+<section class="navigation" id="stamp-and-verify">
+    <div class="container">
+        <div class="" id="stamp">
+            <p class="stamp-and-verify-block-title">Convert To OpenTimestamps</p>
+            <p class="stamp-and-verify-title">Receipt file to convert</p>
+            <p class="stamp-and-verify-description">
+
+            </p>
+            <div class="stamp-and-verify-drop-zone" id="document_holder">
+                Drop here a document<br>
+                Or click to select one
+            </div>
+            <input id="document_input" type="file" style="display:none">
+            <div class="stamp-and-verify-result result result_stamp">
+                <p class="result-title">
+                    <span id="document_filename">Max file size is 100MB</span>
+                    <span id="document_filesize"></span>
+                </p>
+                <p class="result-description">
+                    Convert bitcoin timestamp proof ( like Chainpoint v2 ) to OpenTimestamps proof. <a href="https://github.com/eternitywall/convert2ots">More</a>.
+
+            </div>
+
+            <div class="statuses-container">
+                <div class="statuses statuses_hashing" style="display: none">
+                    <p class="statuses-title"></p>
+                    <p class="statuses-description">
+                        Hashing
+                    </p>
+                </div>
+                <div class="statuses statuses_success" style="display: none">
+                    <p class="statuses-title">Success!</p>
+                    <p class="statuses-description">
+                        OpenTimestamps receipt created and download started
+                    </p>
+                </div>
+                <div class="statuses statuses_failure" style="display: none">
+                    <p class="statuses-title">Failure!</p>
+                    <p class="statuses-description">
+                        To stamp you need to drop a file in the Data field
+                    </p>
+                </div>
+            </div>
+
+            <button type="button" class="stamp-and-verify-button" id="convertButton">Convert</button>
+        </div>
+
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container">
+        <a href="#" class="footer-logo"></a>
+        <a href="https://twitter.com/opentimestamps" class="footer-contact-us">@opentimestamps</a>
+    </div>
+</footer>
+<script src="./assets/javascripts/application.js"></script>
+<script src="./assets/javascripts/convert.js"></script>
+</body>
+</html>

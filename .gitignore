@@ -8,4 +8,4 @@ node_modules/
 assets/javascripts/index.bundle.js
 assets/javascripts/info.bundle.js
 assets/javascripts/application.js
-
+package-lock.json
