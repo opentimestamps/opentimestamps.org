@@ -157,7 +157,7 @@ var Document = {
 
 // RUN CONVERT TO OTS
 function run(filename, chainpoint){
-
+    loading("Converting","Uploading ad converting receipt on progress...");
     // Check chainpoint file
     if (chainpoint['@context'] !== 'https://w3id.org/chainpoint/v2') {
         failure('Support only chainpoint v2');
