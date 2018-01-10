@@ -1,9 +1,14 @@
 'use strict'
 
-const OpenTimestamps = require('javascript-opentimestamps');
-const ConvertOTS = require('/src/convert2ots.js');
+//const OpenTimestamps = require('javascript-opentimestamps');
+//const ConvertOTS = require('/src/convert2ots.js');
+
+const OpenTimestamps = javascriptOpentimestamps;
+const ConvertOTS = convert2ots;
 const Tools = ConvertOTS.Tools;
 const DetachedTimestampFile = OpenTimestamps.DetachedTimestampFile;
+const Timestamp = OpenTimestamps.Timestamp;
+const Context = OpenTimestamps.Context;
 const Ops = OpenTimestamps.Ops;
 
 var chainpoint = {
@@ -77,13 +82,15 @@ $( document ).ready(function() {
         Document.upload(f);
     });
     $('#convertButton').click(function (event) {
-        if (Document.data) {
-            run(Document.filename, JSON.parse(Document.data));
-        } else {
-            failureStamp("To <strong>convert</strong> you need to drop a file in the Data field")
+        if (Document.output) {
+            download(Document.filename, Document.output);
         }
     });
-
+    $('#infoButton').click(function (event) {
+        if (Document.output) {
+            location.href = "./info.html?ots="+bytesToHex(Document.output);
+        }
+    });
 });
 
 
@@ -113,6 +120,8 @@ var Document = {
             self.filesize = file.size;
             console.log('proof: ' + self.data);
             self.show();
+            // start conversion
+            run(Document.filename, JSON.parse(Document.data));
         };
         reader.readAsBinaryString(file);
     },
@@ -147,7 +156,6 @@ var Document = {
 };
 
 // RUN CONVERT TO OTS
-
 function run(filename, chainpoint){
 
     // Check chainpoint file
@@ -219,7 +227,8 @@ function run(filename, chainpoint){
             const detached = new DetachedTimestampFile(new Ops.OpSHA256(), timestamp);
             const ctx = new Context.StreamSerialization();
             detached.serialize(ctx);
-            download(filename, ctx.getOutput());
+            Document.output = ctx.getOutput();
+            success('Convert success!');
         })
         .catch(err => {
             failure('Resolve attestation error: ' + err);
@@ -257,11 +266,29 @@ function humanFileSize(bytes, si) {
     return bytes.toFixed(1) + ' ' + units[u];
 }
 
+function bytesToHex (bytes) {
+    const hex = [];
+    for (var i = 0; i < bytes.length; i++) {
+        hex.push((bytes[i] >>> 4).toString(16));
+        hex.push((bytes[i] & 0xF).toString(16));
+    }
+    return hex.join('');
+};
+
+function string2Bin(str) {
+    var result = [];
+    for (var i = 0; i < str.length; i++) {
+        result.push(str.charCodeAt(i));
+    }
+    return result;
+}
+
 // Download file
 function download(filename, text) {
     var blob = new Blob([text], {type: "octet/stream"});
     saveAs(blob,  filename + '.ots');
 }
+
 
 // Alerts
 function loading(title, text){
@@ -276,6 +303,9 @@ function success(text){
     $('#stamp .statuses_success .statuses-title').html("SUCCESS!");
     $('#stamp .statuses_success .statuses-description').html(text);
     $('#stamp .statuses_success').show();
+
+    $('#convertButton').removeClass("disabled");
+    $('#infoButton').removeClass("disabled");
 }
 function failure(text){
     console.log(text);

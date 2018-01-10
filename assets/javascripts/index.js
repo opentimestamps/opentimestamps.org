@@ -1,4 +1,4 @@
-const OpenTimestamps = require('javascript-opentimestamps');
+const OpenTimestamps = javascriptOpentimestamps;
 
 function stamp(filename, hash, hashType) {
 	Document.progressStart();

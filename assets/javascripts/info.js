@@ -1,5 +1,4 @@
-const OpenTimestamps = require('javascript-opentimestamps');
-
+const OpenTimestamps = javascriptOpentimestamps;
 const ots = getParameterByName('ots');
 var bytes=[];
 

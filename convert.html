@@ -15,24 +15,23 @@
 <body>
 <header class="header">
     <div class="container">
-        <a href="#" class="header-logo"></a>
-        <div class="header-nav-open"></div>
-        <nav class="header-nav">
-            <!-- <a href="#intro" class="header-nav-i">Intro</a> -->
-            <a href="#stamp-and-verify" class="header-nav-i">Stamp and Verify</a>
-            <a href="#how-it-works" class="header-nav-i">How it works</a>
-            <a href="#members" class="header-nav-i">Members</a>
-            <a href="#code-repositories" class="header-nav-i">Code repositories</a>
-            <!-- <a href="#use-cases" class="header-nav-i">Use cases</a> -->
-            <a href="https://lists.opentimestamps.org" class="header-nav-i">Mailing lists</a>
-        </nav>
+        <a href="/" class="header-logo"></a>
     </div>
 </header>
 
 
 
 <!-- STAMP AND VERIFY -->
-<section class="navigation" id="stamp-and-verify">
+<style>
+    .stamp-and-verify .container:before{
+        display: none;
+    }
+    .disabled{
+        background-color: #fff;
+        color: #004eaa;
+    }
+</style>
+<section class="stamp-and-verify" id="stamp-and-verify">
     <div class="container">
         <div class="" id="stamp">
             <p class="stamp-and-verify-block-title">Convert To OpenTimestamps</p>
@@ -76,7 +75,8 @@
                 </div>
             </div>
 
-            <button type="button" class="stamp-and-verify-button" id="convertButton">Convert</button>
+            <button type="button" class="stamp-and-verify-button disabled" id="convertButton">DOWNLOAD</button>
+            <button type="button" class="stamp-and-verify-button disabled" id="infoButton">INFO</button>
         </div>
 
     </div>
@@ -84,7 +84,7 @@
 
 <footer class="footer">
     <div class="container">
-        <a href="#" class="footer-logo"></a>
+        <a href="/" class="footer-logo"></a>
         <a href="https://twitter.com/opentimestamps" class="footer-contact-us">@opentimestamps</a>
     </div>
 </footer>
