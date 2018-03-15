@@ -1,4 +1,4 @@
-const OpenTimestamps = javascriptOpentimestamps;
+const OpenTimestamps = window.OpenTimestamps;
 const ots = getParameterByName('ots');
 var bytes=[];
 

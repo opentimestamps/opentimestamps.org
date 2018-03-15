@@ -1,4 +1,4 @@
-const OpenTimestamps = javascriptOpentimestamps;
+const OpenTimestamps = window.OpenTimestamps;
 
 function stamp(filename, hash, hashType) {
 	Document.progressStart();

@@ -3,7 +3,7 @@
 //const OpenTimestamps = require('javascript-opentimestamps');
 //const ConvertOTS = require('/src/convert2ots.js');
 
-const OpenTimestamps = javascriptOpentimestamps;
+const OpenTimestamps = window.OpenTimestamps;
 const ConvertOTS = convert2ots;
 const Tools = ConvertOTS.Tools;
 const DetachedTimestampFile = OpenTimestamps.DetachedTimestampFile;
