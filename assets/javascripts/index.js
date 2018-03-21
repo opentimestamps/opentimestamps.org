@@ -43,23 +43,27 @@ function verify(ots, hash, hashType, filename) {
 		op = new OpenTimestamps.Ops.OpSHA256();
 	}
 	const detached = OpenTimestamps.DetachedTimestampFile.fromHash(op, hexToBytes(hash));
-	const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(ots));
+	const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(ots);
 	OpenTimestamps.verify(detachedOts,detached).then( (result)=>{
-		if (result === undefined) {
+        if( Object.keys(result).length == 0 ){
 			if (!Proof.upgraded) {
 				upgrade(ots, hash, hashType, filename);
 				Proof.upgraded = true;
 			} else {
 				Proof.progressStop();
-				warningVerify('Pending or Bad attestation');
+				warningVerify('Pending attestation');
 			}
 		} else {
 			Proof.progressStop();
-			successVerify('Bitcoin attests data existed as of ' + (new Date(result * 1000)));
+			var text = "";
+        	Object.keys(result).forEach(key => {
+        		text += key+" attests data existed as of " + (new Date(result[key] * 1000))+"<br>";
+			});
+        	successVerify(text);
 		}
 	}).catch(err => {
 		Proof.progressStop();
-		failureVerify('Verify error');
+		failureVerify('Bad Attestation');
 	});
 }
 
@@ -70,20 +74,27 @@ function upgrade(ots, hash, hashType, filename) {
 	}
 
 	// OpenTimestamps command
-	const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(ots));
+	const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(ots);
 	OpenTimestamps.upgrade(detachedOts).then( (changed)=>{
+        const bytes = detachedOts.serializeToBytes();
 		if(changed){
-			successVerify('Timestamp has been successfully upgraded!');
-			download(filename, timestampBytes);
-			verify(timestampBytes, hash, hashType, filename);
+			//successVerify('Timestamp has been successfully upgraded!');
+			download(filename, bytes);
 		} else {
-			Proof.progressStop();
-			failureVerify('File not changed');
+			//failureVerify('File not changed');
 		}
+    	verify(bytes, hash, hashType, filename);
 	}).catch(err => {
 		Proof.progressStop();
-		warningVerify('Pending or Bad Attestation');
+    	failureVerify('Bad Attestation');
 	});
+}
+
+
+function getHashTypeFrom(ots) {
+    // OpenTimestamps command
+    const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(ots));
+    return detachedOts.fileHashOp._HASHLIB_NAME().toUpperCase();
 }
 
 $(document).ready(function () {
@@ -141,54 +152,45 @@ $(document).scroll(function () {
 
 
 
+var Hashes = {
+	init(){
+        this["SHA1"] = CryptoJS.algo.SHA1.create();
+        this["SHA256"] = CryptoJS.algo.SHA256.create();
+        this["RIPEMD160"] = CryptoJS.algo.RIPEMD160.create();
+	},
+	getSupportedTypes(){
+		return ["SHA1","SHA256","RIPEMD160"];
+	},
+	update(type,msg){
+        this[type].update(msg);
+	},
+	get(type){
+		if(typeof(this[type])=="string"){
+			return this[type];
+		}
+        this[type] = this[type].finalize().toString();
+		return this[type];
+	},
+	set(type, hash){
+        this[type] = hash;
+	}
+}
+
 /*
  * GLOBAL DOCUMENT OBJ
  */
 
 var Document = {
-	setHash : function(hash,hashType){
-		this.filename = undefined;
-		this.filesize = undefined;
-		this.hash = hash;
-		this.hashType = (hashType === undefined)? "SHA256" : hashType;
+	init : function (){
+        this.filename = undefined;
+        this.filesize = undefined;
+        Hashes.init();
 	},
-	setFile : function(file,hashType){
-		this.hash = undefined;
-		this.filename = file.name;
-		this.filesize = file.size;
-		this.hashType = (hashType === undefined)? "SHA256" : hashType;
-	},
-	/*upload : function (file) {
-		var self = this;
-		// Read and crypt the file
-		var reader = new FileReader();
-		reader.onload = function (event) {
-			try {
-				var data = event.target.result;
-				setTimeout(function () {
-					CryptoJS.SHA256(data, crypto_callback, crypto_finish);
-				}, 200);
-
-			} catch (err) {
-				failureStamp("" + err);
-			}
-		};
-		if (file.size > 100 * 1024 * 1024) {
-			failureStamp("File bigger than 100Mb are not supported in the browser at the moment");
-		} else {
-			reader.readAsBinaryString(file);
-		}
-		function crypto_callback(p) {
-			loadingStamp((p * 100).toFixed(0) + '%', 'Hashing');
-		}
-		function crypto_finish(hash) {
-			console.log('crypto_finish ' + hash);
-			self.hash = String(String(hash));
-			self.show();
-		}
-	},*/
+    setFile : function(file,hashType){
+        this.filename = file.name;
+        this.filesize = file.size;
+    },
 	upload : function (file) {
-
 		var lastOffset = 0;
 		function callbackRead(reader, file, evt, callbackProgress, callbackFinal){
 			if(lastOffset === reader.offset) {
@@ -231,26 +233,27 @@ var Document = {
 
 		var counter = 0;
 		var self = this;
-		var shaObj = new jsSHA("SHA-256", "ARRAYBUFFER");
+
+        Hashes.init();
 		console.log("file length: "+file.size);
 		loadingStamp('0%', 'Hashing');
 
 		parseFile(file,
 			function (data) {
-
-				shaObj.update(data);
+				var wordBuffer = CryptoJS.lib.WordArray.create(data);
+                Hashes.update("SHA1",wordBuffer);
+                Hashes.update("SHA256",wordBuffer);
+                Hashes.update("RIPEMD160",wordBuffer);
 				counter += data.byteLength;
 				loadingStamp((( counter / file.size)*100).toFixed(0) + '%', 'Hashing');
 				//console.log((( counter / file.size)*100).toFixed(0) + '%', 'Hashing');
 
 			}, function (data) {
-
-				self.hash = shaObj.getHash("HEX");
-				console.log('crypto_finish ' + self.hash);
+                console.log('SHA1 '+Hashes.get("SHA1"));
+                console.log('SHA256 '+Hashes.get("SHA256"));
+                console.log('RIPEMD160 '+Hashes.get("RIPEMD160"));
 				self.show();
-
 			});
-
 	},
 	show : function(){
 		hideMessages();
@@ -399,8 +402,13 @@ var Proof = {
 		Document.upload(f);
 	});
 	$('#stampButton').click(function (event) {
-		if (Document.hash) {
-			stamp(Document.filename, Document.hash, Document.hashType);
+        const algorithm = getParameterByName('algorithm');
+        var hashType = "SHA256";
+        if (algorithm){
+            hashType = algorithm.toUpperCase();
+		}
+		if (Hashes.get(hashType)) {
+			stamp(Document.filename, Hashes.get(hashType), hashType);
 		} else {
 			failureStamp("To <strong>stamp</strong> you need to drop a file in the Data field")
 		}
@@ -447,10 +455,15 @@ var Proof = {
 		Proof.upload(f);
 	});
 	$('#verifyButton').click(function (event) {
-		if (Proof.data && Document.hash) {
+		if (Proof.data) {
 			Proof.progressStart();
+            var hashType = getHashTypeFrom(Proof.data);
+            if (!Hashes.get(hashType)){
+                failureVerify("Not supported hash type");
+				return;
+            }
 			Proof.upgraded = false;
-			verify(Proof.data, Document.hash, Document.hashType, Proof.filename);
+			verify(string2Bin(Proof.data), Hashes.get(hashType), hashType, Proof.filename);
 		} else {
 			failureVerify("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
 		}
@@ -465,8 +478,10 @@ var Proof = {
 
 	// Handle GET parameters
 	const digest = getParameterByName('digest');
+    const algorithm = getParameterByName('algorithm');
 	if(digest) {
-		Document.setHash(digest, "SHA256");
+		Hashes.init();
+		Hashes.set(digest, algorithm);
 		Document.show();
 	}
 	const ots = getParameterByName('ots');
