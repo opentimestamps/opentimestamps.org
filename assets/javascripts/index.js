@@ -91,11 +91,6 @@ function upgrade(ots, hash, hashType, filename) {
 }
 
 
-function getHashTypeFrom(ots) {
-    // OpenTimestamps command
-    const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(ots));
-    return detachedOts.fileHashOp._HASHLIB_NAME().toUpperCase();
-}
 
 $(document).ready(function () {
 	hideMessages();
@@ -165,6 +160,9 @@ var Hashes = {
         this[type].update(msg);
 	},
 	get(type){
+        if(this[type] === undefined){
+            return undefined;
+        }
 		if(typeof(this[type])=="string"){
 			return this[type];
 		}
@@ -252,7 +250,7 @@ var Document = {
                 console.log('SHA1 '+Hashes.get("SHA1"));
                 console.log('SHA256 '+Hashes.get("SHA256"));
                 console.log('RIPEMD160 '+Hashes.get("RIPEMD160"));
-				self.show();
+                showHashes();
 			});
 	},
 	show : function(){
@@ -266,11 +264,6 @@ var Document = {
 			$("#document_filesize").html(" " + humanFileSize(this.filesize, true));
 		} else {
 			$("#document_filesize").html("&nbsp;");
-		}
-		if(this.hash) {
-			$("#document_hash").html("Hash: " + this.hash);
-		} else {
-			$("#document_hash").html("&nbsp;");
 		}
 	},
 	progressStart : function(){
@@ -315,6 +308,7 @@ var Proof = {
 			self.filesize = file.size;
 			console.log('proof: ' + self.data);
 			self.show();
+            showHashes();
 		};
 		reader.readAsBinaryString(file);
 	},
@@ -331,7 +325,15 @@ var Proof = {
 			$("#proof_filesize").html(" " + humanFileSize(this.data.length, true));
 		}
 	},
-	progressStart : function(){
+    getHashType : function (){
+        const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(this.data ));
+        return detachedOts.fileHashOp._HASHLIB_NAME().toUpperCase();
+    },
+    getHash : function (){
+        const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(this.data ));
+        return detachedOts.fileDigest();
+    },
+    progressStart : function(){
 		this.percent = 0;
 
 		var self = this;
@@ -347,6 +349,25 @@ var Proof = {
 		clearInterval(this.interval);
 	}
 };
+
+function showHashes() {
+    if (!Proof.data) {
+        var hashType = "SHA256";
+        var hash = Hashes.get(hashType);
+        $("#document_hash").html(hashType + ": " + hash);
+        return;
+    }
+    var hashType = Proof.getHashType().toUpperCase();
+    if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
+        $("#proof_hash").html("Not supported hash type");
+        return;
+    }
+    var hash = Proof.getHash();
+    $("#proof_hash").html(hashType + ": " + bytesToHex(hash));
+    if (Hashes.get(hashType)) {
+        $("#document_hash").html(hashType + ": " + Hashes.get(hashType));
+    }
+}
 
 /*
 * STARTUP FUNCTION
@@ -457,12 +478,17 @@ var Proof = {
 	$('#verifyButton').click(function (event) {
 		if (Proof.data) {
 			Proof.progressStart();
-            var hashType = getHashTypeFrom(Proof.data);
-            if (!Hashes.get(hashType)){
+
+            var hashType = Proof.getHashType().toUpperCase();
+            if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
                 failureVerify("Not supported hash type");
+                return;
+            }
+            if (!Hashes.get(hashType)){
+                failureVerify("Not found hash type");
 				return;
             }
-			Proof.upgraded = false;
+            Proof.upgraded = false;
 			verify(string2Bin(Proof.data), Hashes.get(hashType), hashType, Proof.filename);
 		} else {
 			failureVerify("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
