@@ -213,6 +213,11 @@ var Document = {
 			var size=chunkSize;
 			var partial;
 			var index = 0;
+
+			if(file.size===0){
+                callbackFinal();
+            }
+
 			while (offset < file.size) {
 				partial = file.slice(offset, offset+size);
 
@@ -247,6 +252,7 @@ var Document = {
 				//console.log((( counter / file.size)*100).toFixed(0) + '%', 'Hashing');
 
 			}, function (data) {
+                loadingStamp('100%', 'Hashing');
                 console.log('SHA1 '+Hashes.get("SHA1"));
                 console.log('SHA256 '+Hashes.get("SHA256"));
                 console.log('RIPEMD160 '+Hashes.get("RIPEMD160"));
