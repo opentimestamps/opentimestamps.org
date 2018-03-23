@@ -16,9 +16,9 @@
 
     #{$this}-description {
       color: #888;
-      line-height: 16px;
+      line-height: 20px;
       word-break: break-all;
-      font-size: 12px;
+      font-size: 14px;
     }
   }
 
@@ -34,6 +34,7 @@
     #{$this}-description {
       color: #888;
       line-height: 20px;
+      word-break: break-all;
       font-size: 14px;
 
       a {
