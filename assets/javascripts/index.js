@@ -57,7 +57,7 @@ function verify(ots, hash, hashType, filename) {
 			Proof.progressStop();
 			var text = "";
         	Object.keys(result).forEach(key => {
-        		text += key+" attests data existed as of " + (new Date(result[key] * 1000))+"<br>";
+        		text += upperFirstLetter(key)+" attests data existed as of " + (new Date(result[key] * 1000))+"<br>";
 			});
         	successVerify(text);
 		}
@@ -603,6 +603,10 @@ function hexToBytes(hex) {
 	}
 	return bytes;
 };
+
+function upperFirstLetter(string){
+	return string[0].toUpperCase() + string.substr(1);
+}
 
 
 // get parameters
