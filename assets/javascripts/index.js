@@ -46,12 +46,23 @@ function verify(ots, hash, hashType, filename) {
 	const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(ots);
 	OpenTimestamps.verify(detachedOts,detached).then( (result)=>{
         if( Object.keys(result).length == 0 ){
-			if (!Proof.upgraded) {
+			if (!detachedOts.timestamp.isTimestampComplete()) {
 				upgrade(ots, hash, hashType, filename);
 				Proof.upgraded = true;
 			} else {
-				Proof.progressStop();
-				warningVerify('Pending attestation');
+                Proof.progressStop();
+				// check attestations
+				unknown = false;
+                detachedOts.timestamp.allAttestations().forEach(attestation => {
+                	if(attestation instanceof OpenTimestamps.Notary.UnknownAttestation){
+                        unknown = true;
+					}
+                });
+                if (unknown){
+                    warningVerify('Unknown attestation');
+				} else {
+                    warningVerify('Pending attestation');
+				}
 			}
 		} else {
 			Proof.progressStop();
@@ -665,7 +676,7 @@ function failureVerify(text){
 }
 function warningVerify(text){
     hideMessages();
-    $('#verify .statuses_warning .statuses-title').html("PENDING!");
+    $('#verify .statuses_warning .statuses-title').html("WARNING!");
     $('#verify .statuses_warning .statuses-description').html(text);
     $('#verify .statuses_warning').show();
 }
