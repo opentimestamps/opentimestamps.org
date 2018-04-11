@@ -9,3 +9,5 @@ assets/javascripts/index.bundle.js
 assets/javascripts/info.bundle.js
 assets/javascripts/application.js
 package-lock.json
+assets/stylesheets/application.css
+assets/stylesheets/timestamp-of.css
