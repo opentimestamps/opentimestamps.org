@@ -59,7 +59,7 @@ function verify(ots, hash, hashType, filename) {
 					}
                 });
                 if (unknown){
-                    warningVerify('Unknown attestation');
+                    warningVerify('Unknown attestation type');
 				} else {
                     warningVerify('Pending attestation');
 				}
