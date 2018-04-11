@@ -502,8 +502,8 @@ function showHashes() {
                 return;
             }
             if (!Hashes.get(hashType)){
-                failureVerify("Not found hash type");
-				return;
+                failureVerify("No file to verify; upload one first");
+                return;
             }
             Proof.upgraded = false;
 			verify(string2Bin(Proof.data), Hashes.get(hashType), hashType, Proof.filename);
