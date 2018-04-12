@@ -41,7 +41,6 @@ function print(timestamp){
         container = $("#table");
     }
 
-
     if(timestamp.attestations !== undefined ){
         timestamp.attestations.forEach(function(item){
             var div = printAttestation(item,item.fork);
@@ -52,7 +51,6 @@ function print(timestamp){
             }
         });
     }
-
 
     if(timestamp.tx !== undefined ) {
         var div = printTx(timestamp.tx,timestamp.ops[0].fork);
@@ -93,20 +91,25 @@ function printAttestation (item,fork){
     var title="Attestation";
     var color="grey";
     var content = "";
-    if(item.type == "BitcoinBlockHeaderAttestation"){
+    if(item.type == "BitcoinBlockHeaderAttestation") {
         title = "Bitcoin Attestation";
         content = 'Merkle root of Bitcoin block ' +
+            '<strong class="hash" style="display: inline;">' + item.param + '</strong>' +
+            '<a class="copy"></a>' +
+            '</div>';
+        color = "green";
+    } else if(item.type == "LitecoinBlockHeaderAttestation"){
+        title = "Litecoin Attestation";
+        content = 'Merkle root of Litecoin block ' +
             '<strong class="hash" style="display: inline;">'+item.param+'</strong>' +
             '<a class="copy"></a>' +
-            //'<p>'+item.merkle+'</p>'+
             '</div>';
-        color="green";
+        color="gold";
     } else if(item.type == "EthereumBlockHeaderAttestation"){
         title = "Ethereum Attestation";
         content = 'Merkle root of Ethereum block ' +
             '<strong class="hash" style="display: inline;">'+item.param+'</strong>' +
             '<a class="copy"></a>' +
-            //'<p>'+item.merkle+'</p>'+
             '</div>';
         color="gold";
     } else if(item.type == "PendingAttestation"){
@@ -174,7 +177,7 @@ function printTx (tx,fork){
 
     var second = document.createElement('div');
     $(second).addClass("table-value table-value_copy");
-    $(second).append('<p>Bitcoin transaction</p>');
+    $(second).append('<p>Transaction</p>');
     $(second).append('<div class="badge"></div>');
 
     if(fork>0) {
