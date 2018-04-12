@@ -1,39 +1,24 @@
 const OpenTimestamps = window.OpenTimestamps;
-const ots = getParameterByName('ots');
-var bytes=[];
-
-if(ots) {
-    bytes = ots;
-} else {
-}
-var jsonString = OpenTimestamps.json(hex2ascii(bytes));
+const ots = getParameterByRoute();
+var jsonString = OpenTimestamps.json(hex2ascii(ots));
 var obj = JSON.parse(jsonString);
 
+// Fill labels
 $("#hash").html(obj.hash);
 if(obj.result=="KO"){
     $("#error").html(obj.error);
 }
-
 $("#digest").html(obj.hash);
 $("#type").html(obj.op);
 $("#title_digest").html(obj.hash.substring(0, 12));
 $("#download").click(function(){
-    download('Timestamp.ots', new Uint8Array( hexToBytes(bytes) ));
+    download('Timestamp.ots', new Uint8Array( hexToBytes(ots) ));
 });
 
-function hexToBytes (hex) {
-    const bytes = [];
-    for (var c = 0; c < hex.length; c += 2) {
-        bytes.push(parseInt(hex.substr(c, 2), 16));
-    }
-    return bytes;
-};
-
-
+// Print timestamp
+var container;
 var timestamp = obj.timestamp;
 print(timestamp,0);
-
-var container;
 
 function print(timestamp){
 
@@ -80,9 +65,7 @@ function print(timestamp){
             print(item.timestamp);
         });
     }
-
 }
-
 
 function printAttestation (item,fork){
     var div = document.createElement('div');
@@ -160,7 +143,6 @@ function printMerkle (merkle,fork){
 
     return div;
 }
-
 
 function printTx (tx,fork){
     var div = document.createElement('div');
@@ -245,7 +227,7 @@ function printTimestamp (op,arg,result,fork){
     return div;
 }
 
-// get parameters
+// Common functions
 function getParameterByName(name, url) {
     if (!url) {
         url = window.location.href;
@@ -257,6 +239,22 @@ function getParameterByName(name, url) {
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
+
+function getParameterByRoute(){
+    var routes = window.location.pathname.split( '/' );
+    if (routes.length === 0){
+        return '';
+    }
+    return routes[routes.length-1];
+}
+
+function hexToBytes (hex) {
+    const bytes = [];
+    for (var c = 0; c < hex.length; c += 2) {
+        bytes.push(parseInt(hex.substr(c, 2), 16));
+    }
+    return bytes;
+};
 
 function hex2ascii(hexx) {
     var hex = hexx.toString();//force conversion

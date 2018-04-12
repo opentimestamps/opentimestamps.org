@@ -513,7 +513,7 @@ function showHashes() {
 	});
 	$('#infoButton').click(function (event) {
 		if (Proof.data) {
-			location.href = "./info.html?ots="+bytesToHex(string2Bin(Proof.data));
+			location.href = "./info/"+bytesToHex(string2Bin(Proof.data));
 		} else {
 			failureVerify("To <strong>info</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
 		}
