@@ -235,17 +235,21 @@ function getParameterByName(name, url) {
     name = name.replace(/[\[\]]/g, "\\$&");
     var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
         results = regex.exec(url);
-    if (!results) return null;
+    if (!results) return '';
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-function getParameterByRoute(){
-    var routes = window.location.pathname.split( '/' );
-    if (routes.length === 0){
-        return '';
+function getParameterByRoute(url){
+    if (!url) {
+        url = window.location.href;
     }
-    return routes[routes.length-1];
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&](([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return '';
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
 function hexToBytes (hex) {
