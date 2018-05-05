@@ -112,7 +112,6 @@ function upgrade(ots, hash, hashType, filename) {
 
 
 $(document).ready(function () {
-	hideMessages();
 //	$('[data-toggle="tooltip"]').tooltip();
 });
 // Closes the sidebar menu
@@ -199,6 +198,7 @@ var Hashes = {
 
 var Document = {
 	init : function (){
+        this.tagId = undefined;
         this.filename = undefined;
         this.filesize = undefined;
         Hashes.init();
@@ -209,6 +209,9 @@ var Document = {
     setFile : function(file,hashType){
         this.filename = file.name;
         this.filesize = file.size;
+    },
+    exist : function(){
+        return this.filename !== undefined && this.filesize !== undefined;
     },
 	upload : function (file) {
 		var lastOffset = 0;
@@ -282,7 +285,6 @@ var Document = {
 			});
 	},
 	show : function(){
-		hideMessages();
 		if(this.filename) {
 			$(this.tagId+" .filename").html(this.filename);
 		} else {
@@ -295,7 +297,7 @@ var Document = {
 		}
 
         var hashType = "SHA256";
-        if (Proof.data) {
+        if (Proof.exist()) {
             hashType = Proof.getHashType().toUpperCase();
             if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
                 failure("Not supported hash type");
@@ -326,7 +328,7 @@ var Document = {
 	},
 	callback : function(){
 		// Run automatically stamp or verify action
-        if(Proof.data) {
+        if(Proof.exist()) {
             // Automatically verify
             run_verification();
         } else {
@@ -339,6 +341,12 @@ var Document = {
 /* Proof object to upload & parse OTS file */
 
 var Proof = {
+    init : function(){
+        this.tagId = undefined;
+        this.data = undefined;
+        this.filename = undefined;
+        this.filesize = undefined;
+    },
     isValid : function(fileName){
         return fileName.match(/\.[0-9a-z]+$/i)[0] === ".ots"
     },
@@ -355,6 +363,9 @@ var Proof = {
 		this.filename = undefined;
 		this.filesize = undefined;
 	},
+	exist : function(){
+    	return this.filename !== undefined && this.filesize !== undefined && this.data !== undefined;
+	},
 	upload: function (file) {
 		// Read and crypt the file
 		var self = this;
@@ -370,7 +381,6 @@ var Proof = {
 		reader.readAsBinaryString(file);
 	},
 	show: function(tagId) {
-		hideMessages();
 		if (this.filename) {
 			$(this.tagId+" .filename").html(this.filename);
 		} else {
@@ -389,12 +399,13 @@ var Proof = {
                 return;
             }
             var hash = Proof.getHash();
-            if (Hashes.get(hashType)) {
-                // Document uploaded
-                $(this.tagId+" .hash").html(hashType + ": " + Hashes.get(hashType));
+            $(this.tagId+" .hash").html("Stamped "+ hashType + " hash: " + hash);
+
+            if (Document.exist()) {
+                // Document just uploaded
+                run_verification();
             } else {
                 // Document not uploaded
-                $(this.tagId+" .hash").html("Stamped "+ hashType + " hash: " + hash);
                 verifying("Upload original stamped data to verify");
             }
         }
@@ -439,6 +450,7 @@ var Proof = {
             return;
         }
         if (Proof.isValid(f.name)){
+            Proof.init();
             Proof.setFile(f);
             Proof.setTagId('#document_holder');
             Proof.show();
@@ -447,6 +459,8 @@ var Proof = {
             $("#result_stamp").hide();
             $("#result_verify").show();
         } else {
+            Proof.init();
+            Document.init();
             Document.setFile(f);
             Document.setTagId('#document_holder');
             Document.show();
@@ -495,6 +509,7 @@ var Proof = {
         if (f === undefined){
             return;
         }
+        Document.init()
         Document.setFile(f);
         Document.setTagId('#stamped_holder');
         Document.show();
@@ -536,7 +551,7 @@ var Proof = {
 
     // Get info action on ots
 
-    $("#result_verify").click(function (event) {
+    $("#statuses .statuses-info").click(function (event) {
         event.preventDefault();
         run_info();
         return false;
@@ -704,46 +719,37 @@ function getParameterByName(name, url) {
  * STATUS ALERT MESSAGES
  */
 
-function verifying(text){
-    hideMessages();
-    $('.statuses_hashing .statuses-title').html("VERIFYING");
-    $('.statuses_hashing .statuses-description').html(text);
-    $('.statuses_hashing').show();
-}
-function stamping(text){
-    hideMessages();
-    $('.statuses_hashing .statuses-title').html("STAMPING");
-    $('.statuses_hashing .statuses-description').html(text);
-    $('.statuses_hashing').show();
-}
-function hashing(text){
-    hideMessages();
-    $('.statuses_hashing .statuses-title').html("HASHING");
-    $('.statuses_hashing .statuses-description').html(text);
-    $('.statuses_hashing').show();
-}
-function success(text){
-	hideMessages();
-	$('.statuses_success .statuses-title').html("SUCCESS!");
-	$('.statuses_success .statuses-description').html(text);
-	$('.statuses_success').show();
-}
-function failure(text){
-	hideMessages();
-	$('.statuses_failure .statuses-title').html("FAILURE!");
-	$('.statuses_failure .statuses-description').html(text);
-	$('.statuses_failure').show();
-}
-function warning(text){
-    hideMessages();
-    $('.statuses_warning .statuses-title').html("WARNING!");
-    $('.statuses_warning .statuses-description').html(text);
-    $('.statuses_warning').show();
+function message(title, text, cssClass, showInfo){
+	$('#statuses').attr('class','statuses '+cssClass);
+    $('#statuses .statuses-title').html(title);
+    $('#statuses .statuses-description').html(text);
+    message_info(showInfo);
+    $('#statuses').show();
 }
 
-function hideMessages() {
-	$('.statuses_hashing').hide();
-	$('.statuses_failure').hide();
-	$('.statuses_success').hide();
-    $('.statuses_warning').hide();
+function message_info(showInfo){
+    if(showInfo != undefined && showInfo == true){
+        $('#statuses .statuses-info').show();
+    } else if(showInfo != undefined && showInfo == false){
+        $('#statuses .statuses-info').hide();
+    }
+}
+
+function verifying(text){
+    message("VERIFYING", text, 'statuses_hashing', true);
+}
+function stamping(text){
+    message("STAMPING", text, 'statuses_hashing', false);
+}
+function hashing(text){
+    message("HASHING", text, 'statuses_hashing', false);
+}
+function success(text){
+    message("SUCCESS!", text, 'statuses_success');
+}
+function failure(text){
+    message("FAILURE!", text, 'statuses_failure');
+}
+function warning(text){
+    message("WARNING!", text, 'statuses_warning');
 }
