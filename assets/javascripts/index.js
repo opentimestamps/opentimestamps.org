@@ -477,6 +477,7 @@ var Proof = {
         }
         if (Proof.isValid(f.name)){
             Proof.init();
+            Document.init();
             Proof.setFile(f);
             Proof.setTagId('#document_holder');
             Proof.show();
