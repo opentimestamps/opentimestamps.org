@@ -47,9 +47,9 @@ function verify(ots, hash, hashType, filename) {
 	}
 	const detached = OpenTimestamps.DetachedTimestampFile.fromHash(op, hexToBytes(hash));
 	const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(ots);
-	OpenTimestamps.verify(detachedOts,detached).then( (result)=>{
+	OpenTimestamps.verify(detachedOts,detached).then( (results)=>{
 
-        if( Object.keys(result).length == 0 ){
+        if( Object.keys(results).length == 0 ){
         	// no attestation returned
 			if (detachedOts.timestamp.isTimestampComplete()) {
                 Proof.progressStop();
@@ -75,9 +75,10 @@ function verify(ots, hash, hashType, filename) {
 		} else {
 			Proof.progressStop();
 			var text = "";
-        	Object.keys(result).forEach(key => {
-        		text += upperFirstLetter(key)+" attests data existed as of " + (new Date(result[key] * 1000))+"<br>";
-			});
+			Object.keys(results).map(chain => {
+				var date = moment(results[chain].timestamp * 1000).tz(moment.tz.guess()).format('YYYY-MM-DD z')
+                text += upperFirstLetter(chain) + ' block ' + results[chain].height + ' attests existence as of ' + date + '<br>';
+    		});
         	success(text);
 		}
 	}).catch(err => {
