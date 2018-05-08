@@ -168,6 +168,7 @@ $(document).scroll(function () {
 
 var Hashes = {
 	init(){
+        this.progress = true;
         this["SHA1"] = CryptoJS.algo.SHA1.create();
         this["SHA256"] = CryptoJS.algo.SHA256.create();
         this["RIPEMD160"] = CryptoJS.algo.RIPEMD160.create();
@@ -176,9 +177,11 @@ var Hashes = {
 		return ["SHA1","SHA256","RIPEMD160"];
 	},
 	update(type,msg){
+        this.progress = true;
         this[type].update(msg);
 	},
 	get(type){
+        this.progress = false;
         if(this[type] === undefined){
             return undefined;
         }
@@ -189,6 +192,7 @@ var Hashes = {
 		return this[type];
 	},
 	set(type, hash){
+        this.progress = false;
         this[type] = hash;
 	}
 }
@@ -229,7 +233,7 @@ var Document = {
 
             function parseResult(offset, size, result) {
                 lastOffset = offset + size;
-                callbackProgress(evt.target.result);
+                callbackProgress(result);
                 if (offset + size >= file.size) {
                     lastOffset = 0;
                     callbackFinal();
@@ -331,7 +335,8 @@ var Document = {
             failure("Not supported hash type");
             return;
         }
-        if (Hashes.get(hashType)) {
+        $(this.tagId+" .hash").html("");
+        if (!Hashes.progress && Hashes.get(hashType)) {
             $(this.tagId+" .hash").html(hashType + ": " + Hashes.get(hashType));
         }
 	},
