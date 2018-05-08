@@ -16,7 +16,7 @@
       left: 50%;
       top: 0;
       bottom: 0;
-      width: 1px;
+      width: 0px; /*width: 1px;*/
       background-color: #dadada;
 
       @media (max-width: $container-responsive--width) {
@@ -80,7 +80,7 @@
     cursor: pointer;
     position: relative;
     transition: 0.3s border-color;
-    height: 160px;
+    height: 180px;
     padding-top: 96px;
     box-sizing: border-box;
     border-radius: 5px;

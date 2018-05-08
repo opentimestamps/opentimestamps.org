@@ -1,3 +1,6 @@
+
+/* OpenTimestamps functions */
+
 const OpenTimestamps = window.OpenTimestamps;
 
 function stamp(filename, hash, hashType) {
@@ -16,17 +19,16 @@ function stamp(filename, hash, hashType) {
 	const detached = OpenTimestamps.DetachedTimestampFile.fromHash(op, hexToBytes(hash));
 
 	OpenTimestamps.stamp(detached).then( ()=>{
-		console.log('STAMP result : ');
 		const ctx = new OpenTimestamps.Context.StreamSerialization();
 		detached.serialize(ctx);
 		const timestampBytes = ctx.getOutput();
 		download(filename, timestampBytes);
 		Document.progressStop();
-		successStamp('OpenTimestamps receipt created and download started');
+		success('OpenTimestamps receipt created and download started');
 	}).catch(err => {
 		console.log("err "+err);
 		Document.progressStop();
-		failureStamp("" + err);
+		failure("" + err);
 	});
 }
 
@@ -44,37 +46,43 @@ function verify(ots, hash, hashType, filename) {
 	}
 	const detached = OpenTimestamps.DetachedTimestampFile.fromHash(op, hexToBytes(hash));
 	const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(ots);
-	OpenTimestamps.verify(detachedOts,detached).then( (result)=>{
-        if( Object.keys(result).length == 0 ){
-			if (!detachedOts.timestamp.isTimestampComplete()) {
+	OpenTimestamps.verify(detachedOts,detached).then( (results)=>{
+
+        if( Object.keys(results).length == 0 ){
+        	// no attestation returned
+			if (detachedOts.timestamp.isTimestampComplete()) {
+                Proof.progressStop();
+                // check attestations
+                unknown = false;
+                detachedOts.timestamp.allAttestations().forEach(attestation => {
+                    if(attestation instanceof OpenTimestamps.Notary.UnknownAttestation){
+                    	unknown = true;
+                	}
+                	if (unknown) {
+                    	warning('Unknown attestation type');
+                	} else {
+                    	warning('Pending attestation');
+                	}
+            	});
+    		} else if(Proof.upgraded){
+                Proof.progressStop();
+        		warning('Pending attestation');
+			} else {
 				upgrade(ots, hash, hashType, filename);
 				Proof.upgraded = true;
-			} else {
-                Proof.progressStop();
-				// check attestations
-				unknown = false;
-                detachedOts.timestamp.allAttestations().forEach(attestation => {
-                	if(attestation instanceof OpenTimestamps.Notary.UnknownAttestation){
-                        unknown = true;
-					}
-                });
-                if (unknown){
-                    warningVerify('Unknown attestation type');
-				} else {
-                    warningVerify('Pending attestation');
-				}
 			}
 		} else {
 			Proof.progressStop();
 			var text = "";
-        	Object.keys(result).forEach(key => {
-        		text += upperFirstLetter(key)+" attests data existed as of " + (new Date(result[key] * 1000))+"<br>";
-			});
-        	successVerify(text);
+			Object.keys(results).map(chain => {
+				var date = moment(results[chain].timestamp * 1000).tz(moment.tz.guess()).format('YYYY-MM-DD z')
+                text += upperFirstLetter(chain) + ' block ' + results[chain].height + ' attests existence as of ' + date + '<br>';
+    		});
+        	success(text);
 		}
 	}).catch(err => {
-		Proof.progressStop();
-		failureVerify('Bad Attestation');
+        Proof.progressStop();
+		failure(err.message);
 	});
 }
 
@@ -89,22 +97,21 @@ function upgrade(ots, hash, hashType, filename) {
 	OpenTimestamps.upgrade(detachedOts).then( (changed)=>{
         const bytes = detachedOts.serializeToBytes();
 		if(changed){
-			//successVerify('Timestamp has been successfully upgraded!');
+			//success('Timestamp has been successfully upgraded!');
 			download(filename, bytes);
 		} else {
-			//failureVerify('File not changed');
+			//failure('File not changed');
 		}
     	verify(bytes, hash, hashType, filename);
 	}).catch(err => {
 		Proof.progressStop();
-    	failureVerify('Bad Attestation');
+    	failure('Bad Attestation');
 	});
 }
 
 
 
 $(document).ready(function () {
-	hideMessages();
 //	$('[data-toggle="tooltip"]').tooltip();
 });
 // Closes the sidebar menu
@@ -157,9 +164,11 @@ $(document).scroll(function () {
 });
 
 
+/* Hashes object to handle different hashes */
 
 var Hashes = {
 	init(){
+        this.progress = true;
         this["SHA1"] = CryptoJS.algo.SHA1.create();
         this["SHA256"] = CryptoJS.algo.SHA256.create();
         this["RIPEMD160"] = CryptoJS.algo.RIPEMD160.create();
@@ -168,9 +177,11 @@ var Hashes = {
 		return ["SHA1","SHA256","RIPEMD160"];
 	},
 	update(type,msg){
+        this.progress = true;
         this[type].update(msg);
 	},
 	get(type){
+        this.progress = false;
         if(this[type] === undefined){
             return undefined;
         }
@@ -181,107 +192,152 @@ var Hashes = {
 		return this[type];
 	},
 	set(type, hash){
+        this.progress = false;
         this[type] = hash;
 	}
 }
 
-/*
- * GLOBAL DOCUMENT OBJ
- */
+
+/* Document object to upload & parse document file */
 
 var Document = {
 	init : function (){
+        this.tagId = undefined;
         this.filename = undefined;
         this.filesize = undefined;
         Hashes.init();
 	},
+    setTagId : function(tagId){
+        this.tagId = tagId;
+    },
     setFile : function(file,hashType){
         this.filename = file.name;
         this.filesize = file.size;
     },
+    exist : function(){
+        return this.filename !== undefined && this.filesize !== undefined;
+    },
 	upload : function (file) {
+
+		// callbackRead function
 		var lastOffset = 0;
-		function callbackRead(reader, file, evt, callbackProgress, callbackFinal){
-			if(lastOffset === reader.offset) {
-				console.log("order",reader.offset, reader.size, reader.result);
-				lastOffset = reader.offset+reader.size;
-				callbackProgress(evt.target.result);
-				if ( reader.offset + reader.size >= file.size ){
-					callbackFinal();
-				}
-			} else {
-				console.log("not in order",reader.offset, reader.size, reader.result);
-				timeout = setTimeout(function () {
-					callbackRead(reader,file,evt, callbackProgress, callbackFinal);
-				}, 100);
-			}
-		}
+        var previous = [];
+        function callbackRead(reader, file, evt, callbackProgress, callbackFinal){
 
-		function parseFile(file, callbackProgress, callbackFinal) {
-			var chunkSize  = 1024*1024; // bytes
-			var offset     = 0;
-
-			var size=chunkSize;
-			var partial;
-			var index = 0;
-
-			if(file.size===0){
-                callbackFinal();
+            if(lastOffset !== reader.offset){
+                // out of order
+                //console.log("[",reader.size,"]",reader.offset,'->', reader.offset+reader.size,">>buffer");
+                previous.push({ offset: reader.offset, size: reader.size, result: reader.result});
+                return;
             }
 
-			while (offset < file.size) {
-				partial = file.slice(offset, offset+size);
+            function parseResult(offset, size, result) {
+                lastOffset = offset + size;
+                callbackProgress(result);
+                if (offset + size >= file.size) {
+                    lastOffset = 0;
+                    callbackFinal();
+                }
+            }
 
-				var reader = new FileReader;
-				reader.size = chunkSize;
-				reader.offset = offset;
-				reader.index = index;
-				reader.onload = function(evt) {
-					callbackRead(this, file, evt, callbackProgress, callbackFinal);
-				};
-				reader.readAsArrayBuffer(partial);
-				offset += chunkSize;
-				index += 1;
-			}
-		}
+            // in order
+            //console.log("[",reader.size,"]",reader.offset,'->', reader.offset+reader.size,"");
+            parseResult(reader.offset, reader.size, reader.result);
 
+            // resolve previous buffered
+            var buffered = [{}]
+            while (buffered.length > 0) {
+                buffered = previous.filter(function (item) {
+                    return item.offset === lastOffset;
+                });
+                buffered.forEach(function (item) {
+                    //console.log("[", item.size, "]", item.offset, '->', item.offset + item.size, "<<buffer");
+                    parseResult(item.offset, item.size, item.result);
+                    previous.remove(item);
+                })
+            }
+        }
+
+        // loading function
+        function loading(file, callbackProgress, callbackFinal) {
+            var chunkSize  = 1024*1024; // bytes
+            var offset     = 0;
+            var size=chunkSize;
+            var partial;
+            var index = 0;
+
+            if(file.size===0){
+                callbackFinal();
+            }
+            while (offset < file.size) {
+                partial = file.slice(offset, offset+size);
+                var reader = new FileReader;
+                reader.size = chunkSize;
+                reader.offset = offset;
+                reader.index = index;
+                reader.onload = function(evt) {
+                    callbackRead(this, file, evt, callbackProgress, callbackFinal);
+                };
+                reader.readAsArrayBuffer(partial);
+                offset += chunkSize;
+                index += 1;
+            }
+        }
+
+
+        // start upload
 		var counter = 0;
 		var self = this;
 
         Hashes.init();
-		console.log("file length: "+file.size);
-		loadingStamp('0%', 'Hashing');
+		hashing('0%');
 
-		parseFile(file,
+        loading(file,
 			function (data) {
 				var wordBuffer = CryptoJS.lib.WordArray.create(data);
                 Hashes.update("SHA1",wordBuffer);
                 Hashes.update("SHA256",wordBuffer);
                 Hashes.update("RIPEMD160",wordBuffer);
 				counter += data.byteLength;
-				loadingStamp((( counter / file.size)*100).toFixed(0) + '%', 'Hashing');
-				//console.log((( counter / file.size)*100).toFixed(0) + '%', 'Hashing');
+				hashing((( counter / file.size)*100).toFixed(0) + '%');
 
 			}, function (data) {
-                loadingStamp('100%', 'Hashing');
+                hashing('100%');
                 console.log('SHA1 '+Hashes.get("SHA1"));
                 console.log('SHA256 '+Hashes.get("SHA256"));
                 console.log('RIPEMD160 '+Hashes.get("RIPEMD160"));
-                showHashes();
+                self.show();
+                self.callback();
 			});
 	},
 	show : function(){
-		hideMessages();
 		if(this.filename) {
-			$("#document_filename").html(this.filename);
+			$(this.tagId+" .filename").html(this.filename);
 		} else {
-			$("#document_filename").html("Unknown name");
+			$(this.tagId+" .filename").html("Unknown name");
 		}
 		if(this.filesize) {
-			$("#document_filesize").html(" " + humanFileSize(this.filesize, true));
+			$(this.tagId+" .filesize").html(" " + humanFileSize(this.filesize, true));
 		} else {
-			$("#document_filesize").html("&nbsp;");
+			$(this.tagId+" .filesize").html("&nbsp;");
 		}
+
+        var hashType = "SHA256";
+        if (Proof.exist()) {
+            hashType = Proof.getHashType().toUpperCase();
+            if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
+                failure("Not supported hash type");
+                return;
+            }
+        }
+        if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
+            failure("Not supported hash type");
+            return;
+        }
+        $(this.tagId+" .hash").html("");
+        if (!Hashes.progress && Hashes.get(hashType)) {
+            $(this.tagId+" .hash").html(hashType + ": " + Hashes.get(hashType));
+        }
 	},
 	progressStart : function(){
 		this.percent = 0;
@@ -291,19 +347,39 @@ var Document = {
 		if (self.percent > 100) {
 			self.percent = 100;
 		}
-		loadingStamp(self.percent + ' %', 'Stamping')
+		stamping(self.percent + ' %', 'Stamping')
 		}, 100);
 	},
 	progressStop : function(){
 		clearInterval(this.interval);
+	},
+	callback : function(){
+		// Run automatically stamp or verify action
+        if(Proof.exist()) {
+            // Automatically verify
+            run_verification();
+        } else {
+            // Automatically stamp
+            run_stamping();
+        }
 	}
 };
 
+/* Proof object to upload & parse OTS file */
 
-/*
- * GLOBAL PROOF OBJ
- */
 var Proof = {
+    init : function(){
+        this.tagId = undefined;
+        this.data = undefined;
+        this.filename = undefined;
+        this.filesize = undefined;
+    },
+    isValid : function(fileName){
+        return fileName.match(/\.[0-9a-z]+$/i)[0] === ".ots"
+    },
+    setTagId : function(tagId){
+        this.tagId = tagId;
+    },
 	setFile : function(file){
 		this.data = undefined;
 		this.filename = file.name;
@@ -314,6 +390,9 @@ var Proof = {
 		this.filename = undefined;
 		this.filesize = undefined;
 	},
+	exist : function(){
+    	return this.filename !== undefined && this.filesize !== undefined && this.data !== undefined;
+	},
 	upload: function (file) {
 		// Read and crypt the file
 		var self = this;
@@ -323,24 +402,39 @@ var Proof = {
 			self.data = String(String(data));
 			self.filename = file.name;
 			self.filesize = file.size;
-			console.log('proof: ' + self.data);
 			self.show();
-            showHashes();
 		};
 		reader.readAsBinaryString(file);
 	},
-	show: function() {
-		hideMessages();
+	show: function(tagId) {
 		if (this.filename) {
-			$("#proof_filename").html(this.filename);
+			$(this.tagId+" .filename").html(this.filename);
 		} else {
-			$("#proof_filename").html("Unknown name");
+			$(this.tagId+" .filename").html("Unknown name");
 		}
 		if (this.filesize) {
-			$("#proof_filesize").html(" " + humanFileSize(this.filesize, true));
+			$(this.tagId+" .filesize").html(" " + humanFileSize(this.filesize, true));
 		} else {
-			$("#proof_filesize").html(" " + humanFileSize(this.data.length, true));
+			$(this.tagId+" .filesize").html(" " + humanFileSize(this.data.length, true));
 		}
+
+        if (Proof.data) {
+            var hashType = Proof.getHashType().toUpperCase();
+            if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
+                failure("Not supported hash type");
+                return;
+            }
+            var hash = Proof.getHash();
+            $(this.tagId+" .hash").html("Stamped "+ hashType + " hash: " + hash);
+
+            if (Document.exist()) {
+                // Document just uploaded
+                run_verification();
+            } else {
+                // Document not uploaded
+                verifying("Upload original stamped data to verify");
+            }
+        }
 	},
     getHashType : function (){
         const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(this.data ));
@@ -348,7 +442,7 @@ var Proof = {
     },
     getHash : function (){
         const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(this.data ));
-        return detachedOts.fileDigest();
+        return bytesToHex(detachedOts.fileDigest());
     },
     progressStart : function(){
 		this.percent = 0;
@@ -359,32 +453,13 @@ var Proof = {
 				if (self.percent > 100) {
 					self.percent = 100;
 				}
-				loadingVerify(self.percent + ' %', 'Verify')
+        		verifying(self.percent + ' %', 'Verify')
 			}, 100);
 	},
 	progressStop : function(){
 		clearInterval(this.interval);
 	}
 };
-
-function showHashes() {
-    if (!Proof.data) {
-        var hashType = "SHA256";
-        var hash = Hashes.get(hashType);
-        $("#document_hash").html(hashType + ": " + hash);
-        return;
-    }
-    var hashType = Proof.getHashType().toUpperCase();
-    if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
-        $("#proof_hash").html("Not supported hash type");
-        return;
-    }
-    var hash = Proof.getHash();
-    $("#proof_hash").html(hashType + ": " + bytesToHex(hash));
-    if (Hashes.get(hashType)) {
-        $("#document_hash").html(hashType + ": " + Hashes.get(hashType));
-    }
-}
 
 /*
 * STARTUP FUNCTION
@@ -393,22 +468,41 @@ function showHashes() {
 (function () {
 	// your page initialization code here
 	// the DOM will be available here
-	/*
-	 *Document section
-	 events handle to easy file uploading : drop, drag-over, drag-leave, click, file change
-	 */
 
+	// Document/Proof upload on #document_holder box
+
+	function document_holder_upload(f){
+        if (f === undefined){
+            return;
+        }
+        if (Proof.isValid(f.name)){
+            Proof.init();
+            Document.init();
+            Proof.setFile(f);
+            Proof.setTagId('#document_holder');
+            Proof.show();
+            Proof.upload(f);
+            $('#stamped_holder').show();
+            $("#result_stamp").hide();
+            $("#result_verify").show();
+        } else {
+            Proof.init();
+            Document.init();
+            Document.setFile(f);
+            Document.setTagId('#document_holder');
+            Document.show();
+            Document.upload(f);
+            $('#stamped_holder').hide();
+            $("#result_stamp").hide();
+            $("#result_verify").hide();
+        }
+	}
 	$('#document_holder').on('drop', function (event) {
 		event.preventDefault();
 		event.stopPropagation();
 		$(this).removeClass('hover');
 		var f = event.originalEvent.dataTransfer.files[0];
-		if (f === undefined){
-			return;
-		}
-		Document.setFile(f);
-		Document.show();
-		Document.upload(f);
+        document_holder_upload(f);
 		return false;
 	});
 	$('#document_holder').on('dragover', function (event) {
@@ -424,7 +518,6 @@ function showHashes() {
 		return false;
 	});
 	$('#document_holder').click(function (event) {
-		console.log('document_holder : click');
 		event.preventDefault();
 		event.stopPropagation();
 		document.getElementById('document_input').click();
@@ -432,92 +525,63 @@ function showHashes() {
 	});
 	$('#document_input').change(function (event) {
 		var f = event.target.files[0];
-		if (f === undefined){
-			return;
-		}
-		Document.setFile(f);
-		Document.show();
-		Document.upload(f);
-	});
-	$('#stampButton').click(function (event) {
-        const algorithm = getParameterByName('algorithm');
-        var hashType = "SHA256";
-        if (algorithm){
-            hashType = algorithm.toUpperCase();
-		}
-		if (Hashes.get(hashType)) {
-			stamp(Document.filename, Hashes.get(hashType), hashType);
-		} else {
-			failureStamp("To <strong>stamp</strong> you need to drop a file in the Data field")
-		}
-	});
-	/* Proof section */
-	$('#proof_holder').on('drop', function (event) {
-		event.preventDefault();
-		event.stopPropagation();
-		$(this).removeClass('hover');
-		var f = event.originalEvent.dataTransfer.files[0];
-		if (f === undefined){
-			return;
-		}
-		Proof.setFile(f);
-		Proof.show();
-		Proof.upload(f);
+        document_holder_upload(f);
 		return false;
 	});
-	$('#proof_holder').on('dragover', function (event) {
-		event.preventDefault();
-		event.stopPropagation();
-		$(this).addClass('hover');
-		return false;
-	});
-	$('#proof_holder').on('dragleave', function (event) {
-		event.preventDefault();
-		event.stopPropagation();
-		$(this).removeClass('hover');
-		return false;
-	});
-	$('#proof_holder').click(function (event) {
-		event.preventDefault();
-		event.stopPropagation();
-		document.getElementById('proof_input').click();
-		return false;
-	});
-	$('#proof_input').change(function (event) {
-		var f = event.target.files[0];
-		if (f === undefined){
-			return;
-		}
-		Proof.setFile(f);
-		Proof.show();
-		Proof.upload(f);
-	});
-	$('#verifyButton').click(function (event) {
-		if (Proof.data) {
-			Proof.progressStart();
 
-            var hashType = Proof.getHashType().toUpperCase();
-            if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
-                failureVerify("Not supported hash type");
-                return;
-            }
-            if (!Hashes.get(hashType)){
-                failureVerify("No file to verify; upload one first");
-                return;
-            }
-            Proof.upgraded = false;
-			verify(string2Bin(Proof.data), Hashes.get(hashType), hashType, Proof.filename);
-		} else {
-			failureVerify("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
-		}
-	});
-	$('#infoButton').click(function (event) {
-		if (Proof.data) {
-			location.href = "./info/?"+bytesToHex(string2Bin(Proof.data));
-		} else {
-			failureVerify("To <strong>info</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
-		}
-	});
+    // Document upload on #stamped_holder box
+
+	function stamped_holder_upload(f){
+        if (f === undefined){
+            return;
+        }
+        Document.init()
+        Document.setFile(f);
+        Document.setTagId('#stamped_holder');
+        Document.show();
+        Document.upload(f);
+	}
+    $('#stamped_holder').on('drop', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        $(this).removeClass('hover');
+        var f = event.originalEvent.dataTransfer.files[0];
+        stamped_holder_upload(f);
+        return false;
+    });
+    $('#stamped_holder').on('dragover', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        $(this).addClass('hover');
+        return false;
+    });
+    $('#stamped_holder').on('dragleave', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        $(this).removeClass('hover');
+        return false;
+    });
+    $('#stamped_holder').click(function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        document.getElementById('stamped_input').click();
+        return false;
+    });
+    $('#stamped_input').change(function (event) {
+        event.preventDefault();
+        var f = event.target.files[0];
+        stamped_holder_upload(f);
+        return false;
+    });
+
+    // Get info action on ots
+
+    $("#statuses .statuses-info").click(function (event) {
+        event.preventDefault();
+        run_info();
+        return false;
+    });
+
 
 	// Handle GET parameters
 	const digest = getParameterByName('digest');
@@ -534,11 +598,65 @@ function showHashes() {
 	}
 	// autorun proof
 	if(digest && ots){
-		$('#verifyButton').click();
+        run_verification();
 	}
 
 })();
 
+/* Runnable functions on gui to start processes */
+
+function run_stamping(){
+    const algorithm = getParameterByName('algorithm');
+    var hashType = "SHA256";
+    if (algorithm){
+        hashType = algorithm.toUpperCase();
+    }
+    if (Hashes.get(hashType)) {
+        stamp(Document.filename, Hashes.get(hashType), hashType);
+    } else {
+        failure("To <strong>stamp</strong> you need to drop a file in the Data field");
+    }
+}
+
+function run_verification(){
+    if (Proof.data) {
+        Proof.progressStart();
+
+        var hashType = Proof.getHashType().toUpperCase();
+        if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
+            failure("Not supported hash type");
+            return;
+        }
+        if (!Hashes.get(hashType)){
+            failure("No file to verify; upload one first");
+            return;
+        }
+        Proof.upgraded = false;
+        verify(string2Bin(Proof.data), Hashes.get(hashType), hashType, Proof.filename);
+    } else {
+        failure("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
+    }
+}
+
+function run_info(){
+    if (Proof.data) {
+        location.href = "./info/?"+bytesToHex(string2Bin(Proof.data));
+    } else {
+        failure("To <strong>info</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
+    }
+}
+
+/*
+ * EXTENDS ARRAY
+ */
+Array.prototype.remove = Array.prototype.remove || function(val){
+    var i = this.length;
+    while(i--){
+        if (this[i] === val){
+            this.splice(i,1);
+        }
+    }
+};
 
 /*
  * COMMON FUNCTIONS
@@ -638,55 +756,37 @@ function getParameterByName(name, url) {
  * STATUS ALERT MESSAGES
  */
 
-
-function loadingStamp(title, text){
-	$('#stamp .statuses_hashing .statuses-title').html(title);
-	$('#stamp .statuses_hashing .statuses-description').html(text);
-	$('#stamp .statuses_hashing').show();
-}
-function successStamp(text){
-	hideMessages();
-	$('#stamp .statuses_success .statuses-title').html("SUCCESS!");
-	$('#stamp .statuses_success .statuses-description').html(text);
-	$('#stamp .statuses_success').show();
-}
-function failureStamp(text){
-	hideMessages();
-	$('#stamp .statuses_failure .statuses-title').html("FAILURE!");
-	$('#stamp .statuses_failure .statuses-description').html(text);
-	$('#stamp .statuses_failure').show();
+function message(title, text, cssClass, showInfo){
+	$('#statuses').attr('class','statuses '+cssClass);
+    $('#statuses .statuses-title').html(title);
+    $('#statuses .statuses-description').html(text);
+    message_info(showInfo);
+    $('#statuses').show();
 }
 
-function loadingVerify(title, text){
-	$('#verify .statuses_hashing .statuses-title').html(title);
-	$('#verify .statuses_hashing .statuses-description').html(text);
-	$('#verify .statuses_hashing').show();
-}
-function successVerify(text){
-	hideMessages();
-	$('#verify .statuses_success .statuses-title').html("SUCCESS!");
-	$('#verify .statuses_success .statuses-description').html(text);
-	$('#verify .statuses_success').show();
-}
-function failureVerify(text){
-	hideMessages();
-	$('#verify .statuses_failure .statuses-title').html("FAILURE!");
-	$('#verify .statuses_failure .statuses-description').html(text);
-	$('#verify .statuses_failure').show();
-}
-function warningVerify(text){
-    hideMessages();
-    $('#verify .statuses_warning .statuses-title').html("WARNING!");
-    $('#verify .statuses_warning .statuses-description').html(text);
-    $('#verify .statuses_warning').show();
+function message_info(showInfo){
+    if(showInfo != undefined && showInfo == true){
+        $('#statuses .statuses-info').show();
+    } else if(showInfo != undefined && showInfo == false){
+        $('#statuses .statuses-info').hide();
+    }
 }
 
-function hideMessages() {
-	$('#stamp .statuses_hashing').hide();
-	$('#stamp .statuses_failure').hide();
-	$('#stamp .statuses_success').hide();
-	$('#verify .statuses_hashing').hide();
-	$('#verify .statuses_failure').hide();
-	$('#verify .statuses_success').hide();
-    $('#verify .statuses_warning').hide();
+function verifying(text){
+    message("VERIFYING", text, 'statuses_hashing', true);
+}
+function stamping(text){
+    message("STAMPING", text, 'statuses_hashing', false);
+}
+function hashing(text){
+    message("HASHING", text, 'statuses_hashing', false);
+}
+function success(text){
+    message("SUCCESS!", text, 'statuses_success');
+}
+function failure(text){
+    message("FAILURE!", text, 'statuses_failure');
+}
+function warning(text){
+    message("WARNING!", text, 'statuses_warning');
 }
