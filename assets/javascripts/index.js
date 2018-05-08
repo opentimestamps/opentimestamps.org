@@ -19,7 +19,6 @@ function stamp(filename, hash, hashType) {
 	const detached = OpenTimestamps.DetachedTimestampFile.fromHash(op, hexToBytes(hash));
 
 	OpenTimestamps.stamp(detached).then( ()=>{
-		console.log('STAMP result : ');
 		const ctx = new OpenTimestamps.Context.StreamSerialization();
 		detached.serialize(ctx);
 		const timestampBytes = ctx.getOutput();
@@ -227,7 +226,7 @@ var Document = {
 
             if(lastOffset !== reader.offset){
                 // out of order
-                console.log("[",reader.size,"]",reader.offset,'->', reader.offset+reader.size,">>buffer");
+                //console.log("[",reader.size,"]",reader.offset,'->', reader.offset+reader.size,">>buffer");
                 previous.push({ offset: reader.offset, size: reader.size, result: reader.result});
                 return;
             }
@@ -242,7 +241,7 @@ var Document = {
             }
 
             // in order
-            console.log("[",reader.size,"]",reader.offset,'->', reader.offset+reader.size,"");
+            //console.log("[",reader.size,"]",reader.offset,'->', reader.offset+reader.size,"");
             parseResult(reader.offset, reader.size, reader.result);
 
             // resolve previous buffered
@@ -252,7 +251,7 @@ var Document = {
                     return item.offset === lastOffset;
                 });
                 buffered.forEach(function (item) {
-                    console.log("[", item.size, "]", item.offset, '->', item.offset + item.size, "<<buffer");
+                    //console.log("[", item.size, "]", item.offset, '->', item.offset + item.size, "<<buffer");
                     parseResult(item.offset, item.size, item.result);
                     previous.remove(item);
                 })
@@ -291,7 +290,6 @@ var Document = {
 		var self = this;
 
         Hashes.init();
-		console.log("file length: "+file.size);
 		hashing('0%');
 
         loading(file,
@@ -404,7 +402,6 @@ var Proof = {
 			self.data = String(String(data));
 			self.filename = file.name;
 			self.filesize = file.size;
-			console.log('proof: ' + self.data);
 			self.show();
 		};
 		reader.readAsBinaryString(file);
@@ -520,7 +517,6 @@ var Proof = {
 		return false;
 	});
 	$('#document_holder').click(function (event) {
-		console.log('document_holder : click');
 		event.preventDefault();
 		event.stopPropagation();
 		document.getElementById('document_input').click();
@@ -565,7 +561,6 @@ var Proof = {
         return false;
     });
     $('#stamped_holder').click(function (event) {
-        console.log('stamped_holder : click');
         event.preventDefault();
         event.stopPropagation();
         document.getElementById('stamped_input').click();
