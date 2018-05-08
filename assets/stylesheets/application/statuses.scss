@@ -22,6 +22,21 @@
     color: #004eaa;
   }
 
+  @-webkit-keyframes rotating {
+      from{
+          -webkit-transform: rotate(0deg);
+      }
+      to{
+          -webkit-transform: rotate(360deg);
+      }
+  }
+
+  &_hashing {
+    &:before {
+      -webkit-animation: rotating 2s linear infinite;
+    }
+  }
+
   &_stamping,
   &_hashing {
     &:before {
