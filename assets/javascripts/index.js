@@ -214,51 +214,74 @@ var Document = {
         return this.filename !== undefined && this.filesize !== undefined;
     },
 	upload : function (file) {
+
+		// callbackRead function
 		var lastOffset = 0;
-		function callbackRead(reader, file, evt, callbackProgress, callbackFinal){
-			if(lastOffset === reader.offset) {
-				console.log("order",reader.offset, reader.size, reader.result);
-				lastOffset = reader.offset+reader.size;
-				callbackProgress(evt.target.result);
-				if ( reader.offset + reader.size >= file.size ){
-					callbackFinal();
-				}
-			} else {
-				console.log("not in order",reader.offset, reader.size, reader.result);
-				timeout = setTimeout(function () {
-					callbackRead(reader,file,evt, callbackProgress, callbackFinal);
-				}, 100);
-			}
-		}
+        var previous = [];
+        function callbackRead(reader, file, evt, callbackProgress, callbackFinal){
 
-		function parseFile(file, callbackProgress, callbackFinal) {
-			var chunkSize  = 1024*1024; // bytes
-			var offset     = 0;
-
-			var size=chunkSize;
-			var partial;
-			var index = 0;
-
-			if(file.size===0){
-                callbackFinal();
+            if(lastOffset !== reader.offset){
+                // out of order
+                console.log("[",reader.size,"]",reader.offset,'->', reader.offset+reader.size,">>buffer");
+                previous.push({ offset: reader.offset, size: reader.size, result: reader.result});
+                return;
             }
 
-			while (offset < file.size) {
-				partial = file.slice(offset, offset+size);
+            function parseResult(offset, size, result) {
+                lastOffset = offset + size;
+                callbackProgress(evt.target.result);
+                if (offset + size >= file.size) {
+                    lastOffset = 0;
+                    callbackFinal();
+                }
+            }
 
-				var reader = new FileReader;
-				reader.size = chunkSize;
-				reader.offset = offset;
-				reader.index = index;
-				reader.onload = function(evt) {
-					callbackRead(this, file, evt, callbackProgress, callbackFinal);
-				};
-				reader.readAsArrayBuffer(partial);
-				offset += chunkSize;
-				index += 1;
-			}
-		}
+            // in order
+            console.log("[",reader.size,"]",reader.offset,'->', reader.offset+reader.size,"");
+            parseResult(reader.offset, reader.size, reader.result);
 
+            // resolve previous buffered
+            var buffered = [{}]
+            while (buffered.length > 0) {
+                buffered = previous.filter(function (item) {
+                    return item.offset === lastOffset;
+                });
+                buffered.forEach(function (item) {
+                    console.log("[", item.size, "]", item.offset, '->', item.offset + item.size, "<<buffer");
+                    parseResult(item.offset, item.size, item.result);
+                    previous.remove(item);
+                })
+            }
+        }
+
+        // loading function
+        function loading(file, callbackProgress, callbackFinal) {
+            var chunkSize  = 1024*1024; // bytes
+            var offset     = 0;
+            var size=chunkSize;
+            var partial;
+            var index = 0;
+
+            if(file.size===0){
+                callbackFinal();
+            }
+            while (offset < file.size) {
+                partial = file.slice(offset, offset+size);
+                var reader = new FileReader;
+                reader.size = chunkSize;
+                reader.offset = offset;
+                reader.index = index;
+                reader.onload = function(evt) {
+                    callbackRead(this, file, evt, callbackProgress, callbackFinal);
+                };
+                reader.readAsArrayBuffer(partial);
+                offset += chunkSize;
+                index += 1;
+            }
+        }
+
+
+        // start upload
 		var counter = 0;
 		var self = this;
 
@@ -266,7 +289,7 @@ var Document = {
 		console.log("file length: "+file.size);
 		hashing('0%');
 
-		parseFile(file,
+        loading(file,
 			function (data) {
 				var wordBuffer = CryptoJS.lib.WordArray.create(data);
                 Hashes.update("SHA1",wordBuffer);
@@ -620,6 +643,18 @@ function run_info(){
         failure("To <strong>info</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
     }
 }
+
+/*
+ * EXTENDS ARRAY
+ */
+Array.prototype.remove = Array.prototype.remove || function(val){
+    var i = this.length;
+    while(i--){
+        if (this[i] === val){
+            this.splice(i,1);
+        }
+    }
+};
 
 /*
  * COMMON FUNCTIONS
