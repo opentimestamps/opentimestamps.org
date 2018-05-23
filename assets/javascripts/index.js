@@ -32,7 +32,7 @@ function stamp(filename, hash, hashType) {
 	});
 }
 
-function verify(ots, hash, hashType, filename) {
+function upgrade_verify(ots, hash, hashType, filename) {
 	// OpenTimestamps command
 	var op;
 	if (hashType == "SHA1"){
@@ -46,33 +46,39 @@ function verify(ots, hash, hashType, filename) {
 	}
 	const detached = OpenTimestamps.DetachedTimestampFile.fromHash(op, hexToBytes(hash));
 	const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(ots);
-	OpenTimestamps.verify(detachedOts,detached).then( (results)=>{
+
+    Proof.progressStart();
+
+    // OpenTimestamps upgrade command
+    OpenTimestamps.upgrade(detachedOts).then( (changed)=>{
+        const bytes = detachedOts.serializeToBytes();
+    	if(changed){
+        	//success('Timestamp has been successfully upgraded!');
+        	download(filename, bytes);
+
+        	// update proof
+        	Proof.data = bin2String(bytes);
+    	} else {
+        	// File not changed: just upgraded
+    	}
+    	return OpenTimestamps.verify(detachedOts,detached)
+    }).then( (results)=>{
+        Proof.progressStop();
 
         if( Object.keys(results).length == 0 ){
         	// no attestation returned
 			if (detachedOts.timestamp.isTimestampComplete()) {
                 Proof.progressStop();
                 // check attestations
-                unknown = false;
                 detachedOts.timestamp.allAttestations().forEach(attestation => {
                     if(attestation instanceof OpenTimestamps.Notary.UnknownAttestation){
-                    	unknown = true;
-                	}
-                	if (unknown) {
                     	warning('Unknown attestation type');
-                	} else {
-                    	warning('Pending attestation');
                 	}
             	});
-    		} else if(Proof.upgraded){
-                Proof.progressStop();
-        		warning('Pending attestation');
-			} else {
-				upgrade(ots, hash, hashType, filename);
-				Proof.upgraded = true;
+    		} else {
+                warning('Pending attestation');
 			}
 		} else {
-			Proof.progressStop();
 			var text = "";
 			Object.keys(results).map(chain => {
 				var date = moment(results[chain].timestamp * 1000).tz(moment.tz.guess()).format('YYYY-MM-DD z')
@@ -85,31 +91,6 @@ function verify(ots, hash, hashType, filename) {
 		failure(err.message);
 	});
 }
-
-function upgrade(ots, hash, hashType, filename) {
-	// Check not loop race condition
-	if (Proof.upgraded == true) {
-		return false;
-	}
-
-	// OpenTimestamps command
-	const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(ots);
-	OpenTimestamps.upgrade(detachedOts).then( (changed)=>{
-        const bytes = detachedOts.serializeToBytes();
-		if(changed){
-			//success('Timestamp has been successfully upgraded!');
-			download(filename, bytes);
-		} else {
-			//failure('File not changed');
-		}
-    	verify(bytes, hash, hashType, filename);
-	}).catch(err => {
-		Proof.progressStop();
-    	failure('Bad Attestation');
-	});
-}
-
-
 
 $(document).ready(function () {
 //	$('[data-toggle="tooltip"]').tooltip();
@@ -445,6 +426,7 @@ var Proof = {
         return bytesToHex(detachedOts.fileDigest());
     },
     progressStart : function(){
+        this.stopInterval = false;
 		this.percent = 0;
 
 		var self = this;
@@ -453,10 +435,13 @@ var Proof = {
 				if (self.percent > 100) {
 					self.percent = 100;
 				}
-        		verifying(self.percent + ' %', 'Verify')
+				if(self.stopInterval == false) {
+                    verifying(self.percent + ' %', 'Verify')
+                }
 			}, 100);
 	},
 	progressStop : function(){
+        this.stopInterval = true;
 		clearInterval(this.interval);
 	}
 };
@@ -632,7 +617,7 @@ function run_verification(){
             return;
         }
         Proof.upgraded = false;
-        verify(string2Bin(Proof.data), Hashes.get(hashType), hashType, Proof.filename);
+        upgrade_verify(string2Bin(Proof.data), Hashes.get(hashType), hashType, Proof.filename);
     } else {
         failure("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
     }
