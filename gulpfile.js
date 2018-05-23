@@ -12,7 +12,6 @@ const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
 const connect = require('gulp-connect');
 const clean = require('gulp-clean');
-const bower = require('gulp-bower');
 const source = require('vinyl-source-stream');
 const runSequence = require('run-sequence');
 
@@ -44,12 +43,9 @@ gulp.task('javascript', function() {
         .pipe(gulp.dest('assets/javascripts'));
 });
 
-gulp.task('bower', function() {
-    return bower();
-});
 
 gulp.task('default', function(done) {
-    runSequence('clean','sass','javascript','bower', function(){
+    runSequence('clean','sass','javascript', function(){
         done();
     });
 });
