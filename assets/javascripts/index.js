@@ -668,7 +668,8 @@ function humanFileSize(bytes, si) {
 // Download file
 function download(filename, text) {
 	var blob = new Blob([text], {type: "octet/stream"});
-	saveAs(blob,  filename + '.ots');
+
+	saveAs(blob, filename + (Proof.isValid(filename) ? '' : '.ots') );
 }
 
 function string2Bin(str) {
