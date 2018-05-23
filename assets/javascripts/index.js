@@ -356,7 +356,9 @@ var Proof = {
         this.filesize = undefined;
     },
     isValid : function(fileName){
-        return fileName.match(/\.[0-9a-z]+$/i)[0] === ".ots"
+        const res = fileName.match(/\.[0-9a-z]+$/i);
+		return res !== null && res.length > 0 && res[0] === ".ots";
+
     },
     setTagId : function(tagId){
         this.tagId = tagId;
