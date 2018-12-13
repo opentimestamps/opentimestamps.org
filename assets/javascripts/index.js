@@ -52,7 +52,7 @@ function upgrade_verify(ots, hash, hashType, filename) {
     // OpenTimestamps upgrade command
     OpenTimestamps.upgrade(detachedOts).then( (changed)=>{
         const bytes = detachedOts.serializeToBytes();
-    	if(changed){
+    	if (changed) {
         	//success('Timestamp has been successfully upgraded!');
         	download(filename, bytes);
 
@@ -61,17 +61,17 @@ function upgrade_verify(ots, hash, hashType, filename) {
     	} else {
         	// File not changed: just upgraded
     	}
-    	return OpenTimestamps.verify(detachedOts,detached)
+    	return OpenTimestamps.verifyTimestamp(detachedOts.timestamp)
     }).then( (results)=>{
         Proof.progressStop();
 
-        if( Object.keys(results).length == 0 ){
+        if (Object.keys(results).length == 0) {
         	// no attestation returned
 			if (detachedOts.timestamp.isTimestampComplete()) {
                 Proof.progressStop();
                 // check attestations
                 detachedOts.timestamp.allAttestations().forEach(attestation => {
-                    if(attestation instanceof OpenTimestamps.Notary.UnknownAttestation){
+                    if (attestation instanceof OpenTimestamps.Notary.UnknownAttestation) {
                     	warning('Unknown attestation type');
                 	}
             	});
@@ -84,7 +84,7 @@ function upgrade_verify(ots, hash, hashType, filename) {
 				var date = moment(results[chain].timestamp * 1000).tz(moment.tz.guess()).format('YYYY-MM-DD z')
                 text += upperFirstLetter(chain) + ' block ' + results[chain].height + ' attests existence as of ' + date + '<br>';
     		});
-        	success(text);
+        	verified(text);
 		}
 	}).catch(err => {
         Proof.progressStop();
@@ -148,31 +148,31 @@ $(document).scroll(function () {
 /* Hashes object to handle different hashes */
 
 var Hashes = {
-	init(){
+	init() {
         this.progress = true;
         this["SHA1"] = CryptoJS.algo.SHA1.create();
         this["SHA256"] = CryptoJS.algo.SHA256.create();
         this["RIPEMD160"] = CryptoJS.algo.RIPEMD160.create();
 	},
-	getSupportedTypes(){
+	getSupportedTypes() {
 		return ["SHA1","SHA256","RIPEMD160"];
 	},
-	update(type,msg){
+	update(type,msg) {
         this.progress = true;
         this[type].update(msg);
 	},
-	get(type){
+	get(type) {
         this.progress = false;
-        if(this[type] === undefined){
+        if (this[type] === undefined) {
             return undefined;
         }
-		if(typeof(this[type])=="string"){
+		if (typeof(this[type])=="string") {
 			return this[type];
 		}
         this[type] = this[type].finalize().toString();
 		return this[type];
 	},
-	set(type, hash){
+	set(type, hash) {
         this.progress = false;
         this[type] = hash;
 	}
@@ -180,39 +180,36 @@ var Hashes = {
 
 
 /* Document object to upload & parse document file */
-
 var Document = {
-	init : function (){
+	init : function() {
         this.tagId = undefined;
         this.filename = undefined;
         this.filesize = undefined;
         Hashes.init();
 	},
-    setTagId : function(tagId){
+    setTagId : function(tagId) {
         this.tagId = tagId;
     },
-    setFile : function(file,hashType){
+    setFile : function(file, hashType) {
         this.filename = file.name;
         this.filesize = file.size;
     },
-    exist : function(){
+    exist : function() {
         return this.filename !== undefined && this.filesize !== undefined;
     },
-	upload : function (file) {
-
+	upload : function(file) {
 		// callbackRead function
 		var lastOffset = 0;
         var previous = [];
-        function callbackRead(reader, file, evt, callbackProgress, callbackFinal){
-
-            if(lastOffset !== reader.offset){
+        function callbackRead(reader, file, evt, callbackProgress, callbackFinal) {
+            if (lastOffset !== reader.offset) {
                 // out of order
                 //console.log("[",reader.size,"]",reader.offset,'->', reader.offset+reader.size,">>buffer");
                 previous.push({ offset: reader.offset, size: reader.size, result: reader.result});
                 return;
             }
 
-            function parseResult(offset, size, result) {
+			function parseResult(offset, size, result) {
                 lastOffset = offset + size;
                 callbackProgress(result);
                 if (offset + size >= file.size) {
@@ -247,7 +244,7 @@ var Document = {
             var partial;
             var index = 0;
 
-            if(file.size===0){
+            if (file.size===0) {
                 callbackFinal();
             }
             while (offset < file.size) {
@@ -291,13 +288,13 @@ var Document = {
                 self.callback();
 			});
 	},
-	show : function(){
-		if(this.filename) {
+	show : function() {
+		if (this.filename) {
 			$(this.tagId+" .filename").html(this.filename);
 		} else {
-			$(this.tagId+" .filename").html("Unknown name");
+			$(this.tagId+" .filename").html("&nbsp;");
 		}
-		if(this.filesize) {
+		if (this.filesize) {
 			$(this.tagId+" .filesize").html(" " + humanFileSize(this.filesize, true));
 		} else {
 			$(this.tagId+" .filesize").html("&nbsp;");
@@ -307,20 +304,21 @@ var Document = {
         if (Proof.exist()) {
             hashType = Proof.getHashType().toUpperCase();
             if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
-                failure("Not supported hash type");
+                failure("Unsupported hash type");
                 return;
             }
         }
         if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
-            failure("Not supported hash type");
+            failure("Unsupported hash type");
             return;
         }
-        $(this.tagId+" .hash").html("");
         if (!Hashes.progress && Hashes.get(hashType)) {
             $(this.tagId+" .hash").html(hashType + ": " + Hashes.get(hashType));
-        }
+        } else {
+			$(this.tagId+" .hash").html("Drop here the original file to check that its hash matches the stamped one");
+		}
 	},
-	progressStart : function(){
+	progressStart : function() {
 		this.percent = 0;
 		var self = this;
 		this.interval = setInterval(() => {
@@ -331,15 +329,18 @@ var Document = {
 		stamping(self.percent + ' %', 'Stamping')
 		}, 100);
 	},
-	progressStop : function(){
+	progressStop : function() {
 		clearInterval(this.interval);
 	},
-	callback : function(){
+	callback : function() {
 		// Run automatically stamp or verify action
-        if(Proof.exist()) {
-            // Automatically verify
-            run_verification();
-        } else {
+        if (Proof.exist()) {
+			if (Proof.getHash() == Hashes.get("SHA256")) {
+				success('The provided file is the stamped one: its hash value matches the stamped one')
+			} else {
+				warning('The provided file is not the stamped one: its hash value does not match the stamped one')
+			}
+		} else {
             // Automatically stamp
             run_stamping();
         }
@@ -347,36 +348,35 @@ var Document = {
 };
 
 /* Proof object to upload & parse OTS file */
-
 var Proof = {
-    init : function(){
+    init : function() {
         this.tagId = undefined;
         this.data = undefined;
         this.filename = undefined;
         this.filesize = undefined;
     },
-    isValid : function(fileName){
+    isValid : function(fileName) {
         const res = fileName.match(/\.[0-9a-z]+$/i);
 		return res !== null && res.length > 0 && res[0] === ".ots";
 
     },
-    setTagId : function(tagId){
+    setTagId : function(tagId) {
         this.tagId = tagId;
     },
-	setFile : function(file){
+	setFile : function(file) {
 		this.data = undefined;
 		this.filename = file.name;
 		this.filesize = file.size;
 	},
-	setArray : function(buffer){
+	setArray : function(buffer) {
 		this.data = buffer;
 		this.filename = undefined;
 		this.filesize = undefined;
 	},
-	exist : function(){
+	exist : function() {
     	return this.filename !== undefined && this.filesize !== undefined && this.data !== undefined;
 	},
-	upload: function (file) {
+	upload: function(file) {
 		// Read and crypt the file
 		var self = this;
 		var reader = new FileReader();
@@ -410,24 +410,18 @@ var Proof = {
             var hash = Proof.getHash();
             $(this.tagId+" .hash").html("Stamped "+ hashType + " hash: " + hash);
 
-            if (Document.exist()) {
-                // Document just uploaded
                 run_verification();
-            } else {
-                // Document not uploaded
-                verifying("Upload original stamped data to verify");
             }
-        }
 	},
-    getHashType : function (){
+    getHashType : function() {
         const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(this.data ));
         return detachedOts.fileHashOp._HASHLIB_NAME().toUpperCase();
     },
-    getHash : function (){
+    getHash : function() {
         const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(this.data ));
         return bytesToHex(detachedOts.fileDigest());
     },
-    progressStart : function(){
+    progressStart : function() {
         this.stopInterval = false;
 		this.percent = 0;
 
@@ -442,160 +436,132 @@ var Proof = {
                 }
 			}, 100);
 	},
-	progressStop : function(){
+	progressStop : function() {
         this.stopInterval = true;
 		clearInterval(this.interval);
 	}
 };
 
-/*
-* STARTUP FUNCTION
-*/
-
+/* STARTUP FUNCTION */
 (function () {
 	// your page initialization code here
 	// the DOM will be available here
 
-	// Document/Proof upload on #document_holder box
-
-	function document_holder_upload(f){
-        if (f === undefined){
+	// Document/Proof upload on #dropbox1 box
+	function dropbox1_upload(f) {
+        if (f === undefined) {
             return;
         }
-        if (Proof.isValid(f.name)){
-            Proof.init();
+		if (Proof.isValid(f.name)) {
             Document.init();
+            Document.setTagId('#dropbox2');
+            Document.show();
+			$('#dropbox2').show();
+			$("#document-status").hide();
+
+			Proof.init();
             Proof.setFile(f);
-            Proof.setTagId('#document_holder');
+            Proof.setTagId('#dropbox1');
             Proof.show();
             Proof.upload(f);
-            $('#stamped_holder').show();
-            $("#result_stamp").hide();
-            $("#result_verify").show();
-        } else {
+			$("#proof-status").show();
+		} else {
             Proof.init();
-            Document.init();
+			$("#proof-status").hide();
+
+			Document.init();
             Document.setFile(f);
-            Document.setTagId('#document_holder');
+            Document.setTagId('#dropbox1');
             Document.show();
             Document.upload(f);
-            $('#stamped_holder').hide();
-            $("#result_stamp").hide();
-            $("#result_verify").hide();
+			$('#dropbox2').hide();
+			$("#document-status").show();
         }
 	}
-	$('#document_holder').on('drop', function (event) {
+	$('#dropbox1').on('drop', function (event) {
 		event.preventDefault();
 		event.stopPropagation();
 		$(this).removeClass('hover');
 		var f = event.originalEvent.dataTransfer.files[0];
-        document_holder_upload(f);
+        dropbox1_upload(f);
 		return false;
 	});
-	$('#document_holder').on('dragover', function (event) {
+	$('#dropbox1').on('dragover', function (event) {
 		event.preventDefault();
 		event.stopPropagation();
 		$(this).addClass('hover');
 		return false;
 	});
-	$('#document_holder').on('dragleave', function (event) {
+	$('#dropbox1').on('dragleave', function (event) {
 		event.preventDefault();
 		event.stopPropagation();
 		$(this).removeClass('hover');
 		return false;
 	});
-	$('#document_holder').click(function (event) {
+	$('#dropbox1').click(function (event) {
 		event.preventDefault();
 		event.stopPropagation();
-		document.getElementById('document_input').click();
+		document.getElementById('dropbox1_input').click();
 		return false;
 	});
-	$('#document_input').change(function (event) {
+	$('#dropbox1_input').change(function (event) {
 		var f = event.target.files[0];
-        document_holder_upload(f);
+        dropbox1_upload(f);
 		return false;
 	});
 
-    // Document upload on #stamped_holder box
-
-	function stamped_holder_upload(f){
-        if (f === undefined){
+    // Document upload on #dropbox2 box
+	function dropbox2_upload(f) {
+        if (f === undefined) {
             return;
         }
+		$('#document-status').show();
         Document.init()
         Document.setFile(f);
-        Document.setTagId('#stamped_holder');
+        Document.setTagId('#dropbox2');
         Document.show();
         Document.upload(f);
 	}
-    $('#stamped_holder').on('drop', function (event) {
+    $('#dropbox2').on('drop', function (event) {
         event.preventDefault();
         event.stopPropagation();
         $(this).removeClass('hover');
         var f = event.originalEvent.dataTransfer.files[0];
-        stamped_holder_upload(f);
+        dropbox2_upload(f);
         return false;
     });
-    $('#stamped_holder').on('dragover', function (event) {
+    $('#dropbox2').on('dragover', function (event) {
         event.preventDefault();
         event.stopPropagation();
         $(this).addClass('hover');
         return false;
     });
-    $('#stamped_holder').on('dragleave', function (event) {
+    $('#dropbox2').on('dragleave', function (event) {
         event.preventDefault();
         event.stopPropagation();
         $(this).removeClass('hover');
         return false;
     });
-    $('#stamped_holder').click(function (event) {
+    $('#dropbox2').click(function (event) {
         event.preventDefault();
         event.stopPropagation();
-        document.getElementById('stamped_input').click();
+        document.getElementById('dropbox2_input').click();
         return false;
     });
-    $('#stamped_input').change(function (event) {
+    $('#dropbox2_input').change(function (event) {
         event.preventDefault();
         var f = event.target.files[0];
-        stamped_holder_upload(f);
+        dropbox2_upload(f);
         return false;
     });
-
-    // Get info action on ots
-
-    $("#statuses .statuses-info").click(function (event) {
-        event.preventDefault();
-        run_info();
-        return false;
-    });
-
-
-	// Handle GET parameters
-	const digest = getParameterByName('digest');
-    const algorithm = getParameterByName('algorithm');
-	if(digest) {
-		Hashes.init();
-		Hashes.set(digest, algorithm);
-		Document.show();
-	}
-	const ots = getParameterByName('ots');
-	if(ots) {
-		Proof.setArray(hex2ascii(ots));
-		Proof.show();
-	}
-	// autorun proof
-	if(digest && ots){
-        run_verification();
-	}
 
 })();
 
 /* Runnable functions on gui to start processes */
-
-function run_stamping(){
+function run_stamping() {
     const algorithm = getParameterByName('algorithm');
     var hashType = "SHA256";
-    if (algorithm){
+    if (algorithm) {
         hashType = algorithm.toUpperCase();
     }
     if (Hashes.get(hashType)) {
@@ -604,7 +570,6 @@ function run_stamping(){
         failure("To <strong>stamp</strong> you need to drop a file in the Data field");
     }
 }
-
 function run_verification(){
     if (Proof.data) {
         Proof.progressStart();
@@ -614,7 +579,7 @@ function run_verification(){
             failure("Not supported hash type");
             return;
         }
-        if (!Hashes.get(hashType)){
+        if (!Hashes.get(hashType)) {
             failure("No file to verify; upload one first");
             return;
         }
@@ -625,30 +590,17 @@ function run_verification(){
     }
 }
 
-function run_info(){
-    if (Proof.data) {
-        location.href = "./info/?"+bytesToHex(string2Bin(Proof.data));
-    } else {
-        failure("To <strong>info</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
-    }
-}
-
-/*
- * EXTENDS ARRAY
- */
-Array.prototype.remove = Array.prototype.remove || function(val){
+/* EXTENDS ARRAY */
+Array.prototype.remove = Array.prototype.remove || function(val) {
     var i = this.length;
     while(i--){
         if (this[i] === val){
             this.splice(i,1);
         }
     }
-};
+}
 
-/*
- * COMMON FUNCTIONS
- */
-// Human file size
+/* COMMON FUNCTION */
 function humanFileSize(bytes, si) {
 	var thresh = si ? 1000 : 1024;
 	if (Math.abs(bytes) < thresh) {
@@ -664,14 +616,10 @@ function humanFileSize(bytes, si) {
 	} while (Math.abs(bytes) >= thresh && u < units.length - 1);
 	return bytes.toFixed(1) + ' ' + units[u];
 }
-
-// Download file
 function download(filename, text) {
 	var blob = new Blob([text], {type: "octet/stream"});
-
 	saveAs(blob, filename + (Proof.isValid(filename) ? '' : '.ots') );
 }
-
 function string2Bin(str) {
 	var result = [];
 	for (var i = 0; i < str.length; i++) {
@@ -682,7 +630,6 @@ function string2Bin(str) {
 function bin2String(array) {
 	return String.fromCharCode.apply(String, array);
 }
-
 function ascii2hex(str) {
 	var arr = [];
 	for (var i = 0, l = str.length; i < l; i ++) {
@@ -695,7 +642,6 @@ function ascii2hex(str) {
 	}
 	return arr.join('');
 }
-
 function hex2ascii(hexx) {
 	var hex = hexx.toString();//force conversion
 	var str = '';
@@ -703,7 +649,6 @@ function hex2ascii(hexx) {
 		str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
 	return str;
 }
-
 function bytesToHex (bytes) {
 	const hex = [];
 	for (var i = 0; i < bytes.length; i++) {
@@ -711,22 +656,17 @@ function bytesToHex (bytes) {
 		hex.push((bytes[i] & 0xF).toString(16));
 	}
 	return hex.join('');
-};
-
+}
 function hexToBytes(hex) {
 	const bytes = [];
 	for (var c = 0; c < hex.length; c += 2) {
 		bytes.push(parseInt(hex.substr(c, 2), 16));
 	}
 	return bytes;
-};
-
+}
 function upperFirstLetter(string){
 	return string[0].toUpperCase() + string.substr(1);
 }
-
-
-// get parameters
 function getParameterByName(name, url) {
 	if (!url) {
 		url = window.location.href;
@@ -739,42 +679,48 @@ function getParameterByName(name, url) {
 	return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-
-/*
- * STATUS ALERT MESSAGES
- */
-
-function message(title, text, cssClass, showInfo){
-	$('#statuses').attr('class','statuses '+cssClass);
-    $('#statuses .statuses-title').html(title);
-    $('#statuses .statuses-description').html(text);
-    message_info(showInfo);
-    $('#statuses').show();
-}
-
-function message_info(showInfo){
-    if(showInfo != undefined && showInfo == true){
-        $('#statuses .statuses-info').show();
-    } else if(showInfo != undefined && showInfo == false){
-        $('#statuses .statuses-info').hide();
+/* STATUS ALERT MESSAGES */
+function proof_message(title, text, cssClass, showInfo){
+	$('#proof-status').attr('class','statuses '+cssClass);
+    $('#proof-status .statuses-title').html(title);
+    $('#proof-status .statuses-description').html(text);
+    if (showInfo != undefined && showInfo == true) {
+        $('#proof-status .statuses-info').show();
+    } else if (showInfo != undefined && showInfo == false) {
+        $('#proof-status .statuses-info').hide();
     }
+    $('#proof-status').show();
+}
+function verifying(text) {
+    proof_message("VERIFYING", text, 'statuses_hashing', true);
+}
+function verified(text) {
+    proof_message("VERIFIED!", text, 'statuses_success');
 }
 
-function verifying(text){
-    message("VERIFYING", text, 'statuses_hashing', true);
+function document_message(title, text, cssClass, showInfo){
+	$('#document-status').attr('class','statuses '+cssClass);
+    $('#document-status .statuses-title').html(title);
+    $('#document-status .statuses-description').html(text);
+    if (showInfo != undefined && showInfo == true){
+        $('#document-status .statuses-info').show();
+    } else if (showInfo != undefined && showInfo == false){
+        $('#document-status .statuses-info').hide();
+    }
+    $('#document-status').show();
 }
-function stamping(text){
-    message("STAMPING", text, 'statuses_hashing', false);
+function hashing(text) {
+    document_message("HASHING", text, 'statuses_hashing', false);
 }
-function hashing(text){
-    message("HASHING", text, 'statuses_hashing', false);
+function stamping(text) {
+    document_message("STAMPING", text, 'statuses_hashing', false);
 }
-function success(text){
-    message("SUCCESS!", text, 'statuses_success');
+function success(text) {
+    document_message("SUCCESS!", text, 'statuses_success');
 }
-function failure(text){
-    message("FAILURE!", text, 'statuses_failure');
+function failure(text) {
+    document_message("FAILURE!", text, 'statuses_failure');
 }
-function warning(text){
-    message("WARNING!", text, 'statuses_warning');
+function warning(text) {
+    document_message("WARNING!", text, 'statuses_warning');
 }
