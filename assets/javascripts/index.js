@@ -410,8 +410,8 @@ var Proof = {
             var hash = Proof.getHash();
             $(this.tagId+" .hash").html("Stamped "+ hashType + " hash: " + hash);
 
-                run_verification();
-            }
+            run_verification();
+        }
 	},
     getHashType : function() {
         const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(this.data ));
