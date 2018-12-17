@@ -44,6 +44,7 @@ function upgrade_verify(ots, hash, hashType, filename) {
 	} else {
 		op = new OpenTimestamps.Ops.OpSHA256();
 	}
+	const detached = OpenTimestamps.DetachedTimestampFile.fromHash(op, hexToBytes(hash));
 	const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(ots);
 
     Proof.progressStart();
@@ -51,7 +52,7 @@ function upgrade_verify(ots, hash, hashType, filename) {
     // OpenTimestamps upgrade command
     OpenTimestamps.upgrade(detachedOts).then( (changed)=>{
         const bytes = detachedOts.serializeToBytes();
-    	if(changed){
+    	if (changed) {
         	//success('Timestamp has been successfully upgraded!');
         	download(filename, bytes);
 
@@ -64,13 +65,13 @@ function upgrade_verify(ots, hash, hashType, filename) {
     }).then( (results)=>{
         Proof.progressStop();
 
-        if( Object.keys(results).length == 0 ){
+        if (Object.keys(results).length == 0) {
         	// no attestation returned
 			if (detachedOts.timestamp.isTimestampComplete()) {
                 Proof.progressStop();
                 // check attestations
                 detachedOts.timestamp.allAttestations().forEach(attestation => {
-                    if(attestation instanceof OpenTimestamps.Notary.UnknownAttestation){
+                    if (attestation instanceof OpenTimestamps.Notary.UnknownAttestation) {
                     	warning('Unknown attestation type');
                 	}
             	});
@@ -147,31 +148,31 @@ $(document).scroll(function () {
 /* Hashes object to handle different hashes */
 
 var Hashes = {
-	init(){
+	init() {
         this.progress = true;
         this["SHA1"] = CryptoJS.algo.SHA1.create();
         this["SHA256"] = CryptoJS.algo.SHA256.create();
         this["RIPEMD160"] = CryptoJS.algo.RIPEMD160.create();
 	},
-	getSupportedTypes(){
+	getSupportedTypes() {
 		return ["SHA1","SHA256","RIPEMD160"];
 	},
-	update(type,msg){
+	update(type,msg) {
         this.progress = true;
         this[type].update(msg);
 	},
-	get(type){
+	get(type) {
         this.progress = false;
-        if(this[type] === undefined){
+        if (this[type] === undefined) {
             return undefined;
         }
-		if(typeof(this[type])=="string"){
+		if (typeof(this[type])=="string") {
 			return this[type];
 		}
         this[type] = this[type].finalize().toString();
 		return this[type];
 	},
-	set(type, hash){
+	set(type, hash) {
         this.progress = false;
         this[type] = hash;
 	}
@@ -179,39 +180,36 @@ var Hashes = {
 
 
 /* Document object to upload & parse document file */
-
 var Document = {
-	init : function (){
+	init : function() {
         this.tagId = undefined;
         this.filename = undefined;
         this.filesize = undefined;
         Hashes.init();
 	},
-    setTagId : function(tagId){
+    setTagId : function(tagId) {
         this.tagId = tagId;
     },
-    setFile : function(file){
+    setFile : function(file, hashType) {
         this.filename = file.name;
         this.filesize = file.size;
     },
-    exist : function(){
+    exist : function() {
         return this.filename !== undefined && this.filesize !== undefined;
     },
-	upload : function (file) {
-
+	upload : function(file) {
 		// callbackRead function
 		var lastOffset = 0;
         var previous = [];
-        function callbackRead(reader, file, evt, callbackProgress, callbackFinal){
-
-            if(lastOffset !== reader.offset){
+        function callbackRead(reader, file, evt, callbackProgress, callbackFinal) {
+            if (lastOffset !== reader.offset) {
                 // out of order
                 //console.log("[",reader.size,"]",reader.offset,'->', reader.offset+reader.size,">>buffer");
                 previous.push({ offset: reader.offset, size: reader.size, result: reader.result});
                 return;
             }
 
-            function parseResult(offset, size, result) {
+			function parseResult(offset, size, result) {
                 lastOffset = offset + size;
                 callbackProgress(result);
                 if (offset + size >= file.size) {
@@ -246,7 +244,7 @@ var Document = {
             var partial;
             var index = 0;
 
-            if(file.size===0){
+            if (file.size===0) {
                 callbackFinal();
             }
             while (offset < file.size) {
@@ -286,15 +284,17 @@ var Document = {
                 console.log('SHA1 '+Hashes.get("SHA1"));
                 console.log('SHA256 '+Hashes.get("SHA256"));
                 console.log('RIPEMD160 '+Hashes.get("RIPEMD160"));
+                self.show();
+                self.callback();
 			});
 	},
-	show : function(){
-		if(this.filename) {
+	show : function() {
+		if (this.filename) {
 			$(this.tagId+" .filename").html(this.filename);
 		} else {
 			$(this.tagId+" .filename").html("&nbsp;");
 		}
-		if(this.filesize) {
+		if (this.filesize) {
 			$(this.tagId+" .filesize").html(" " + humanFileSize(this.filesize, true));
 		} else {
 			$(this.tagId+" .filesize").html("&nbsp;");
@@ -304,12 +304,12 @@ var Document = {
         if (Proof.exist()) {
             hashType = Proof.getHashType().toUpperCase();
             if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
-                failure("Not supported hash type");
+                failure("Unsupported hash type");
                 return;
             }
         }
         if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
-            failure("Not supported hash type");
+            failure("Unsupported hash type");
             return;
         }
         if (!Hashes.progress && Hashes.get(hashType)) {
@@ -318,7 +318,7 @@ var Document = {
 			$(this.tagId+" .hash").html("Drop here the original file to check that its hash matches the stamped one");
 		}
 	},
-	progressStart : function(){
+	progressStart : function() {
 		this.percent = 0;
 		var self = this;
 		this.interval = setInterval(() => {
@@ -329,54 +329,54 @@ var Document = {
 		stamping(self.percent + ' %', 'Stamping')
 		}, 100);
 	},
-	progressStop : function(){
+	progressStop : function() {
 		clearInterval(this.interval);
 	},
-	compare_hashes_or_stamp : function(){
-		// compare proof/document hashes or stamp document
-        if (Proof.exist()) { // document is in dropbox2, proof is in dropbox1: compare hashes
+	callback : function() {
+		// Run automatically stamp or verify action
+        if (Proof.exist()) {
 			if (Proof.getHash() == Hashes.get("SHA256")) {
 				success('The provided file is the stamped one: its hash value matches the stamped one')
 			} else {
 				warning('The provided file is not the stamped one: its hash value does not match the stamped one')
 			}
-		} else { // document is in dropbox1: stamp it
+		} else {
+            // Automatically stamp
             run_stamping();
         }
 	}
 };
 
 /* Proof object to upload & parse OTS file */
-
 var Proof = {
-    init : function(){
+    init : function() {
         this.tagId = undefined;
         this.data = undefined;
         this.filename = undefined;
         this.filesize = undefined;
     },
-    isValid : function(fileName){
+    isValid : function(fileName) {
         const res = fileName.match(/\.[0-9a-z]+$/i);
 		return res !== null && res.length > 0 && res[0] === ".ots";
 
     },
-    setTagId : function(tagId){
+    setTagId : function(tagId) {
         this.tagId = tagId;
     },
-	setFile : function(file){
+	setFile : function(file) {
 		this.data = undefined;
 		this.filename = file.name;
 		this.filesize = file.size;
 	},
-	setArray : function(buffer){
+	setArray : function(buffer) {
 		this.data = buffer;
 		this.filename = undefined;
 		this.filesize = undefined;
 	},
-	exist : function(){
+	exist : function() {
     	return this.filename !== undefined && this.filesize !== undefined && this.data !== undefined;
 	},
-	upload: function (file) {
+	upload: function(file) {
 		// Read and crypt the file
 		var self = this;
 		var reader = new FileReader();
@@ -385,10 +385,11 @@ var Proof = {
 			self.data = String(String(data));
 			self.filename = file.name;
 			self.filesize = file.size;
+			self.show();
 		};
 		reader.readAsBinaryString(file);
 	},
-	show: function() {
+	show: function(tagId) {
 		if (this.filename) {
 			$(this.tagId+" .filename").html(this.filename);
 		} else {
@@ -399,8 +400,7 @@ var Proof = {
 		} else {
 			$(this.tagId+" .filesize").html(" " + humanFileSize(this.data.length, true));
 		}
-	},
-	verify: function() {
+
         if (Proof.data) {
             var hashType = Proof.getHashType().toUpperCase();
             if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
@@ -413,15 +413,15 @@ var Proof = {
             run_verification();
         }
 	},
-    getHashType : function (){
+    getHashType : function() {
         const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(this.data ));
         return detachedOts.fileHashOp._HASHLIB_NAME().toUpperCase();
     },
-    getHash : function (){
+    getHash : function() {
         const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(this.data ));
         return bytesToHex(detachedOts.fileDigest());
     },
-    progressStart : function(){
+    progressStart : function() {
         this.stopInterval = false;
 		this.percent = 0;
 
@@ -436,27 +436,23 @@ var Proof = {
                 }
 			}, 100);
 	},
-	progressStop : function(){
+	progressStop : function() {
         this.stopInterval = true;
 		clearInterval(this.interval);
 	}
 };
 
-/*
-* STARTUP FUNCTION
-*/
-
+/* STARTUP FUNCTION */
 (function () {
 	// your page initialization code here
 	// the DOM will be available here
 
-	// Document/Proof upload on #dropbox1
-
-	function dropbox1_upload(f){
-        if (f === undefined){
+	// Document/Proof upload on #dropbox1 box
+	function dropbox1_upload(f) {
+        if (f === undefined) {
             return;
         }
-        if (Proof.isValid(f.name)){
+		if (Proof.isValid(f.name)) {
             Document.init();
             Document.setTagId('#dropbox2');
             Document.show();
@@ -464,24 +460,22 @@ var Proof = {
 			$("#document-status").hide();
 
 			Proof.init();
-            Proof.setTagId('#dropbox1');
             Proof.setFile(f);
-            Proof.upload(f);
+            Proof.setTagId('#dropbox1');
             Proof.show();
-            Proof.verify();
+            Proof.upload(f);
 			$("#proof-status").show();
-	    } else {
+		} else {
             Proof.init();
 			$("#proof-status").hide();
 
 			Document.init();
-            Document.setTagId('#dropbox1');
             Document.setFile(f);
-            Document.upload(f);
+            Document.setTagId('#dropbox1');
             Document.show();
-            Document.compare_hashes_or_stamp();
-            $('#dropbox2').hide();
-            $("#document-status").show();
+            Document.upload(f);
+			$('#dropbox2').hide();
+			$("#document-status").show();
         }
 	}
 	$('#dropbox1').on('drop', function (event) {
@@ -516,10 +510,9 @@ var Proof = {
 		return false;
 	});
 
-    // Document upload on #dropbox2
-
-	function dropbox2_upload(f){
-        if (f === undefined){
+    // Document upload on #dropbox2 box
+	function dropbox2_upload(f) {
+        if (f === undefined) {
             return;
         }
 		$('#document-status').show();
@@ -562,22 +555,13 @@ var Proof = {
         return false;
     });
 
-    // Get info action on ots
-
-    $("#statuses .statuses-info").click(function (event) {
-        event.preventDefault();
-        run_info();
-        return false;
-    });
-
 })();
 
 /* Runnable functions on gui to start processes */
-
-function run_stamping(){
+function run_stamping() {
     const algorithm = getParameterByName('algorithm');
     var hashType = "SHA256";
-    if (algorithm){
+    if (algorithm) {
         hashType = algorithm.toUpperCase();
     }
     if (Hashes.get(hashType)) {
@@ -586,7 +570,6 @@ function run_stamping(){
         failure("To <strong>stamp</strong> you need to drop a file in the Data field");
     }
 }
-
 function run_verification(){
     if (Proof.data) {
         Proof.progressStart();
@@ -596,7 +579,7 @@ function run_verification(){
             failure("Not supported hash type");
             return;
         }
-        if (!Hashes.get(hashType)){
+        if (!Hashes.get(hashType)) {
             failure("No file to verify; upload one first");
             return;
         }
@@ -607,30 +590,17 @@ function run_verification(){
     }
 }
 
-function run_info(){
-    if (Proof.data) {
-        location.href = "./info/?"+bytesToHex(string2Bin(Proof.data));
-    } else {
-        failure("To <strong>info</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
-    }
-}
-
-/*
- * EXTENDS ARRAY
- */
-Array.prototype.remove = Array.prototype.remove || function(val){
+/* EXTENDS ARRAY */
+Array.prototype.remove = Array.prototype.remove || function(val) {
     var i = this.length;
     while(i--){
         if (this[i] === val){
             this.splice(i,1);
         }
     }
-};
+}
 
-/*
- * COMMON FUNCTIONS
- */
-// Human file size
+/* COMMON FUNCTION */
 function humanFileSize(bytes, si) {
 	var thresh = si ? 1000 : 1024;
 	if (Math.abs(bytes) < thresh) {
@@ -646,14 +616,10 @@ function humanFileSize(bytes, si) {
 	} while (Math.abs(bytes) >= thresh && u < units.length - 1);
 	return bytes.toFixed(1) + ' ' + units[u];
 }
-
-// Download file
 function download(filename, text) {
 	var blob = new Blob([text], {type: "octet/stream"});
-
 	saveAs(blob, filename + (Proof.isValid(filename) ? '' : '.ots') );
 }
-
 function string2Bin(str) {
 	var result = [];
 	for (var i = 0; i < str.length; i++) {
@@ -664,7 +630,6 @@ function string2Bin(str) {
 function bin2String(array) {
 	return String.fromCharCode.apply(String, array);
 }
-
 function ascii2hex(str) {
 	var arr = [];
 	for (var i = 0, l = str.length; i < l; i ++) {
@@ -677,7 +642,6 @@ function ascii2hex(str) {
 	}
 	return arr.join('');
 }
-
 function hex2ascii(hexx) {
 	var hex = hexx.toString();//force conversion
 	var str = '';
@@ -685,7 +649,6 @@ function hex2ascii(hexx) {
 		str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
 	return str;
 }
-
 function bytesToHex (bytes) {
 	const hex = [];
 	for (var i = 0; i < bytes.length; i++) {
@@ -693,22 +656,17 @@ function bytesToHex (bytes) {
 		hex.push((bytes[i] & 0xF).toString(16));
 	}
 	return hex.join('');
-};
-
+}
 function hexToBytes(hex) {
 	const bytes = [];
 	for (var c = 0; c < hex.length; c += 2) {
 		bytes.push(parseInt(hex.substr(c, 2), 16));
 	}
 	return bytes;
-};
-
+}
 function upperFirstLetter(string){
 	return string[0].toUpperCase() + string.substr(1);
 }
-
-
-// get parameters
 function getParameterByName(name, url) {
 	if (!url) {
 		url = window.location.href;
@@ -721,10 +679,7 @@ function getParameterByName(name, url) {
 	return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-
-/*
- * STATUS ALERT MESSAGES
- */
+/* STATUS ALERT MESSAGES */
 function proof_message(title, text, cssClass, showInfo){
 	$('#proof-status').attr('class','statuses '+cssClass);
     $('#proof-status .statuses-title').html(title);
