@@ -27,7 +27,7 @@ Get parameters:
 ### Install dependencies.
 Resolve and install dependencies.
 ```
-npm install --dev
+npm install --only=dev
 ```
 
 ### Build
