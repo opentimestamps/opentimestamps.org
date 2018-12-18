@@ -72,11 +72,11 @@ function upgrade_verify(ots, hash, hashType, filename) {
                 // check attestations
                 detachedOts.timestamp.allAttestations().forEach(attestation => {
                     if (attestation instanceof OpenTimestamps.Notary.UnknownAttestation) {
-                    	warning('Unknown attestation type');
+                    	proof_warning('Unknown attestation type');
                 	}
             	});
     		} else {
-                warning('Pending attestation');
+                proof_warning('Pending attestation');
 			}
 		} else {
 			var text = "";
@@ -88,7 +88,7 @@ function upgrade_verify(ots, hash, hashType, filename) {
 		}
 	}).catch(err => {
         Proof.progressStop();
-		failure(err.message);
+		proof_failure(err.message);
 	});
 }
 
@@ -404,7 +404,7 @@ var Proof = {
         if (Proof.data) {
             var hashType = Proof.getHashType().toUpperCase();
             if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
-                failure("Not supported hash type");
+                proof_failure("Not supported hash type");
                 return;
             }
             var hash = Proof.getHash();
@@ -576,17 +576,17 @@ function run_verification(){
 
         var hashType = Proof.getHashType().toUpperCase();
         if (!Hashes.getSupportedTypes().indexOf(hashType) === -1) {
-            failure("Not supported hash type");
+            proof_failure("Not supported hash type");
             return;
         }
         if (!Hashes.get(hashType)) {
-            failure("No file to verify; upload one first");
+            proof_failure("No file to verify; upload one first");
             return;
         }
         Proof.upgraded = false;
         upgrade_verify(string2Bin(Proof.data), Hashes.get(hashType), hashType, Proof.filename);
     } else {
-        failure("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
+        proof_failure("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
     }
 }
 
@@ -723,4 +723,10 @@ function failure(text) {
 }
 function warning(text) {
     document_message("WARNING!", text, 'statuses_warning');
+}
+function proof_failure(text) {
+    proof_message("FAILURE!", text, 'statuses_failure');
+}
+function proof_warning(text) {
+    proof_message("WARNING!", text, 'statuses_warning');
 }
