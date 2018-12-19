@@ -44,7 +44,6 @@ function upgrade_verify(ots, hash, hashType, filename) {
 	} else {
 		op = new OpenTimestamps.Ops.OpSHA256();
 	}
-	const detached = OpenTimestamps.DetachedTimestampFile.fromHash(op, hexToBytes(hash));
 	const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(ots);
 
     Proof.progressStart();
@@ -447,7 +446,7 @@ var Proof = {
 	// your page initialization code here
 	// the DOM will be available here
 
-	// Document/Proof upload on #dropbox1 box
+	// Document/Proof upload on #dropbox1
 	function dropbox1_upload(f) {
         if (f === undefined) {
             return;
@@ -510,7 +509,7 @@ var Proof = {
 		return false;
 	});
 
-    // Document upload on #dropbox2 box
+    // Document upload on #dropbox2
 	function dropbox2_upload(f) {
         if (f === undefined) {
             return;
@@ -734,7 +733,12 @@ function verifying(text) {
 function verified(text) {
     proof_message("VERIFIED!", text, 'statuses_success');
 }
-
+function proof_failure(text) {
+    proof_message("FAILURE!", text, 'statuses_failure');
+}
+function proof_warning(text) {
+    proof_message("WARNING!", text, 'statuses_warning');
+}
 function document_message(title, text, cssClass, showInfo){
 	$('#document-status').attr('class','statuses '+cssClass);
     $('#document-status .statuses-title').html(title);
@@ -760,10 +764,4 @@ function failure(text) {
 }
 function warning(text) {
     document_message("WARNING!", text, 'statuses_warning');
-}
-function proof_failure(text) {
-    proof_message("FAILURE!", text, 'statuses_failure');
-}
-function proof_warning(text) {
-    proof_message("WARNING!", text, 'statuses_warning');
 }
