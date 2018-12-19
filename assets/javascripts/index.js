@@ -553,7 +553,35 @@ var Proof = {
         var f = event.target.files[0];
         dropbox2_upload(f);
         return false;
+	});
+	
+	// Get info action on ots
+
+    $("#proof-status .statuses-info").click(function (event) {
+        event.preventDefault();
+        run_info();
+        return false;
     });
+
+
+	// Handle GET parameters
+	const digest = getParameterByName('digest');
+    const algorithm = getParameterByName('algorithm');
+	if(digest) {
+		Hashes.init();
+		Hashes.set(digest, algorithm);
+		Document.show();
+	}
+	const ots = getParameterByName('ots');
+	if(ots) {
+		Proof.setArray(hex2ascii(ots));
+		Proof.show();
+	}
+	// autorun proof
+	if(digest && ots){
+        run_verification();
+	}
+
 
 })();
 
@@ -589,6 +617,15 @@ function run_verification(){
         proof_failure("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
     }
 }
+
+function run_info(){
+    if (Proof.data) {
+        location.href = "./info/?"+bytesToHex(string2Bin(Proof.data));
+    } else {
+        failure("To <strong>info</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
+    }
+}
+
 
 /* EXTENDS ARRAY */
 Array.prototype.remove = Array.prototype.remove || function(val) {
