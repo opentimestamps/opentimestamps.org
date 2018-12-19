@@ -204,7 +204,7 @@ var Document = {
         var previous = [];
         function callbackRead(reader, file, evt, callbackProgress, callbackFinal){
 
-		if (lastOffset !== reader.offset){
+                if (lastOffset !== reader.offset){
                 // out of order
                 //console.log("[",reader.size,"]",reader.offset,'->', reader.offset+reader.size,">>buffer");
                 previous.push({ offset: reader.offset, size: reader.size, result: reader.result});
@@ -331,12 +331,12 @@ var Document = {
 		stamping(self.percent + ' %', 'Stamping')
 		}, 100);
 	},
-	progressStop : function() {
+	progressStop : function(){
 		clearInterval(this.interval);
 	},
 	callback : function(){
 		// Run automatically stamp or verify action
-        if(Proof.exist()){
+        if(Proof.exist()) {
             if (Proof.getHash() == Hashes.get("SHA256")) {
                 success('The provided file is the stamped one: its hash value matches the stamped one')
             } else {
@@ -593,10 +593,10 @@ var Proof = {
 
 /* Runnable functions on gui to start processes */
 
-function run_stamping() {
+function run_stamping(){
     const algorithm = getParameterByName('algorithm');
     var hashType = "SHA256";
-    if (algorithm) {
+    if (algorithm){
         hashType = algorithm.toUpperCase();
     }
     if (Hashes.get(hashType)) {
@@ -615,7 +615,7 @@ function run_verification(){
             proof_failure("Not supported hash type");
             return;
         }
-        if (!Hashes.get(hashType)) {
+        if (!Hashes.get(hashType)){
             proof_failure("No file to verify; upload one first");
             return;
         }
@@ -637,7 +637,7 @@ function run_info(){
 /*
  * EXTENDS ARRAY
  */
-Array.prototype.remove = Array.prototype.remove || function(val) {
+Array.prototype.remove = Array.prototype.remove || function(val){
     var i = this.length;
     while(i--){
         if (this[i] === val){
