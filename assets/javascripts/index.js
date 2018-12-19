@@ -179,6 +179,7 @@ var Hashes = {
 
 
 /* Document object to upload & parse document file */
+
 var Document = {
 	init : function (){
         this.tagId = undefined;
@@ -335,13 +336,13 @@ var Document = {
 	},
 	callback : function(){
 		// Run automatically stamp or verify action
-        if (Proof.exist()) {
-			if (Proof.getHash() == Hashes.get("SHA256")) {
-				success('The provided file is the stamped one: its hash value matches the stamped one')
-			} else {
-				warning('The provided file is not the stamped one: its hash value does not match the stamped one')
-			}
-		} else {
+        if(Proof.exist()){
+            if (Proof.getHash() == Hashes.get("SHA256")) {
+                success('The provided file is the stamped one: its hash value matches the stamped one')
+            } else {
+                warning('The provided file is not the stamped one: its hash value does not match the stamped one')
+            }
+	} else {
             // Automatically stamp
             run_stamping();
         }
@@ -415,11 +416,11 @@ var Proof = {
             run_verification();
         }
 	},
-    getHashType : function(){
+    getHashType : function (){
         const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(this.data ));
         return detachedOts.fileHashOp._HASHLIB_NAME().toUpperCase();
     },
-    getHash : function(){
+    getHash : function (){
         const detachedOts = OpenTimestamps.DetachedTimestampFile.deserialize(string2Bin(this.data ));
         return bytesToHex(detachedOts.fileDigest());
     },
@@ -458,30 +459,30 @@ var Proof = {
         if (f === undefined){
             return;
         }
-	if (Proof.isValid(f.name)){
+        if (Proof.isValid(f.name)){
             Document.init();
             Document.setTagId('#dropbox2');
             Document.show();
-			$('#dropbox2').show();
-			$("#document-status").hide();
+            $('#dropbox2').show();
+            $("#document-status").hide();
 
             Proof.init();
             Proof.setFile(f);
             Proof.setTagId('#dropbox1');
             Proof.show();
             Proof.upload(f);
-			$("#proof-status").show();
-		} else {
+            $("#proof-status").show();
+        } else {
             Proof.init();
-			$("#proof-status").hide();
-
-			Document.init();
+            $("#proof-status").hide();
+            
+            Document.init();
             Document.setFile(f);
             Document.setTagId('#dropbox1');
             Document.show();
             Document.upload(f);
-			$('#dropbox2').hide();
-			$("#document-status").show();
+            $('#dropbox2').hide();
+            $("#document-status").show();
         }
 	}
 	$('#dropbox1').on('drop', function (event) {
@@ -591,6 +592,7 @@ var Proof = {
 })();
 
 /* Runnable functions on gui to start processes */
+
 function run_stamping() {
     const algorithm = getParameterByName('algorithm');
     var hashType = "SHA256";
@@ -667,7 +669,7 @@ function humanFileSize(bytes, si) {
 // Download file
 function download(filename, text) {
 	var blob = new Blob([text], {type: "octet/stream"});
-	
+
 	saveAs(blob, filename + (Proof.isValid(filename) ? '' : '.ots') );
 }
 
@@ -678,7 +680,6 @@ function string2Bin(str) {
 	}
 	return result;
 }
-
 function bin2String(array) {
 	return String.fromCharCode.apply(String, array);
 }
