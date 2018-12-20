@@ -669,8 +669,11 @@ function humanFileSize(bytes, si) {
 // Download file
 function download(filename, text) {
 	var blob = new Blob([text], {type: "octet/stream"});
-
-	saveAs(blob, filename + (Proof.isValid(filename) ? '' : '.ots') );
+	var proofname = filename
+	if (filename.endsWith(".ots")) {
+		proofname = filename.substr(0, filename.length-3) + "upgraded"
+	}
+	saveAs(blob, proofname + '.ots');
 }
 
 function string2Bin(str) {
