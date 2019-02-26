@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta property="og:title" content="OpenTimestamps: a timestamping proof standard">
-  <meta property="og:description" content="OpenTimestamps aims to be a standard format for blockchain timestamping. The format is flexible enough to be vendor and blockchain independent.">
+  <meta property="og:title" content="Bull Bitcoin OpenTimestamps Explorer">
+  <meta property="og:description" content="OpenTimestamps.org is the Bitcoin timestamping standard used by Bull Bitcoin and Cyphernode.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://opentimestamps.org/">
+  <meta property="og:url" content="https://ots.bullbitcoin.com/">
   <meta property="og:image" content="./assets/images/og.jpg">
   <title>OpenTimestamps</title>
   <link rel="stylesheet" href="./assets/stylesheets/application.css" media="screen" title="no title">
@@ -15,101 +15,12 @@
 <body>
 <style>
   </style>
-  <header class="header">
-    <div class="container">
-      <a href="#" class="header-logo"></a>
-      <div class="header-nav-open"></div>
-      <nav class="header-nav">
-        <!-- <a href="#intro" class="header-nav-i">Intro</a> -->
-        <a href="#stamp-and-verify" class="header-nav-i">Stamp and Verify</a>
-        <a href="#how-it-works" class="header-nav-i">How it works</a>
-        <a href="#members" class="header-nav-i">Members</a>
-        <a href="#code-repositories" class="header-nav-i">Code repositories</a>
-        <!-- <a href="#use-cases" class="header-nav-i">Use cases</a> -->
-        <a href="https://lists.opentimestamps.org" class="header-nav-i">Mailing lists</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- INTRO -->
-  <section class="intro" id="intro">
-    <div class="container">
-      <h1 class="intro-title">A timestamping proof standard</h1>
-      <h2 class="intro-description">
-        OpenTimestamps aims to be a standard format
-        for blockchain timestamping. The format is flexible
-        enough to be vendor and blockchain independent.
-      </h2>
-    </div>
-  </section>
-
-  <!-- NAVIGATION -->
-  <section class="navigation">
-    <div class="container">
-      <a href="#stamp-and-verify" class="navigation-i">
-        <span class="navigation-icon navigation-icon_stamp-and-verify"></span>
-        <p class="navigation-title">Stamp &amp; Verify</p>
-        <p class="navigation-description">
-          Use the in-browser
-          stamper and verifier
-        </p>
-      </a>
-      <a href="#how-it-works" class="navigation-i">
-        <span class="navigation-icon navigation-icon_how-it-works"></span>
-        <p class="navigation-title">How it works</p>
-        <p class="navigation-description">
-          Details on
-          OpenTimestamps
-        </p>
-      </a>
-      <a href="#members" class="navigation-i">
-        <span class="navigation-icon navigation-icon_members"></span>
-        <p class="navigation-title">Members</p>
-        <p class="navigation-description">
-          Companies using
-          OpenTimestamps
-        </p>
-      </a>
-      <a href="#code-repositories" class="navigation-i">
-        <span class="navigation-icon navigation-icon_repositories"></span>
-        <p class="navigation-title">Code repositories</p>
-        <p class="navigation-description">
-          OpenTimestamps
-          repositories
-        </p>
-      </a>
-      <a href="https://lists.opentimestamps.org" class="navigation-i">
-        <span class="navigation-icon navigation-icon_mailing-list"></span>
-        <p class="navigation-title">Mailing lists</p>
-        <p class="navigation-description">
-          OpenTimestamps
-          announcements
-        </p>
-      </a>
-      <a href="/internet-archive" class="navigation-i">
-        <span class="navigation-icon navigation-icon_internet-archive"></span>
-        <p class="navigation-title">Internet Archive</p>
-        <p class="navigation-description">
-          OpenTimestamps proof for the Internet Archive
-
-        </p>
-      </a>
-      <!--<a href="#use-cases" class="navigation-i">
-        <span class="navigation-icon navigation-icon_use-cases"></span>
-        <p class="navigation-title">Use cases</p>
-        <p class="navigation-description">
-          What can you do with
-          timestamping?
-        </p>
-      </a>-->
-    </div>
-  </section>
 
   <!-- STAMP AND VERIFY -->
   <section class="stamp-and-verify" id="stamp-and-verify">
     <div class="container">
       <div class="" id="stamp">
-        <p class="stamp-and-verify-block-title" style="text-align: center;">Stamp & Verify</p>
+        <p class="stamp-and-verify-block-title" style="text-align: center;">Timestamp a file or Verify an OTS timestamp</p>
 
         <p class="stamp-and-verify-description">
         </p>
@@ -117,9 +28,9 @@
           <span class="filename"></span>
           <span class="filesize"></span>
           <p class="hash">
-            Drop here a file to <b>stamp</b><br>
+            Click here to <b>timeststamp</b>a<br>file
             OR<br>
-            an <i>.ots</i> proof file to <b>verify</b>
+           <b>Verify</b>the <i>.ots</i> proof <b>verify</b>
           </p>
         </div>
         <input id="document_input" type="file" style="display:none">
@@ -137,8 +48,8 @@
 
         <div class="stamp-and-verify-result result result_stamp" id="result_stamp">
           <p class="result-description">
-            The hash is calculated on your browser preserving your privacy. <a href="https://github.com/opentimestamps/opentimestamps.org/pull/7">More</a>...<br>
-            Timestamping proof download will start automatically after uploading document.
+            The hash of the file is calculated in your browser, preserving your privacy. We never have access to the contents of the file that you timestamp on this website
+            An Opentimestamps proof file (OTS file) will be downloaded in your browser as soon as it is submitted. This file will at first be an incomplete OTS file, and will be upgraded automatically to a completed OTS file when verified after the OTS proof has been included in a block of the Bitcoin blockchain.
           </p>
         </div>
 
@@ -171,249 +82,4 @@
     </div>-->
   </section>
 
-  <!-- HOW IT WORKS -->
-  <section class="how-it-works" id="how-it-works">
-    <div class="container">
-      <h3 class="how-it-works-title">How it Works</h3>
-      <p class="how-it-works-description">
-        A timestamp proves that some data existed prior to some point in time. OpenTimestamps defines a set of operations for creating provable timestamps and later independently verifying them.
-        At the time of writing timestamping on the Bitcoin blockchain is supported, the format is flexible enough to support a variety of methods. <a href="https://petertodd.org/2016/opentimestamps-announcement">More.</a>
-      </p>
-      <br>
-      <p class="how-it-works-description">
-        Anyone could realize a timestamp with the permissionless blockchain by paying the transaction fees, for your convenience we offer calendar servers that perform this operation for you. These servers are <strong>free to use</strong> and they don't require any registration or api key.
-      </p>
-      </div>
-      <div class="how-it-works-example">
-        <div class="example-tabs">
-          <p class="example-tabs-i active" data-tab="python">Python</p>
-          <p class="example-tabs-i" data-tab="javascript">Javascript</p>
-          <p class="example-tabs-i" data-tab="java">Java</p>
-        </div>
-        <div class="example-content example-content_python active">
-          <pre>
-
-$ pip3 install opentimestamps-client
-$ ots stamp my-file
-
-          </pre>
-          <a href="https://github.com/opentimestamps/opentimestamps-client/blob/master/README.md" class="example-content-more">More</a>
-        </div>
-        <div class="example-content example-content_javascript">
-          <pre>
-
-$ npm install -g javascript-opentimestamps
-$ ots-cli.js stamp my-file
-
-          </pre>
-          <a href="https://github.com/opentimestamps/javascript-opentimestamps/blob/master/README.md" class="example-content-more">More</a>
-        </div>
-        <div class="example-content example-content_java">
-          <pre>
-
-$ git clone https://github.com/opentimestamps/java-opentimestamps
-$ cd java-opentimestamps
-$ mvn install
-$ java -jar target/OtsCli.jar stamp my-file
-
-          </pre>
-          <a href="https://github.com/opentimestamps/java-opentimestamps/blob/master/README.md" class="example-content-more">More</a>
-        </div>
-    </div>
-  </section>
-
-  <!-- MEMBERS -->
-  <section class="members" id="members">
-    <h3 class="members-block-title">Members</h3>
-    <div class="container">
-      <div class="members-i">
-        <a href="http://eternitywall.com" class="members-link">
-          <img src="./assets/images/logos/eternity-wall.png" alt="eternity wall" width="100">
-          <span class="members-name">Eternity wall</span>
-        </a>
-      </div>
-      <div class="members-i">
-        <a href="https://stampery.com/" class="members-link">
-          <img src="./assets/images/logos/stampery.png" alt="stampery" width="200">
-          <span class="members-name">Stampery</span>
-        </a>
-      </div>
-
-      <div class="members-i">
-        <a href="https://www.blocknotary.com/" class="members-link">
-          <img src="./assets/images/logos/logo_bn@2x.png" alt="" width="160">
-          <span class="members-name">Block Notary</span>
-        </a>
-      </div>
-      <div class="members-i">
-        <a href="https://www.verisart.com/" class="members-link">
-          <img src="./assets/images/logos/logo_verisart@2x.png" alt="" width="160">
-          <span class="members-name">Verisart</span>
-        </a>
-      </div>
-      <div class="members-i">
-        <a href="https://signatura.co" class="members-link">
-          <img src="./assets/images/logos/signatura@2x.png" alt="" width="190px">
-          <span class="members-name">Signatura</span>
-        </a>
-      </div>
-      <div class="members-i">
-        <a href="http://www.osdsp.com" class="members-link">
-          <img src="./assets/images/logos/OSDSP@2x.png" alt="" width="120px" style="padding-top:10px;">
-          <span class="members-name">OSDSP</span>
-        </a>
-      </div>
-      <div class="members-i">
-        <a href="http://chain.ventures" class="members-link">
-          <img src="./assets/images/logos/chain_ventures.png" alt="" width="140px" style="padding-top:10px;">
-          <span class="members-name">Chain ventures</span>
-        </a>
-      </div>
-
-      <div class="members-i">
-        <a href="https://www.producerdesk.com/" class="members-link">
-          <img src="./assets/images/logos/producerdesk.png" alt="" width="140px" style="padding-top:10px;">
-          <span class="members-name">producerDesk</span>
-        </a>
-      </div>
-
-      <div class="members-i">
-        <a href="https://catallaxy.com/" class="members-link">
-          <img src="./assets/images/logos/catallaxy.png" alt="" width="140px" style="padding-top:10px;">
-          <span class="members-name">catallaxy</span>
-        </a>
-      </div>
-
-      <div class="members-i">
-        <a href="https://bylls.com/" class="members-link">
-          <img src="./assets/images/logos/bylls.png" alt="" width="140px" style="padding-top:10px;">
-          <span class="members-name">Bylls</span>
-        </a>
-      </div>
-
-      <div class="members-i">
-        <a href="https://www.xcoobee.com/" class="members-link">
-          <img src="./assets/images/logos/XcooBee.png" alt="" width="140px" style="padding-top:10px;">
-          <span class="members-name">XcooBee</span>
-        </a>
-      </div>
-
-
-      <div class="members-i">
-        <a href="https://condominioadvisor.it/" class="members-link">
-          <img src="./assets/images/logos/condominio_advisor.png" alt="" width="160px" style="padding-top:10px;">
-          <span class="members-name">CondominioAdvisor</span>
-        </a>
-      </div>
-
-      <div class="members-i">
-        <a href="https://github.com/opentimestamps/opentimestamps.org/issues/2" class="members-link members-link_add">
-          <img src="./assets/images/logos/company.png" alt="" width="100">
-          <span class="members-name">Add your company here</span>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- REPOSITORIES -->
-  <section class="repositories" id="code-repositories">
-    <h3 class="repositories-block-title">Repositories</h3>
-    <div class="container">
-      <a href="https://github.com/opentimestamps/opentimestamps-client" class="repositories-i">
-        <div class="repositories-icon repositories-icon_client"></div>
-        <p class="repositories-title">Client</p>
-        <p class="repositories-description">
-          Client tool to perform stamping of files through a
-          calendar server and to verify OpenTimestamps proof
-        </p>
-        <span class="repositories-name">
-          opentimestamps-client
-        </span>
-      </a>
-      <a href="https://github.com/opentimestamps/opentimestamps-server" class="repositories-i">
-        <div class="repositories-icon repositories-icon_server"></div>
-        <p class="repositories-title">Server</p>
-        <p class="repositories-description">
-          Calendar Server receiving timestamp request from
-          clients
-        </p>
-        <span class="repositories-name">
-          opentimestamps-server
-        </span>
-      </a>
-      <a href="https://github.com/opentimestamps/python-opentimestamps" class="repositories-i">
-        <div class="repositories-icon repositories-icon_python"></div>
-        <p class="repositories-title">Python</p>
-        <p class="repositories-description">
-          Common library
-        </p>
-        <span class="repositories-name">
-          python-opentimestamps
-        </span>
-      </a>
-      <a href="https://github.com/opentimestamps/javascript-opentimestamps" class="repositories-i">
-        <div class="repositories-icon repositories-icon_javascript"></div>
-        <p class="repositories-title">Javascript</p>
-        <p class="repositories-description">
-          Common library &amp; Client tool
-        </p>
-        <span class="repositories-name">
-          javascript-opentimestamps
-        </span>
-      </a>
-      <a href="https://github.com/opentimestamps/java-opentimestamps" class="repositories-i">
-        <div class="repositories-icon repositories-icon_java"></div>
-        <p class="repositories-title">Java</p>
-        <p class="repositories-description">
-          Common library &amp; Client tool
-        </p>
-        <span class="repositories-name">
-          java-opentimestamps
-        </span>
-      </a>
-      <a href="https://github.com/opentimestamps/rust-opentimestamps" class="repositories-i">
-        <div class="repositories-icon repositories-icon_rust"></div>
-        <p class="repositories-title">Rust</p>
-        <p class="repositories-description">
-          Rust library
-        </p>
-        <span class="repositories-name">
-          rust-opentimestamps
-        </span>
-      </a>
-    </div>
-  </section>
-
-  <!-- USE CASES -->
-
-  <!--
-  <section class="use-cases" id="use-cases">
-    <div class="container">
-      <h3 class="use-cases-title">Use cases</h3>
-      <p class="use-cases-description">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-        laboris nisi ut aliquip ex ea commodo consequat.
-        <br><br>
-        <a href="#">Opentimestamps for git</a>
-      </p>
-    </div>
-  </section>
-  -->
-
-  <footer class="footer">
-    <div class="container">
-      <a href="#" class="footer-logo"></a>
-      <a href="https://twitter.com/opentimestamps" class="footer-contact-us">@opentimestamps</a>
-    </div>
-  </footer>
-  <script src="./assets/javascripts/application.js"></script>
-  <script src="./assets/javascripts/vendor/moment.min.js"></script>
-  <script src="./assets/javascripts/vendor/moment-timezone-with-data-2012-2022.min.js"></script>
-  <!-- OpenTimestamps JavaScript (https://opentimestamps.org or local one) -->
-  <script src="./assets/javascripts/vendor/opentimestamps.min.js"></script>
-  <!-- script src="../javascript-opentimestamps/dist/opentimestamps.js"></script -->
-  <script src="./assets/javascripts/crypto-js/crypto-js.js"></script>
-  <script src="./assets/javascripts/index.js"></script>
-</body>
-</html>
+ 
