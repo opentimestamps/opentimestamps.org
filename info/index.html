@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+ <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta property="og:title" content="OpenTimestamps: a timestamping proof standard">
-  <meta property="og:description" content="OpenTimestamps aims to be a standard format for blockchain timestamping. The format is flexible enough to be vendor and blockchain independent.">
+  <meta property="og:title" content="Bull Bitcoin OpenTimestamps Explorer">
+  <meta property="og:description" content="OpenTimestamps.org is the Bitcoin timestamping standard used by Bull Bitcoin and Cyphernode.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://opentimestamps.org/">
-  <meta property="og:image" content="/assets/images/og.jpg">
+  <meta property="og:url" content="https://ots.bullbitcoin.com/">
+  <meta property="og:image" content="./assets/images/og.jpg">
   <title>OpenTimestamps</title>
-  <link rel="stylesheet" href="/assets/stylesheets/timestamp-of.css" media="screen" title="no title">
+  <link rel="stylesheet" href="./assets/stylesheets/application.css" media="screen" title="no title">
 </head>
 <body>
   <header class="header">
@@ -18,11 +18,10 @@
     </div>
   </header>
   <section class="intro">
-    <p class="timestamp-of">
-      Timestamp of
-      <span id="title_digest"></span>
+    <p class="timestamp-of">Opentimestamps Proof for file 
+      <span class="filename"></span>
     </p>
-    <p class="document-digest">Document digest (<span id="type"></span>):</p>
+    <p class="document-digest">File hash (<span id="type"></span>):</p>
     <p class="sha" id="digest">
     </p>
     <a href="#" class="download" id="download">Download this timestamp</a>
