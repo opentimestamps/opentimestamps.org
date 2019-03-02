@@ -1,9 +1,9 @@
 .intro {
-  @include blue-block(true);
+  @include white-block(true);
 
   .container {
     padding: 160px 480px 160px 0;
-    background-image: url(../images/intro.png);
+    background-image: url(../images/Bull Bitcoin Logo.png);
     background-repeat: no-repeat;
     background-position: right center;
   }
