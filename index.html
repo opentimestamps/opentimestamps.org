@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <meta property="og:title" content="OpenTimestamps: a timestamping proof standard">
-  <meta property="og:description" content="OpenTimestamps aims to be a standard format for blockchain timestamping. The format is flexible enough to be vendor and blockchain independent.">
+  <meta property="og:description" content="OpenTimestamps aims to be a standard format for blockchain timestamping.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://opentimestamps.org/">
   <meta property="og:image" content="./assets/images/og.jpg">
@@ -37,8 +37,7 @@
       <h1 class="intro-title">A timestamping proof standard</h1>
       <h2 class="intro-description">
         OpenTimestamps aims to be a standard format
-        for blockchain timestamping. The format is flexible
-        enough to be vendor and blockchain independent.
+        for blockchain timestamping.
       </h2>
     </div>
   </section>
@@ -181,7 +180,7 @@
       </p>
       <br>
       <p class="how-it-works-description">
-        Anyone could realize a timestamp with the permissionless blockchain by paying the transaction fees, for your convenience we offer calendar servers that perform this operation for you. These servers are <strong>free to use</strong> and they don't require any registration or api key.
+        Anyone could realize a timestamp with the permissionless blockchain by paying the transaction fees, for your convenience we offer <a href="#calendars">calendar servers</a> that perform this operation for you. These servers are <strong>free to use</strong> and they don't require any registration or api key..
       </p>
       </div>
       <div class="how-it-works-example">
@@ -221,6 +220,35 @@ $ java -jar target/OtsCli.jar stamp my-file
         </div>
     </div>
   </section>
+
+
+  <!-- CALENDARS -->
+  <section class="repositories" id="calendars">
+    <h3 class="repositories-block-title">Calendars</h3>
+
+    <div class="container">
+      <div class="repositories-description">The following are the, <strong>free to use</strong>, default calendars used by OpenTimestamps. They relies on donations to reduce maintainers efforts, they accept bitcoin and some accept lightning network payments.</div>
+      <div class="repositories-description">&nbsp;</div>
+
+      <a href="https://alice.btc.calendar.opentimestamps.org/">
+        <p class="repositories-title">Alice</p>
+      </a>
+
+      <a href="https://bob.btc.calendar.opentimestamps.org/">
+        <p class="repositories-title">Bob</p>
+      </a>
+
+      <a href="https://finney.calendar.eternitywall.com/">
+        <p class="repositories-title">Finney</p>
+      </a>
+
+      <a href="https://ots.btc.catallaxy.com/">
+        <p class="repositories-title">Catallaxy</p>
+      </a>
+
+    </div>
+  </section>
+
 
   <!-- MEMBERS -->
   <section class="members" id="members">
@@ -379,6 +407,13 @@ $ java -jar target/OtsCli.jar stamp my-file
         <a href="https://dgi.io/" class="members-link">
           <img src="./assets/images/logos/digitalgoldinstitute.svg" alt="" width="95px" style="padding-top:10px;">
           <span class="members-name">DGI</span>
+        </a>
+      </div>
+
+      <div class="members-i">
+        <a href="https://www.intesigroup.com" class="members-link">
+          <img src="./assets/images/logos/intesigroup.png" alt="" width="95px" style="padding-top:10px;">
+          <span class="members-name">Intesi Group</span>
         </a>
       </div>
 
