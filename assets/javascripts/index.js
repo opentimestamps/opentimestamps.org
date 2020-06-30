@@ -76,7 +76,7 @@ function upgrade_verify(ots, hash, hashType, filename) {
                 	}
             	});
     		} else {
-                warning('Pending attestation');
+                warning('The Bitcoin transaction is unconfirmed. The attestation is still pending. Once the transaction confirms, this file will be updated.');
 			}
 		} else {
 			var text = "";
