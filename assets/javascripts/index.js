@@ -627,11 +627,235 @@ function run_verification(){
 
 function run_info(){
     if (Proof.data) {
-        location.href = "./info/?"+bytesToHex(string2Bin(Proof.data));
+        $("#info").show();
+        location.href = "#info";
+        Info.init(Proof.data);
     } else {
         failure("To <strong>info</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
     }
 }
+
+
+/*
+ * INFO SECTION
+ */
+
+var Info = {
+    init : function(data){
+        var jsonString = OpenTimestamps.json(Proof.data);
+        var obj = JSON.parse(jsonString);
+
+        // Fill labels
+        $("#hash").html(obj.hash);
+        if(obj.result=="KO"){
+            $("#error").html(obj.error);
+        }
+        $("#digest").html(obj.hash);
+        $("#type").html(obj.op);
+        $("#title_digest").html(obj.hash.substring(0, 12));
+
+        // Print timestamp
+        Info.print(obj.timestamp);
+    },
+    print : function(timestamp){
+
+        if(timestamp.attestations !== undefined ){
+            timestamp.attestations.forEach(function(item){
+                var div = Info.printAttestation(item,item.fork);
+                $("#table").append(div);
+                if(item.merkle !== undefined){
+                    div = Info.printMerkle(item.merkle,item.fork);
+                    $("#table").append(div);
+                }
+            });
+        }
+
+        if(timestamp.tx !== undefined ) {
+            var div = Info.printTx(timestamp.tx,timestamp.ops[0].fork);
+            $("#table").append(div);
+        }
+
+        if(timestamp.ops === undefined ){
+            return;
+        }
+
+        if(timestamp.ops.length > 1){
+            var subdiv = Info.printFork(timestamp.fork,timestamp.ops.length);
+            $("#table").append(subdiv);
+
+            var div = document.createElement('div');
+            $(div).addClass("table-i");
+            $(div).append("<div class='table'></div>");
+            $(div).appendTo($("#table"));
+            $("#table")=$(div).find('div');
+
+        }
+
+        if(timestamp.ops.length > 0){
+            timestamp.ops.forEach(function(item){
+                var div = Info.printTimestamp(item.op,item.arg,item.result,item.fork);
+                $("#table").append(div);
+                Info.print(item.timestamp);
+            });
+        }
+    },
+    printAttestation : function(item,fork){
+        var div = document.createElement('div');
+        $(div).addClass("table-i");
+
+        var title="Attestation";
+        var color="grey";
+        var content = "";
+        if(item.type == "BitcoinBlockHeaderAttestation") {
+            title = "Bitcoin Attestation";
+            content = 'Merkle root of Bitcoin block ' +
+                '<strong class="hash" style="display: inline;">' + item.param + '</strong>' +
+                '<a class="copy"></a>' +
+                '</div>';
+            color = "green";
+        } else if(item.type == "LitecoinBlockHeaderAttestation"){
+            title = "Litecoin Attestation";
+            content = 'Merkle root of Litecoin block ' +
+                '<strong class="hash" style="display: inline;">'+item.param+'</strong>' +
+                '<a class="copy"></a>' +
+                '</div>';
+            color="gold";
+        } else if(item.type == "EthereumBlockHeaderAttestation"){
+            title = "Ethereum Attestation";
+            content = 'Merkle root of Ethereum block ' +
+                '<strong class="hash" style="display: inline;">'+item.param+'</strong>' +
+                '<a class="copy"></a>' +
+                '</div>';
+            color="gold";
+        } else if(item.type == "PendingAttestation"){
+            title = "Pending Attestation";
+            content = "Pending attestation: server "+"<a href=''>"+item.param+"</a>";
+            color="gold";
+        } else if(item.type == "UnknownAttestation"){
+            title = "Unknown attestation";
+            content = "Unknown Attestation: payload "+"<a href=''>"+item.param+"</a>";
+            color="grey"
+        }
+
+        var first = document.createElement('div');
+        $(first).addClass("table-name "+color);
+        $(first).html(title);
+        $(first).appendTo(div);
+
+        var second = document.createElement('div');
+        $(second).addClass("table-value table-value_copy");
+        $(second).append(content);
+        $(second).appendTo(div);
+
+        return div;
+    },
+    printMerkle : function(merkle,fork){
+        var div = document.createElement('div');
+        $(div).addClass("table-i");
+
+        var title="Merkle Root";
+        var content=merkle;
+        var color="purple";
+
+        var first = document.createElement('div');
+        $(first).addClass("table-name "+color);
+        $(first).html(title);
+        $(first).appendTo(div);
+
+        var second = document.createElement('div');
+        $(second).addClass("table-value table-value_copy");
+        $(second).append('<div class="badge"></div>');
+        if(fork>0) {
+            $(second).find(".badge").append('<p class="step">'+fork+'</p>');
+        }
+        $(second).find(".badge").append('<p class="hash">'+content+'</p>');
+        $(second).find(".badge").append('<a class="copy"></a>');
+        $(second).appendTo(div);
+
+        return div;
+    },
+    printTx : function(tx,fork){
+        var div = document.createElement('div');
+        $(div).addClass("table-i");
+
+        var title="Parse TX";
+        var content=tx;
+        var color="purple";
+
+        var first = document.createElement('div');
+        $(first).addClass("table-name "+color);
+        $(first).html(title);
+        $(first).appendTo(div);
+
+        var second = document.createElement('div');
+        $(second).addClass("table-value table-value_copy");
+        $(second).append('<p>Transaction</p>');
+        $(second).append('<div class="badge"></div>');
+
+        if(fork>0) {
+            $(second).find(".badge").append('<p class="step">'+fork+'</p>');
+        }
+        $(second).find(".badge").append('<p class="hash">'+content+'</p>');
+        $(second).find(".badge").append('<a class="copy"></a>');
+        $(second).appendTo(div);
+
+        return div;
+    },
+    printFork : function(fork,totfork){
+        var div = document.createElement('div');
+        $(div).addClass("table-i");
+
+        var title="Fork";
+        var content="Fork in " + totfork + " paths";
+        var color="blue";
+
+        var first = document.createElement('div');
+        $(first).addClass("table-name "+color);
+        $(first).html(title);
+        $(first).appendTo(div);
+
+
+        var second = document.createElement('div');
+        $(second).addClass("table-value");
+        if(fork>0) {
+            $(second).append('<p class="step">'+fork+'</p>');
+        }
+        $(second).append('<p class="">'+content+'</p>');
+        $(second).appendTo(div);
+
+        return div;
+    },
+    printTimestamp : function(op,arg,result,fork){
+        var div = document.createElement('div');
+        $(div).addClass("table-i");
+
+        var content = result;
+        if(arg.length>0){
+            var start = content.indexOf(arg);
+            var end = start+arg.length;
+            content = result.substring(0, start)+"<span class='green'>"+arg+"</span>"+result.substring(end, result.length)
+        }
+        var title = op+"("+((arg.length>0)?arg.substring(0, 6)+'...':'')+")";
+        var color="purple";
+
+        var first = document.createElement('div');
+        $(first).addClass("table-name ");
+        $(first).html(title);
+        $(first).appendTo(div);
+
+        var second = document.createElement('div');
+        $(second).addClass("table-value");
+        $(second).append('<div class="badge"></div>');
+        if(fork>0) {
+            $(second).find(".badge").append('<p class="step">'+fork+'</p>');
+        }
+        $(second).find(".badge").append('<p class="hash">'+content+'</p>');
+        $(second).appendTo(div);
+
+        return div;
+    }
+}
+
 
 /*
  * EXTENDS ARRAY
