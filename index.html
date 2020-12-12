@@ -11,6 +11,7 @@
   <meta property="og:image" content="./assets/images/og.jpg">
   <title>OpenTimestamps</title>
   <link rel="stylesheet" href="./assets/stylesheets/application.css" media="screen" title="no title">
+  <link rel="stylesheet" href="/assets/stylesheets/timestamp-of.css" media="screen" title="no title">
 </head>
 <body>
 <style>
@@ -168,6 +169,33 @@
     </div>
     <div class="alert alert-warning" role="alert" id="warningMessage" style="display:none">
     </div>-->
+    </div>
+  </section>
+
+  <!-- TIMESTAMP INFO -->
+  <section class="intro" id="info" style="display:none">
+    <p class="timestamp-of">
+      Timestamp of
+      <span id="title_digest"></span>
+    </p>
+    <p class="document-digest">Document digest (<span id="type"></span>):</p>
+    <p class="sha" id="digest">
+    </p>
+    <!--<a href="./index.html" class="to-upload-page">Return to upload page</a>-->
+  </section>
+  <section class="types">
+    <div class="container">
+      <div class="types-i green">Bitcoin Attestation</div>
+      <div class="types-i grey">Unknown Attestation</div>
+      <div class="types-i gold">Pending/Other Attestation</div>
+      <div class="types-i purple">Comments</div>
+      <div class="types-i blue">Fork</div>
+    </div>
+  </section>
+  <section class="container">
+    <div class="table" id="table">
+
+    </div>
   </section>
 
   <!-- HOW IT WORKS -->
