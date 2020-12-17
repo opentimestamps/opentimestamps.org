@@ -653,6 +653,7 @@ var Info = {
         $("#digest").html(obj.hash);
         $("#type").html(obj.op);
         $("#title_digest").html(obj.hash.substring(0, 12));
+        this.container = $("#table")
 
         // Print timestamp
         Info.print(obj.timestamp);
@@ -662,17 +663,17 @@ var Info = {
         if(timestamp.attestations !== undefined ){
             timestamp.attestations.forEach(function(item){
                 var div = Info.printAttestation(item,item.fork);
-                $("#table").append(div);
+                Info.container.append(div);
                 if(item.merkle !== undefined){
                     div = Info.printMerkle(item.merkle,item.fork);
-                    $("#table").append(div);
+                    Info.container.append(div);
                 }
             });
         }
 
         if(timestamp.tx !== undefined ) {
             var div = Info.printTx(timestamp.tx,timestamp.ops[0].fork);
-            $("#table").append(div);
+            Info.container.append(div);
         }
 
         if(timestamp.ops === undefined ){
@@ -681,20 +682,20 @@ var Info = {
 
         if(timestamp.ops.length > 1){
             var subdiv = Info.printFork(timestamp.fork,timestamp.ops.length);
-            $("#table").append(subdiv);
+            Info.container.append(subdiv);
 
             var div = document.createElement('div');
             $(div).addClass("table-i");
             $(div).append("<div class='table'></div>");
             $(div).appendTo($("#table"));
-            $("#table")=$(div).find('div');
+            Info.container = $(div).find('div');
 
         }
 
         if(timestamp.ops.length > 0){
             timestamp.ops.forEach(function(item){
                 var div = Info.printTimestamp(item.op,item.arg,item.result,item.fork);
-                $("#table").append(div);
+                Info.container.append(div);
                 Info.print(item.timestamp);
             });
         }
