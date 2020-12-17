@@ -628,6 +628,7 @@ function run_verification(){
 function run_info(){
     if (Proof.data) {
         $("#info").show();
+        $("#legend").show();
         location.href = "#info";
         Info.init(Proof.data);
     } else {
@@ -642,17 +643,19 @@ function run_info(){
 
 var Info = {
     init : function(data){
-        var jsonString = OpenTimestamps.json(Proof.data);
+        var jsonString = OpenTimestamps.json(data);
         var obj = JSON.parse(jsonString);
 
         // Fill labels
         $("#hash").html(obj.hash);
+        $("#error").html("");
         if(obj.result=="KO"){
             $("#error").html(obj.error);
         }
         $("#digest").html(obj.hash);
         $("#type").html(obj.op);
         $("#title_digest").html(obj.hash.substring(0, 12));
+        $("#table").empty()
         this.container = $("#table")
 
         // Print timestamp
