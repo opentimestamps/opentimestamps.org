@@ -1006,3 +1006,21 @@ function failure(text){
 function warning(text){
     message("WARNING!", text, 'statuses_warning');
 }
+
+/* Clipboard */
+var clipboard = new Clipboard('.copy', {
+    text: function(event) {
+        var text = $(event).parent().find(".hash").html();
+        console.log(text);
+
+        $(".clipboard-copy")
+          .css('display','block')
+          .find('.badge-copy .hash')
+          .html(text);
+
+        setTimeout(function(){
+          $(".clipboard-copy").css('display','none');
+        },3000)
+        return text;
+    }
+})
