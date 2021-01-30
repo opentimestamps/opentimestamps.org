@@ -782,7 +782,7 @@ var Info = {
         var div = document.createElement('div');
         $(div).addClass("table-i");
 
-        var title="Parse TX";
+        var title="Note";
         var content=tx;
         var color="purple";
 
@@ -793,7 +793,7 @@ var Info = {
 
         var second = document.createElement('div');
         $(second).addClass("table-value table-value_copy");
-        $(second).append('<p>Transaction</p>');
+        $(second).append('<p>Probably a Bitcoin transaction</p>');
         $(second).append('<div class="badge"></div>');
 
         if(fork>0) {
@@ -835,7 +835,7 @@ var Info = {
 
         var content = result;
         if(arg.length>0){
-            var start = content.indexOf(arg);
+            var start = (op=="append") ? content.lastIndexOf(arg) : content.indexOf(arg);
             var end = start+arg.length;
             content = result.substring(0, start)+"<span class='green'>"+arg+"</span>"+result.substring(end, result.length)
         }
