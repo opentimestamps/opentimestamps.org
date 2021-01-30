@@ -835,7 +835,7 @@ var Info = {
 
         var content = result;
         if(arg.length>0){
-            var start = content.indexOf(arg);
+            var start = (op=="append") ? content.lastIndexOf(arg) : content.indexOf(arg);
             var end = start+arg.length;
             content = result.substring(0, start)+"<span class='green'>"+arg+"</span>"+result.substring(end, result.length)
         }
