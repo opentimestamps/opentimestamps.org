@@ -782,7 +782,7 @@ var Info = {
         var div = document.createElement('div');
         $(div).addClass("table-i");
 
-        var title="Parse TX";
+        var title="Note";
         var content=tx;
         var color="purple";
 
@@ -793,7 +793,7 @@ var Info = {
 
         var second = document.createElement('div');
         $(second).addClass("table-value table-value_copy");
-        $(second).append('<p>Transaction</p>');
+        $(second).append('<p>Probably a Bitcoin transaction</p>');
         $(second).append('<div class="badge"></div>');
 
         if(fork>0) {
