@@ -575,7 +575,7 @@ var Proof = {
     const algorithm = getParameterByName('algorithm');
 	if(digest) {
 		Hashes.init();
-		Hashes.set(digest, algorithm);
+		Hashes.set(algorithm, digest);
 		Document.show();
 	}
 	const ots = getParameterByName('ots');
