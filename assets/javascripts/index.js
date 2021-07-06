@@ -54,6 +54,7 @@ function upgrade_verify(ots, hash, hashType, filename) {
         const bytes = detachedOts.serializeToBytes();
     	if(changed){
         	//success('Timestamp has been successfully upgraded!');
+            filename = filename || hash + ".ots";
         	download(filename, bytes);
 
         	// update proof
