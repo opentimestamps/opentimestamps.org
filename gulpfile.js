@@ -17,12 +17,12 @@ const runSequence = require('run-sequence');
 
 gulp.task('clean', function () {
     return gulp.src('assets/stylesheets/*.css', {read: false})
-        .pipe(addsrc('assets/javascripts/application.js'))
+        .pipe(addsrc('assets/javascripts/application.js', {allowEmpty: true}))
         .pipe(clean({force: true}))
 });
 
 gulp.task('sass', function() {
-  return gulp.src(['assets/stylesheets/application.scss', 'assets/stylesheets/certificate.scss','assets/stylesheets/timestamp-of.scss'])
+  return gulp.src(['assets/stylesheets/application.scss', 'assets/stylesheets/timestamp-of.scss'])
     .pipe(sassGlob())
     .pipe(sass().on('error', sass.logError))
     .pipe(autoprefixer())
@@ -44,11 +44,9 @@ gulp.task('javascript', function() {
 });
 
 
-gulp.task('default', function(done) {
-    runSequence('clean','sass','javascript', function(){
-        done();
-    });
-});
+gulp.task('default', gulp.series('clean','sass','javascript', function(done){
+    done();
+}));
 
 gulp.task('watch', function() {
     gulp.watch('assets/stylesheets/**/*.scss', ['sass']);
