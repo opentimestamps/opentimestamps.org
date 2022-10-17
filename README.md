@@ -27,13 +27,13 @@ Get parameters:
 ### Install dependencies.
 Resolve and install dependencies.
 ```
-npm install --dev
+npm install --include=dev
 ```
 
 ### Build
 Compile css, build javascript and dependencies.
 ```
-gulp default
+gulp
 ```
 
 ### Start
