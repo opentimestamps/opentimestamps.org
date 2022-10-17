@@ -13,7 +13,6 @@ const uglify = require('gulp-uglify');
 const connect = require('gulp-connect');
 const clean = require('gulp-clean');
 const source = require('vinyl-source-stream');
-const runSequence = require('run-sequence');
 
 gulp.task('clean', function () {
     return gulp.src('assets/stylesheets/*.css', {read: false})
