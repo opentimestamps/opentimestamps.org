@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
   <link rel="stylesheet" href="./assets/stylesheets/application.css" media="screen" title="no title">
   <link rel="stylesheet" href="/assets/stylesheets/timestamp-of.css" media="screen" title="no title">
 </head>
+
 <body>
   <header class="header">
     <div class="container">
@@ -135,7 +137,8 @@
 
         <div class="stamp-and-verify-result result result_stamp" id="result_stamp">
           <p class="result-description">
-            The hash is calculated on your browser preserving your privacy. <a href="https://github.com/opentimestamps/opentimestamps.org/pull/7">More</a>...<br>
+            The hash is calculated on your browser preserving your privacy. <a
+              href="https://github.com/opentimestamps/opentimestamps.org/pull/7">More</a>...<br>
             Timestamping proof download will start automatically after uploading document.
           </p>
         </div>
@@ -152,8 +155,8 @@
         </div>
       </div>
 
-    <br>
-    <!--<div  class="alert alert-warning" role="alert" id="status" style="display:none">
+      <br>
+      <!--<div  class="alert alert-warning" role="alert" id="status" style="display:none">
     </div>
     <div id="loading" style="display:none">
       <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
@@ -195,7 +198,7 @@
   </div>
 
   <div class="clipboard-copy" style="display: none">
-    <div class="badge-copy" >
+    <div class="badge-copy">
       Copied to Clipboard: <span class="hash"></span>
     </div>
   </div>
@@ -205,40 +208,46 @@
     <div class="container">
       <h3 class="how-it-works-title">How it Works</h3>
       <p class="how-it-works-description">
-        A timestamp proves that some data existed prior to some point in time. OpenTimestamps defines a set of operations for creating provable timestamps and later independently verifying them.
-        At the time of writing timestamping on the Bitcoin blockchain is supported, the format is flexible enough to support a variety of methods. <a href="https://petertodd.org/2016/opentimestamps-announcement">More.</a>
+        A timestamp proves that some data existed prior to some point in time. OpenTimestamps defines a set of
+        operations for creating provable timestamps and later independently verifying them.
+        At the time of writing timestamping on the Bitcoin blockchain is supported, the format is flexible enough to
+        support a variety of methods. <a href="https://petertodd.org/2016/opentimestamps-announcement">More.</a>
       </p>
       <br>
       <p class="how-it-works-description">
-        Anyone could realize a timestamp with the permissionless blockchain by paying the transaction fees, for your convenience we offer <a href="#calendars">calendar servers</a> that perform this operation for you. These servers are <strong>free to use</strong> and they don't require any registration or api key.
+        Anyone could realize a timestamp with the permissionless blockchain by paying the transaction fees, for your
+        convenience we offer <a href="#calendars">calendar servers</a> that perform this operation for you. These
+        servers are <strong>free to use</strong> and they don't require any registration or api key.
       </p>
+    </div>
+    <div class="how-it-works-example">
+      <div class="example-tabs">
+        <p class="example-tabs-i active" data-tab="python">Python</p>
+        <p class="example-tabs-i" data-tab="javascript">Javascript</p>
+        <p class="example-tabs-i" data-tab="java">Java</p>
       </div>
-      <div class="how-it-works-example">
-        <div class="example-tabs">
-          <p class="example-tabs-i active" data-tab="python">Python</p>
-          <p class="example-tabs-i" data-tab="javascript">Javascript</p>
-          <p class="example-tabs-i" data-tab="java">Java</p>
-        </div>
-        <div class="example-content example-content_python active">
-          <pre>
+      <div class="example-content example-content_python active">
+        <pre>
 
 $ pip3 install opentimestamps-client
 $ ots stamp my-file
 
           </pre>
-          <a href="https://github.com/opentimestamps/opentimestamps-client/blob/master/README.md" class="example-content-more">More</a>
-        </div>
-        <div class="example-content example-content_javascript">
-          <pre>
+        <a href="https://github.com/opentimestamps/opentimestamps-client/blob/master/README.md"
+          class="example-content-more">More</a>
+      </div>
+      <div class="example-content example-content_javascript">
+        <pre>
 
 $ npm install -g javascript-opentimestamps
 $ ots-cli.js stamp my-file
 
           </pre>
-          <a href="https://github.com/opentimestamps/javascript-opentimestamps/blob/master/README.md" class="example-content-more">More</a>
-        </div>
-        <div class="example-content example-content_java">
-          <pre>
+        <a href="https://github.com/opentimestamps/javascript-opentimestamps/blob/master/README.md"
+          class="example-content-more">More</a>
+      </div>
+      <div class="example-content example-content_java">
+        <pre>
 
 $ git clone https://github.com/opentimestamps/java-opentimestamps
 $ cd java-opentimestamps
@@ -246,8 +255,9 @@ $ mvn install
 $ java -jar target/OtsCli.jar stamp my-file
 
           </pre>
-          <a href="https://github.com/opentimestamps/java-opentimestamps/blob/master/README.md" class="example-content-more">More</a>
-        </div>
+        <a href="https://github.com/opentimestamps/java-opentimestamps/blob/master/README.md"
+          class="example-content-more">More</a>
+      </div>
     </div>
   </section>
 
@@ -257,7 +267,9 @@ $ java -jar target/OtsCli.jar stamp my-file
     <h3 class="repositories-block-title">Calendars</h3>
 
     <div class="container">
-      <div class="repositories-description">The following are the, <strong>free to use</strong>, default calendars used by OpenTimestamps. They rely on donations to reduce maintainers efforts, they accept bitcoin and some accept lightning network payments. Check the calendars <a href="http://uptime.opentimestamps.net/">uptime</a>.</div>
+      <div class="repositories-description">The following are the, <strong>free to use</strong>, default calendars used
+        by OpenTimestamps. They rely on donations to reduce maintainers efforts, they accept bitcoin and some accept
+        lightning network payments. Check the calendars <a href="http://uptime.opentimestamps.net/">uptime</a>.</div>
       <div class="repositories-description">&nbsp;</div>
 
       <a href="https://alice.btc.calendar.opentimestamps.org/">
@@ -363,14 +375,16 @@ $ java -jar target/OtsCli.jar stamp my-file
 
       <div class="members-i">
         <a href="https://condominioadvisor.it/" class="members-link">
-          <img src="./assets/images/logos/condominio_advisor.png" alt="" width="160" height="74"  style="padding-top:10px;">
+          <img src="./assets/images/logos/condominio_advisor.png" alt="" width="160" height="74"
+            style="padding-top:10px;">
           <span class="members-name">CondominioAdvisor</span>
         </a>
       </div>
 
       <div class="members-i">
         <a href="https://www.cerved.com/" class="members-link">
-          <img src="./assets/images/logos/logo_cerved_color.png" alt="" width="160" height="55" style="padding-top:10px;">
+          <img src="./assets/images/logos/logo_cerved_color.png" alt="" width="160" height="55"
+            style="padding-top:10px;">
           <span class="members-name">Cerved</span>
         </a>
       </div>
@@ -444,7 +458,8 @@ $ java -jar target/OtsCli.jar stamp my-file
 
       <div class="members-i">
         <a href="https://dgi.io/" class="members-link">
-          <img src="./assets/images/logos/digitalgoldinstitute.svg" alt="" width="100" height="70" style="padding-top:10px;">
+          <img src="./assets/images/logos/digitalgoldinstitute.svg" alt="" width="100" height="70"
+            style="padding-top:10px;">
           <span class="members-name">DGI</span>
         </a>
       </div>
@@ -486,21 +501,23 @@ $ java -jar target/OtsCli.jar stamp my-file
 
       <div class="members-i">
         <a href="https://knowmadinstitut.org/" class="members-link">
-          <img src="./assets/images/logos/knowmadinstitut.png" alt="" width="100" height="100" style="padding-top:10px;">
+          <img src="./assets/images/logos/knowmadinstitut.png" alt="" width="100" height="100"
+            style="padding-top:10px;">
           <span class="members-name">Knowmad Institut</span>
         </a>
       </div>
 
       <div class="members-i">
         <a href="https://savis.vn" class="members-link">
-          <img src="./assets/images/logos/Logo-Savis-Digital.jpeg" alt="" width="200" height="85" style="padding-top:10px;">
+          <img src="./assets/images/logos/Logo-Savis-Digital.jpeg" alt="" width="200" height="85"
+            style="padding-top:10px;">
           <span class="members-name">Savis Digital</span>
         </a>
       </div>
 
       <div class="members-i">
         <a href="https://github.com/opentimestamps/opentimestamps.org/issues/2" class="members-link members-link_add">
-          <img src="./assets/images/logos/company.png" alt="" width="100" height="92" >
+          <img src="./assets/images/logos/company.png" alt="" width="100" height="92">
           <span class="members-name">Add your company here</span>
         </a>
       </div>
@@ -610,4 +627,5 @@ $ java -jar target/OtsCli.jar stamp my-file
   <script src="./assets/javascripts/crypto-js/crypto-js.js"></script>
   <script src="./assets/javascripts/index.js"></script>
 </body>
+
 </html>
