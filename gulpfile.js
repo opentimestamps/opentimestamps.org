@@ -1,7 +1,7 @@
 'use strict';
 
 const gulp = require('gulp');
-const sass = require('gulp-sass');
+const sass = require('gulp-sass')(require('sass'));
 const sassGlob = require('gulp-sass-glob');
 const autoprefixer = require('gulp-autoprefixer');
 const uglifycss = require('gulp-uglifycss');
@@ -48,8 +48,8 @@ gulp.task('default', gulp.series('clean','sass','javascript', function(done){
 }));
 
 gulp.task('watch', function() {
-    gulp.watch('assets/stylesheets/**/*.scss', ['sass']);
-    gulp.watch('assets/javascripts/application/*.js', ['javascript']);
+    gulp.watch('assets/stylesheets/**/*.scss', gulp.series('sass'));
+    gulp.watch('assets/javascripts/application/*.js', gulp.series('javascript'));
 });
 
 gulp.task('server', function() {
