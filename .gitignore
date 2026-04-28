@@ -6,3 +6,5 @@ sync-draft.sh
 _site/
 node_modules/
 package-lock.json
+.direnv
+.codex
