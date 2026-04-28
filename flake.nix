@@ -26,6 +26,7 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               nodejs
+              imagemagick
               python3
               gnumake
               gcc

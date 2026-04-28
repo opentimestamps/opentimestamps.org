@@ -39,7 +39,11 @@ npx gulp server
 npm start
 ```
 
-Use `npm run watch` while editing Sass or application JavaScript.
+Use `npm run watch` while editing Sass or application JavaScript. The Nix shell also includes ImageMagick for asset cleanup; for example:
+
+```sh
+magick assets/images/logos/Proxae.png -resize 600x600 assets/images/logos/Proxae.png
+```
 
 ## Coding Style & Naming Conventions
 Follow the existing style in the repo: two-space indentation in JavaScript and simple, flat Sass partials. Keep JavaScript compatible with the current jQuery-based frontend; prefer small functions in `assets/javascripts/application/`. Use kebab-case for file names such as `toggleMenu.js` only when matching the existing naming; otherwise preserve the current patterns already in the folder. Keep Sass partials focused by section, for example `application/navigation.scss`.
