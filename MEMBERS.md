@@ -12,7 +12,7 @@ Companies that **really use OpenTimestamps** can appear in the [Members](https:/
    - how it uses OpenTimestamps (what is hashed, when proofs are created, how users can verify).
 
 2. **Live backlink to opentimestamps.org**  
-   Your public site must include a working hyperlink to `https://opentimestamps.org` (or `http://opentimestamps.org`).  
+   Your public site must include a working hyperlink to `https://opentimestamps.org`.  
    In the PR description, say **exactly where** the backlink is (page URL + section, e.g. footer, FAQ, protocol docs, verification page).
 
 3. **Logo + one HTML entry**  
