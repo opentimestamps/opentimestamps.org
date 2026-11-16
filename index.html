@@ -19,9 +19,9 @@
 <body>
   <header class="header">
     <div class="container">
-      <a href="#" class="header-logo"></a>
+      <a href="/" class="header-logo" aria-label="OpenTimestamps home"></a>
       <div class="header-nav-open"></div>
-      <nav class="header-nav">
+      <nav class="header-nav" aria-label="Primary">
         <!-- <a href="#intro" class="header-nav-i">Intro</a> -->
         <a href="#stamp-and-verify" class="header-nav-i">Stamp and Verify</a>
         <a href="#how-it-works" class="header-nav-i">How it works</a>
@@ -33,6 +33,7 @@
     </div>
   </header>
 
+  <main>
   <!-- INTRO -->
   <section class="intro" id="intro">
     <div class="container">
@@ -139,7 +140,7 @@
         <div class="stamp-and-verify-result result result_stamp" id="result_stamp">
           <p class="result-description">
             The hash is calculated on your browser preserving your privacy. <a
-              href="https://github.com/opentimestamps/opentimestamps.org/pull/7">More</a>...<br>
+              href="https://github.com/opentimestamps/opentimestamps.org/pull/7">How browser hashing protects privacy</a>.<br>
             Timestamping proof download will start automatically after uploading document.
           </p>
         </div>
@@ -212,7 +213,7 @@
         A timestamp proves that some data existed prior to some point in time. OpenTimestamps defines a set of
         operations for creating provable timestamps and later independently verifying them.
         At the time of writing timestamping on the Bitcoin blockchain is supported, the format is flexible enough to
-        support a variety of methods. <a href="https://petertodd.org/2016/opentimestamps-announcement">More.</a>
+        support a variety of methods. <a href="https://petertodd.org/2016/opentimestamps-announcement">Read the OpenTimestamps announcement.</a>
       </p>
       <br>
       <p class="how-it-works-description">
@@ -235,7 +236,7 @@ $ ots stamp my-file
 
           </pre>
         <a href="https://github.com/opentimestamps/opentimestamps-client/blob/master/README.md"
-          class="example-content-more">More</a>
+          class="example-content-more">Python documentation</a>
       </div>
       <div class="example-content example-content_javascript">
         <pre>
@@ -245,7 +246,7 @@ $ ots-cli.js stamp my-file
 
           </pre>
         <a href="https://github.com/opentimestamps/javascript-opentimestamps/blob/master/README.md"
-          class="example-content-more">More</a>
+          class="example-content-more">JavaScript documentation</a>
       </div>
       <div class="example-content example-content_java">
         <pre>
@@ -257,7 +258,7 @@ $ java -jar target/OtsCli.jar stamp my-file
 
           </pre>
         <a href="https://github.com/opentimestamps/java-opentimestamps/blob/master/README.md"
-          class="example-content-more">More</a>
+          class="example-content-more">Java documentation</a>
       </div>
     </div>
   </section>
@@ -270,7 +271,7 @@ $ java -jar target/OtsCli.jar stamp my-file
     <div class="container">
       <div class="repositories-description">The following are the, <strong>free to use</strong>, default calendars used
         by OpenTimestamps. They rely on donations to reduce maintainers efforts, they accept bitcoin and some accept
-        lightning network payments. Check the calendars <a href="http://uptime.opentimestamps.net/">uptime</a>.</div>
+        lightning network payments. Check <a href="http://uptime.opentimestamps.net/">calendar uptime</a>.</div>
       <div class="repositories-description">&nbsp;</div>
 
       <a href="https://alice.btc.calendar.opentimestamps.org/">
@@ -299,7 +300,7 @@ $ java -jar target/OtsCli.jar stamp my-file
     <div class="container">
       <div class="members-i">
         <a href="http://eternitywall.com" class="members-link">
-          <img src="./assets/images/logos/eternity-wall.png" alt="eternity wall" width="100" height="52">
+          <img src="./assets/images/logos/eternity-wall.png" alt="" width="100" height="52">
           <span class="members-name">Eternity wall</span>
         </a>
       </div>
@@ -323,13 +324,13 @@ $ java -jar target/OtsCli.jar stamp my-file
       </div>
       <div class="members-i">
         <a href="https://trusthub.cloud/" class="members-link">
-          <img src="./assets/images/logos/TrustHub.png" alt="TRUSTHUB" width="190" style="padding-top:10px;">
+          <img src="./assets/images/logos/TrustHub.png" alt="" width="190" style="padding-top:10px;">
           <span class="members-name">TRUSTHUB</span>
         </a>
       </div>
       <div class="members-i">
         <a href="https://proxae.com" class="members-link">
-          <img src="./assets/images/logos/Proxae.png" alt="PROXAE" width="120" style="padding-top:10px;">
+          <img src="./assets/images/logos/Proxae.png" alt="" width="120" style="padding-top:10px;">
           <span class="members-name">PROXAE</span>
         </a>
       </div>
@@ -484,7 +485,7 @@ $ java -jar target/OtsCli.jar stamp my-file
 
       <div class="members-i">
         <a href="https://www.simpleproof.com/" class="members-link">
-          <img src="./assets/images/logos/simpleproof.png" alt="Simpleproof" width="90" height="90"
+          <img src="./assets/images/logos/simpleproof.png" alt="" width="90" height="90"
             style="padding-top:10px;">
           <span class="members-name">Simpleproof</span>
         </a>
@@ -492,7 +493,7 @@ $ java -jar target/OtsCli.jar stamp my-file
 
       <div class="members-i">
         <a href="https://digitaltimestamps.com/" class="members-link">
-          <img src="./assets/images/logos/digital-timestamps.png" alt="Digital Timestamps" width="267" height="38"
+          <img src="./assets/images/logos/digital-timestamps.png" alt="" width="267" height="38"
             style="padding-top:10px;">
           <span class="members-name">Digital Timestamps</span>
         </a>
@@ -500,14 +501,14 @@ $ java -jar target/OtsCli.jar stamp my-file
 
       <div class="members-i">
         <a href="https://www.zoho.com/sign" class="members-link">
-          <img src="./assets/images/logos/zoho.png" alt="Zoho" width="190" height="96" style="padding-top:10px;">
+          <img src="./assets/images/logos/zoho.png" alt="" width="190" height="96" style="padding-top:10px;">
           <span class="members-name">Zoho</span>
         </a>
       </div>
 
       <div class="members-i">
         <a href="https://btcfactura.com" class="members-link">
-          <img src="./assets/images/logos/btcfactura@2x.png" alt="BTCfactura" width="190" height="40"
+          <img src="./assets/images/logos/btcfactura@2x.png" alt="" width="190" height="40"
             style="padding-top:10px;">
           <span class="members-name">BTCfactura</span>
         </a>
@@ -516,7 +517,7 @@ $ java -jar target/OtsCli.jar stamp my-file
       <div class="members-i">
         <a href="https://beaverproof.com/" class="members-link">
           <img src="./assets/images/logos/beaver-proof@2x.png"
-               alt="Beaver Proof" width="90" height="90"
+               alt="" width="90" height="90"
                style="padding-top:10px;">
           <span class="members-name">Beaver Proof</span>
         </a>
@@ -524,7 +525,7 @@ $ java -jar target/OtsCli.jar stamp my-file
 
       <div class="members-i">
         <a href="https://timestampgit.dev" class="members-link">
-          <img src="./assets/images/logos/timestampgit@2x.png" alt="TimestampGIT" width="200" height="57"
+          <img src="./assets/images/logos/timestampgit@2x.png" alt="" width="200" height="57"
             style="padding-top:10px;">
           <span class="members-name">TimestampGIT</span>
         </a>
@@ -532,7 +533,7 @@ $ java -jar target/OtsCli.jar stamp my-file
 
       <div class="members-i">
         <a href="https://neuportal.ai/experiment" class="members-link">
-          <img src="./assets/images/logos/neuportal@2x.png" alt="NeuPortal" width="190" height="43"
+          <img src="./assets/images/logos/neuportal@2x.png" alt="" width="190" height="43"
             style="padding-top:10px;">
           <span class="members-name">NeuPortal</span>
         </a>
@@ -635,9 +636,10 @@ $ java -jar target/OtsCli.jar stamp my-file
   </section>
   -->
 
+  </main>
   <footer class="footer">
     <div class="container">
-      <a href="#" class="footer-logo"></a>
+      <a href="/" class="footer-logo" aria-label="OpenTimestamps home"></a>
       <a href="https://twitter.com/opentimestamps" class="footer-contact-us">@opentimestamps</a>
     </div>
   </footer>
