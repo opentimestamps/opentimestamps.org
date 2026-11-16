@@ -20,8 +20,8 @@
   <header class="header">
     <div class="container">
       <a href="/" class="header-logo" aria-label="OpenTimestamps home"></a>
-      <div class="header-nav-open"></div>
-      <nav class="header-nav" aria-label="Primary">
+      <button type="button" class="header-nav-open" aria-label="Menu" aria-controls="primary-navigation" aria-expanded="false"></button>
+      <nav class="header-nav" id="primary-navigation" aria-label="Primary">
         <!-- <a href="#intro" class="header-nav-i">Intro</a> -->
         <a href="#stamp-and-verify" class="header-nav-i">Stamp and Verify</a>
         <a href="#how-it-works" class="header-nav-i">How it works</a>
@@ -223,12 +223,12 @@
       </p>
     </div>
     <div class="how-it-works-example">
-      <div class="example-tabs">
-        <p class="example-tabs-i active" data-tab="python">Python</p>
-        <p class="example-tabs-i" data-tab="javascript">Javascript</p>
-        <p class="example-tabs-i" data-tab="java">Java</p>
+      <div class="example-tabs" role="tablist" aria-label="Code examples">
+        <button type="button" class="example-tabs-i active" id="tab-python" role="tab" aria-controls="panel-python" aria-selected="true" tabindex="0" data-tab="python">Python</button>
+        <button type="button" class="example-tabs-i" id="tab-javascript" role="tab" aria-controls="panel-javascript" aria-selected="false" tabindex="-1" data-tab="javascript">Javascript</button>
+        <button type="button" class="example-tabs-i" id="tab-java" role="tab" aria-controls="panel-java" aria-selected="false" tabindex="-1" data-tab="java">Java</button>
       </div>
-      <div class="example-content example-content_python active">
+      <div class="example-content example-content_python active" id="panel-python" role="tabpanel" aria-labelledby="tab-python" tabindex="0">
         <pre>
 
 $ pip3 install opentimestamps-client
@@ -238,7 +238,7 @@ $ ots stamp my-file
         <a href="https://github.com/opentimestamps/opentimestamps-client/blob/master/README.md"
           class="example-content-more">Python documentation</a>
       </div>
-      <div class="example-content example-content_javascript">
+      <div class="example-content example-content_javascript" id="panel-javascript" role="tabpanel" aria-labelledby="tab-javascript" tabindex="0" hidden>
         <pre>
 
 $ npm install -g opentimestamps
@@ -248,7 +248,7 @@ $ ots-cli.js stamp my-file
         <a href="https://github.com/opentimestamps/javascript-opentimestamps/blob/master/README.md"
           class="example-content-more">JavaScript documentation</a>
       </div>
-      <div class="example-content example-content_java">
+      <div class="example-content example-content_java" id="panel-java" role="tabpanel" aria-labelledby="tab-java" tabindex="0" hidden>
         <pre>
 
 $ git clone https://github.com/opentimestamps/java-opentimestamps

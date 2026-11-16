@@ -40,6 +40,7 @@
     @media (max-width: $container-responsive--width) {
       transition: transform 0.4s ease 0s;
       transform: translateX(100%);
+      visibility: hidden;
       position: fixed;
       z-index: 1000;
       right: 0;
@@ -54,6 +55,7 @@
     &.open {
       transition: transform 0.4s ease 0s;
       transform: translateX(0);
+      visibility: visible;
     }
 
     &-open {
@@ -66,6 +68,9 @@
       margin-top: -9px;
       background-image: url(../images/menu.svg);
       background-size: 100% 100%;
+      background-color: transparent;
+      padding: 0;
+      cursor: pointer;
 
       @media (max-width: $container-responsive--width) {
         display: block;
