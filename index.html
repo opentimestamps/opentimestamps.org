@@ -115,26 +115,26 @@
 
         <p class="stamp-and-verify-description">
         </p>
-        <div class="stamp-and-verify-drop-zone" id="document_holder">
+        <button type="button" class="stamp-and-verify-drop-zone" id="document_holder" aria-label="Choose a file to stamp or a proof to verify">
           <span class="filename"></span>
           <span class="filesize"></span>
-          <p class="hash">
+          <span class="hash">
             Drop here a file to <b>stamp</b><br>
             OR<br>
             an <i>.ots</i> proof file to <b>verify</b>
-          </p>
-        </div>
+          </span>
+        </button>
         <input id="document_input" type="file" style="display:none">
 
         <br>
 
-        <div class="stamp-and-verify-drop-zone" id="stamped_holder" style="display:none">
+        <button type="button" class="stamp-and-verify-drop-zone" id="stamped_holder" aria-label="Choose the stamped file to verify" style="display:none">
           <span class="filename"></span>
           <span class="filesize"></span>
-          <p class="hash">
+          <span class="hash">
             <br>Drop here the stamped file
-          </p>
-        </div>
+          </span>
+        </button>
         <input id="stamped_input" type="file" style="display:none">
 
         <div class="stamp-and-verify-result result result_stamp" id="result_stamp">
@@ -149,12 +149,13 @@
 
       <div class="statuses-container">
         <div class="statuses statuses_hashing" id="statuses" style="display: none">
-          <a href="#" class="statuses-info" style="display: none"></a>
+          <button type="button" class="statuses-info" aria-label="Show proof details" style="display: none"></button>
           <p class="statuses-title">52%</p>
           <p class="statuses-description">
             Hashing
           </p>
         </div>
+        <div id="status-announcement" class="sr-only" role="status" aria-live="polite"></div>
       </div>
 
       <br>
@@ -199,7 +200,7 @@
     </div>
   </div>
 
-  <div class="clipboard-copy" style="display: none">
+  <div class="clipboard-copy" role="status" aria-live="polite" style="display: none">
     <div class="badge-copy">
       Copied to Clipboard: <span class="hash"></span>
     </div>

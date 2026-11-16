@@ -78,9 +78,11 @@
 
   &-drop-zone {
     cursor: pointer;
+    display: block;
     position: relative;
     transition: 0.3s border-color;
     height: 180px;
+    width: 100%;
     padding-top: 96px;
     box-sizing: border-box;
     border-radius: 5px;
@@ -90,6 +92,7 @@
     background-repeat: no-repeat;
     background-position: center top 30px;
     color: #004eaa;
+    font: inherit;
     line-height: 20px;
     text-align: center;
 

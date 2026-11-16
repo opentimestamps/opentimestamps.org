@@ -294,7 +294,7 @@ var Document = {
 	},
 	show : function(){
 		if(this.filename) {
-			$(this.tagId+" .filename").html(this.filename);
+			$(this.tagId+" .filename").text(this.filename);
 		} else {
 			$(this.tagId+" .filename").html("Unknown name");
 		}
@@ -392,7 +392,7 @@ var Proof = {
 	},
 	show: function(tagId) {
 		if (this.filename) {
-			$(this.tagId+" .filename").html(this.filename);
+			$(this.tagId+" .filename").text(this.filename);
 		} else {
 			$(this.tagId+" .filename").html("Unknown name");
 		}
@@ -715,30 +715,27 @@ var Info = {
             title = "Bitcoin Attestation";
             content = 'Merkle root of Bitcoin block ' +
                 '<strong class="hash" style="display: inline;">' + item.param + '</strong>' +
-                '<a class="copy"></a>' +
-                '</div>';
+                '<button type="button" class="copy" aria-label="Copy attestation hash"></button>';
             color = "green";
         } else if(item.type == "LitecoinBlockHeaderAttestation"){
             title = "Litecoin Attestation";
             content = 'Merkle root of Litecoin block ' +
                 '<strong class="hash" style="display: inline;">'+item.param+'</strong>' +
-                '<a class="copy"></a>' +
-                '</div>';
+                '<button type="button" class="copy" aria-label="Copy attestation hash"></button>';
             color="gold";
         } else if(item.type == "EthereumBlockHeaderAttestation"){
             title = "Ethereum Attestation";
             content = 'Merkle root of Ethereum block ' +
                 '<strong class="hash" style="display: inline;">'+item.param+'</strong>' +
-                '<a class="copy"></a>' +
-                '</div>';
+                '<button type="button" class="copy" aria-label="Copy attestation hash"></button>';
             color="gold";
         } else if(item.type == "PendingAttestation"){
             title = "Pending Attestation";
-            content = "Pending attestation: server "+"<a href=''>"+item.param+"</a>";
+            content = "Pending attestation: server " + item.param;
             color="gold";
         } else if(item.type == "UnknownAttestation"){
             title = "Unknown attestation";
-            content = "Unknown Attestation: payload "+"<a href=''>"+item.param+"</a>";
+            content = "Unknown Attestation: payload " + item.param;
             color="grey"
         }
 
@@ -774,7 +771,7 @@ var Info = {
             $(second).find(".badge").append('<p class="step">'+fork+'</p>');
         }
         $(second).find(".badge").append('<p class="hash">'+content+'</p>');
-        $(second).find(".badge").append('<a class="copy"></a>');
+        $(second).find(".badge").append('<button type="button" class="copy" aria-label="Copy Merkle root"></button>');
         $(second).appendTo(div);
 
         return div;
@@ -801,7 +798,7 @@ var Info = {
             $(second).find(".badge").append('<p class="step">'+fork+'</p>');
         }
         $(second).find(".badge").append('<p class="hash">'+content+'</p>');
-        $(second).find(".badge").append('<a class="copy"></a>');
+        $(second).find(".badge").append('<button type="button" class="copy" aria-label="Copy transaction"></button>');
         $(second).appendTo(div);
 
         return div;
@@ -977,6 +974,9 @@ function message(title, text, cssClass, showInfo){
 	$('#statuses').attr('class','statuses '+cssClass);
     $('#statuses .statuses-title').html(title);
     $('#statuses .statuses-description').html(text);
+    if (cssClass === 'statuses_success' || cssClass === 'statuses_failure' || cssClass === 'statuses_warning') {
+        $('#status-announcement').text(title + ' ' + $('<div>').html(text).text());
+    }
     message_info(showInfo);
     $('#statuses').show();
 }
@@ -1011,7 +1011,7 @@ function warning(text){
 /* Clipboard */
 var clipboard = new Clipboard('.copy', {
     text: function(event) {
-        var text = $(event).parent().find(".hash").html();
+        var text = $(event).parent().find(".hash").text();
         console.log(text);
 
         $(".clipboard-copy")
