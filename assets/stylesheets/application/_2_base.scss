@@ -10,6 +10,12 @@ a {
   text-decoration: none;
 }
 
+p a,
+.repositories-description a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 input,
 button {
   margin: 0;
@@ -18,6 +24,15 @@ button {
   border: 0;
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px #003b80;
 }
 
 strong {
