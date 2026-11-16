@@ -83,7 +83,7 @@ function upgrade_verify(ots, hash, hashType, filename) {
 			var text = "";
 			Object.keys(results).map(chain => {
 				var date = moment(results[chain].timestamp * 1000).tz(moment.tz.guess()).format('YYYY-MM-DD z')
-                text += upperFirstLetter(chain) + ' block ' + results[chain].height + ' attests existence as of ' + date + '<br>';
+                text += upperFirstLetter(chain) + ' block ' + results[chain].height + ' attests existence as of ' + date + '\n';
     		});
         	success(text);
 		}
@@ -602,7 +602,7 @@ function run_stamping(){
     if (Hashes.get(hashType)) {
         stamp(Document.filename, Hashes.get(hashType), hashType);
     } else {
-        failure("To <strong>stamp</strong> you need to drop a file in the Data field");
+        failure("To stamp you need to drop a file in the Data field");
     }
 }
 
@@ -622,7 +622,7 @@ function run_verification(){
         Proof.upgraded = false;
         upgrade_verify(string2Bin(Proof.data), Hashes.get(hashType), hashType, Proof.filename);
     } else {
-        failure("To <strong>verify</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
+        failure("To verify you need to drop a file in the Data field and a .ots receipt in the OpenTimestamps proof field")
     }
 }
 
@@ -633,7 +633,7 @@ function run_info(){
         location.href = "#info";
         Info.init(Proof.data);
     } else {
-        failure("To <strong>info</strong> you need to drop a file in the Data field and a <strong>.ots</strong> receipt in the OpenTimestamps proof field")
+        failure("To info you need to drop a file in the Data field and a .ots receipt in the OpenTimestamps proof field")
     }
 }
 
@@ -648,14 +648,14 @@ var Info = {
         var obj = JSON.parse(jsonString);
 
         // Fill labels
-        $("#hash").html(obj.hash);
-        $("#error").html("");
+        $("#hash").text(obj.hash);
+        $("#error").text("");
         if(obj.result=="KO"){
-            $("#error").html(obj.error);
+            $("#error").text(obj.error);
         }
-        $("#digest").html(obj.hash);
-        $("#type").html(obj.op);
-        $("#title_digest").html(obj.hash.substring(0, 12));
+        $("#digest").text(obj.hash);
+        $("#type").text(obj.op);
+        $("#title_digest").text(obj.hash.substring(0, 12));
         $("#table").empty()
         this.container = $("#table")
 
@@ -710,43 +710,49 @@ var Info = {
 
         var title="Attestation";
         var color="grey";
-        var content = "";
+        var prefix = "";
+        var hasHash = false;
         if(item.type == "BitcoinBlockHeaderAttestation") {
             title = "Bitcoin Attestation";
-            content = 'Merkle root of Bitcoin block ' +
-                '<strong class="hash" style="display: inline;">' + item.param + '</strong>' +
-                '<button type="button" class="copy" aria-label="Copy attestation hash"></button>';
+            prefix = 'Merkle root of Bitcoin block ';
+            hasHash = true;
             color = "green";
         } else if(item.type == "LitecoinBlockHeaderAttestation"){
             title = "Litecoin Attestation";
-            content = 'Merkle root of Litecoin block ' +
-                '<strong class="hash" style="display: inline;">'+item.param+'</strong>' +
-                '<button type="button" class="copy" aria-label="Copy attestation hash"></button>';
+            prefix = 'Merkle root of Litecoin block ';
+            hasHash = true;
             color="gold";
         } else if(item.type == "EthereumBlockHeaderAttestation"){
             title = "Ethereum Attestation";
-            content = 'Merkle root of Ethereum block ' +
-                '<strong class="hash" style="display: inline;">'+item.param+'</strong>' +
-                '<button type="button" class="copy" aria-label="Copy attestation hash"></button>';
+            prefix = 'Merkle root of Ethereum block ';
+            hasHash = true;
             color="gold";
         } else if(item.type == "PendingAttestation"){
             title = "Pending Attestation";
-            content = "Pending attestation: server " + item.param;
+            prefix = "Pending attestation: server ";
             color="gold";
         } else if(item.type == "UnknownAttestation"){
             title = "Unknown attestation";
-            content = "Unknown Attestation: payload " + item.param;
+            prefix = "Unknown Attestation: payload ";
             color="grey"
         }
 
         var first = document.createElement('div');
         $(first).addClass("table-name "+color);
-        $(first).html(title);
+        $(first).text(title);
         $(first).appendTo(div);
 
         var second = document.createElement('div');
         $(second).addClass("table-value table-value_copy");
-        $(second).append(content);
+        if (prefix) {
+            $(second).append(document.createTextNode(prefix));
+            if (hasHash) {
+                $(second).append($('<strong class="hash" style="display: inline;"></strong>').text(item.param));
+                $(second).append('<button type="button" class="copy" aria-label="Copy attestation hash"></button>');
+            } else {
+                $(second).append(document.createTextNode(item.param));
+            }
+        }
         $(second).appendTo(div);
 
         return div;
@@ -756,21 +762,20 @@ var Info = {
         $(div).addClass("table-i");
 
         var title="Merkle Root";
-        var content=merkle;
         var color="purple";
 
         var first = document.createElement('div');
         $(first).addClass("table-name "+color);
-        $(first).html(title);
+        $(first).text(title);
         $(first).appendTo(div);
 
         var second = document.createElement('div');
         $(second).addClass("table-value table-value_copy");
         $(second).append('<div class="badge"></div>');
         if(fork>0) {
-            $(second).find(".badge").append('<p class="step">'+fork+'</p>');
+            $(second).find(".badge").append($('<p class="step"></p>').text(fork));
         }
-        $(second).find(".badge").append('<p class="hash">'+content+'</p>');
+        $(second).find(".badge").append($('<p class="hash"></p>').text(merkle));
         $(second).find(".badge").append('<button type="button" class="copy" aria-label="Copy Merkle root"></button>');
         $(second).appendTo(div);
 
@@ -781,12 +786,11 @@ var Info = {
         $(div).addClass("table-i");
 
         var title="Note";
-        var content=tx;
         var color="purple";
 
         var first = document.createElement('div');
         $(first).addClass("table-name "+color);
-        $(first).html(title);
+        $(first).text(title);
         $(first).appendTo(div);
 
         var second = document.createElement('div');
@@ -795,9 +799,9 @@ var Info = {
         $(second).append('<div class="badge"></div>');
 
         if(fork>0) {
-            $(second).find(".badge").append('<p class="step">'+fork+'</p>');
+            $(second).find(".badge").append($('<p class="step"></p>').text(fork));
         }
-        $(second).find(".badge").append('<p class="hash">'+content+'</p>');
+        $(second).find(".badge").append($('<p class="hash"></p>').text(tx));
         $(second).find(".badge").append('<button type="button" class="copy" aria-label="Copy transaction"></button>');
         $(second).appendTo(div);
 
@@ -813,16 +817,16 @@ var Info = {
 
         var first = document.createElement('div');
         $(first).addClass("table-name "+color);
-        $(first).html(title);
+        $(first).text(title);
         $(first).appendTo(div);
 
 
         var second = document.createElement('div');
         $(second).addClass("table-value");
         if(fork>0) {
-            $(second).append('<p class="step">'+fork+'</p>');
+            $(second).append($('<p class="step"></p>').text(fork));
         }
-        $(second).append('<p class="">'+content+'</p>');
+        $(second).append($('<p></p>').text(content));
         $(second).appendTo(div);
 
         return div;
@@ -831,27 +835,29 @@ var Info = {
         var div = document.createElement('div');
         $(div).addClass("table-i");
 
-        var content = result;
-        if(arg.length>0){
-            var start = (op=="append") ? content.lastIndexOf(arg) : content.indexOf(arg);
-            var end = start+arg.length;
-            content = result.substring(0, start)+"<span class='green'>"+arg+"</span>"+result.substring(end, result.length)
-        }
         var title = op+"("+((arg.length>0)?arg.substring(0, 6)+'...':'')+")";
-        var color="purple";
 
         var first = document.createElement('div');
         $(first).addClass("table-name ");
-        $(first).html(title);
+        $(first).text(title);
         $(first).appendTo(div);
 
         var second = document.createElement('div');
         $(second).addClass("table-value");
         $(second).append('<div class="badge"></div>');
         if(fork>0) {
-            $(second).find(".badge").append('<p class="step">'+fork+'</p>');
+            $(second).find(".badge").append($('<p class="step"></p>').text(fork));
         }
-        $(second).find(".badge").append('<p class="hash">'+content+'</p>');
+        var hash = $('<p class="hash"></p>');
+        var start = arg.length > 0 ? (op == "append" ? result.lastIndexOf(arg) : result.indexOf(arg)) : -1;
+        if (start >= 0) {
+            hash.append(document.createTextNode(result.substring(0, start)));
+            hash.append($('<span class="green"></span>').text(arg));
+            hash.append(document.createTextNode(result.substring(start + arg.length)));
+        } else {
+            hash.text(result);
+        }
+        $(second).find(".badge").append(hash);
         $(second).appendTo(div);
 
         return div;
@@ -972,10 +978,10 @@ function getParameterByName(name, url) {
 
 function message(title, text, cssClass, showInfo){
 	$('#statuses').attr('class','statuses '+cssClass);
-    $('#statuses .statuses-title').html(title);
-    $('#statuses .statuses-description').html(text);
+    $('#statuses .statuses-title').text(title);
+    $('#statuses .statuses-description').text(text);
     if (cssClass === 'statuses_success' || cssClass === 'statuses_failure' || cssClass === 'statuses_warning') {
-        $('#status-announcement').text(title + ' ' + $('<div>').html(text).text());
+        $('#status-announcement').text(title + ' ' + text);
     }
     message_info(showInfo);
     $('#statuses').show();
@@ -1017,7 +1023,7 @@ var clipboard = new Clipboard('.copy', {
         $(".clipboard-copy")
           .css('display','block')
           .find('.badge-copy .hash')
-          .html(text);
+          .text(text);
 
         setTimeout(function(){
           $(".clipboard-copy").css('display','none');
