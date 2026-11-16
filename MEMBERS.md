@@ -25,7 +25,7 @@ Companies that **really use OpenTimestamps** can appear in the [Members](https:/
 | Format | **PNG** with transparency (RGBA or palette+alpha). Avoid JPEG/SVG for new entries when possible (some older members used other formats; new PRs should use PNG). |
 | Path / name | `assets/images/logos/<slug>@2x.png` — lowercase slug, no spaces (example: `btcfactura@2x.png`). Older entries use mixed names (e.g. `TrustHub.png`, `logo_verisart@2x.png`); new entries should follow the lowercase `<slug>@2x.png` form. |
 | Pixel size | Existing logos vary. Aim for roughly **400–800 px on the long edge** (or a square up to ~512 px). PR #79’s logo is **800×167**. Keep the file small (on the order of **~5–40 KB** is typical). |
-| Display size in HTML | Set `width` / `height` on the `<img>` so the logo looks balanced next to neighbors. Common display widths in `index.html` are about **90–200** (occasionally wider for wide wordmarks). Many entries use `style="padding-top:10px;"`. |
+| Display size in HTML | Set `width` / `height` and `loading="lazy"` on the `<img>`. Common display widths in `index.html` are about **90–200** (occasionally wider for wide wordmarks). Many entries use `style="padding-top:10px;"`. |
 | Content | Company/product logo on a **transparent** background; no extra marketing slogans baked into the image if avoidable. |
 
 Only change these files in your PR:
@@ -37,12 +37,12 @@ Do not regenerate CSS/JS bundles, edit unrelated pages, or reformat the whole Me
 
 ## Exact HTML snippet
 
-Copy this pattern (from the live site / PR #79). Replace the placeholders:
+Copy this pattern and replace the placeholders:
 
 ```html
       <div class="members-i">
         <a href="https://YOUR-SITE.EXAMPLE" class="members-link">
-          <img src="./assets/images/logos/your-slug@2x.png" alt="Your Company" width="190" height="40"
+          <img loading="lazy" src="./assets/images/logos/your-slug@2x.png" alt="" width="190" height="40"
             style="padding-top:10px;">
           <span class="members-name">Your Company</span>
         </a>
@@ -54,7 +54,7 @@ Notes:
 - Keep two-space indentation consistent with surrounding entries.
 - Separate your block from its neighbours with one blank line, like the existing entries.
 - Adjust `width` / `height` to suit your logo’s aspect ratio.
-- `alt` and `.members-name` should be the public name you want shown.
+- Keep `alt=""` because the adjacent `.members-name` already gives the link an accessible name.
 
 ## Placement
 
@@ -63,7 +63,7 @@ Insert your new `.members-i` block **immediately before** the “Add your compan
 ```html
       <div class="members-i">
         <a href="https://github.com/opentimestamps/opentimestamps.org/blob/master/MEMBERS.md" class="members-link members-link_add">
-          <img src="./assets/images/logos/company.png" alt="" width="100" height="92">
+          <img loading="lazy" src="./assets/images/logos/company.png" alt="" width="100" height="92">
           <span class="members-name">Add your company here</span>
         </a>
       </div>
@@ -95,6 +95,7 @@ Paste and complete:
 - [ ] Live backlink to https://opentimestamps.org — URL/section: …
 - [ ] Logo: transparent PNG at `assets/images/logos/<slug>@2x.png`
 - [ ] One `.members-i` entry in `index.html`, placed just before the “Add your company here” CTA
+- [ ] Logo image has `loading="lazy"`, explicit `width` / `height`, and `alt=""` (the company name is adjacent text)
 - [ ] No unrelated file changes
 ```
 
